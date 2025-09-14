@@ -1,0 +1,181 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-title>Predicción de Cáncer</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Predicción de Cáncer</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <div class="container">
+    <!-- Información del sistema -->
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Sistema de Predicción con CRISP-DM</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <p>Este sistema utiliza machine learning con metodología CRISP-DM para predecir el riesgo de cáncer basado en factores de riesgo del paciente.</p>
+        <ion-chip color="success" *ngIf="isModelTrained">
+          <ion-icon name="checkmark-circle"></ion-icon>
+          <ion-label>Modelo Entrenado</ion-label>
+        </ion-chip>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Formulario de datos del paciente -->
+    <form [formGroup]="predictionForm" (ngSubmit)="predictCancer()">
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>Datos del Paciente</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <!-- Datos básicos -->
+          <ion-item>
+            <ion-label position="stacked">Edad</ion-label>
+            <ion-input 
+              type="number" 
+              formControlName="age" 
+              placeholder="Edad en años">
+            </ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-label position="stacked">IMC (Índice de Masa Corporal)</ion-label>
+            <ion-input 
+              type="number" 
+              formControlName="bmi" 
+              placeholder="IMC">
+            </ion-input>
+          </ion-item>
+
+          <!-- Factores de riesgo -->
+          <ion-item>
+            <ion-checkbox formControlName="smoking"></ion-checkbox>
+            <ion-label class="ion-margin-start">Fumador</ion-label>
+          </ion-item>
+
+          <ion-item>
+            <ion-checkbox formControlName="alcohol_consumption"></ion-checkbox>
+            <ion-label class="ion-margin-start">Consumo de alcohol</ion-label>
+          </ion-item>
+
+          <ion-item>
+            <ion-checkbox formControlName="physical_activity"></ion-checkbox>
+            <ion-label class="ion-margin-start">Actividad física regular</ion-label>
+          </ion-item>
+
+          <ion-item>
+            <ion-checkbox formControlName="family_history"></ion-checkbox>
+            <ion-label class="ion-margin-start">Historia familiar de cáncer</ion-label>
+          </ion-item>
+
+          <ion-item>
+            <ion-checkbox formControlName="previous_cancer_history"></ion-checkbox>
+            <ion-label class="ion-margin-start">Historia previa de cáncer</ion-label>
+          </ion-item>
+
+          <!-- Síntomas -->
+          <ion-item>
+            <ion-checkbox formControlName="fatigue"></ion-checkbox>
+            <ion-label class="ion-margin-start">Fatiga</ion-label>
+          </ion-item>
+
+          <ion-item>
+            <ion-checkbox formControlName="weight_loss"></ion-checkbox>
+            <ion-label class="ion-margin-start">Pérdida de peso inexplicable</ion-label>
+          </ion-item>
+
+          <ion-item>
+            <ion-checkbox formControlName="shortness_of_breath"></ion-checkbox>
+            <ion-label class="ion-margin-start">Dificultad para respirar</ion-label>
+          </ion-item>
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Botones de acción -->
+      <ion-button 
+        expand="block" 
+        type="submit" 
+        [disabled]="!predictionForm.valid || !isModelTrained">
+        <ion-icon name="analytics" slot="start"></ion-icon>
+        Predecir Riesgo de Cáncer
+      </ion-button>
+
+      <ion-button 
+        expand="block" 
+        fill="outline" 
+        (click)="resetForm()">
+        <ion-icon name="refresh" slot="start"></ion-icon>
+        Limpiar Formulario
+      </ion-button>
+    </form>
+
+    <!-- Resultados de la predicción -->
+    <ion-card *ngIf="predictionResult">
+      <ion-card-header>
+        <ion-card-title>Resultado de la Predicción</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <!-- Nivel de riesgo -->
+        <div class="result-section">
+          <h3>Nivel de Riesgo</h3>
+          <ion-chip [color]="getRiskLevelColor()" size="large">
+            <ion-icon name="warning" *ngIf="predictionResult.prediction === 1"></ion-icon>
+            <ion-icon name="checkmark-circle" *ngIf="predictionResult.prediction === 0"></ion-icon>
+            <ion-label>{{ getRiskLevelText() }}</ion-label>
+          </ion-chip>
+        </div>
+
+        <!-- Probabilidades -->
+        <div class="result-section">
+          <h3>Probabilidades</h3>
+          <ion-item>
+            <ion-label>Bajo Riesgo</ion-label>
+            <ion-badge color="success">{{ (predictionResult.risk_probability.low_risk * 100).toFixed(1) }}%</ion-badge>
+          </ion-item>
+          <ion-item>
+            <ion-label>Alto Riesgo</ion-label>
+            <ion-badge color="danger">{{ (predictionResult.risk_probability.high_risk * 100).toFixed(1) }}%</ion-badge>
+          </ion-item>
+        </div>
+
+        <!-- Factores de riesgo identificados -->
+        <div class="result-section" *ngIf="predictionResult.risk_factors.length > 0">
+          <h3>Factores de Riesgo Identificados</h3>
+          <ion-chip 
+            *ngFor="let factor of predictionResult.risk_factors" 
+            color="warning">
+            <ion-icon name="warning-outline"></ion-icon>
+            <ion-label>{{ factor }}</ion-label>
+          </ion-chip>
+        </div>
+
+        <!-- Recomendación -->
+        <div class="result-section">
+          <h3>Recomendación</h3>
+          <ion-item>
+            <ion-icon 
+              name="medical" 
+              slot="start" 
+              [color]="predictionResult.prediction === 1 ? 'danger' : 'success'">
+            </ion-icon>
+            <ion-label class="ion-text-wrap">
+              {{ predictionResult.recommendation }}
+            </ion-label>
+          </ion-item>
+        </div>
+
+        <!-- Información adicional -->
+        <ion-note color="medium">
+          <small>
+            * Esta predicción es solo una herramienta de apoyo y no reemplaza el diagnóstico médico profesional.
+          </small>
+        </ion-note>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>

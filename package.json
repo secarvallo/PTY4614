@@ -1,0 +1,16 @@
+{
+  "name": "cancer-prediction-system",
+  "version": "1.0.0",
+  "description": "Sistema de predicción de cáncer con ML y app móvil Ionic",
+  "main": "index.js",
+  "scripts": {
+    "install-backend": "cd ml-backend && pip install -r requirements.txt",
+    "start-backend": "cd ml-backend && python app.py",
+    "setup-ionic": "npm install -g @ionic/cli && ionic start mobile-app tabs --type=angular --capacitor",
+    "start-mobile": "cd mobile-app && ionic serve",
+    "install-all": "npm run install-backend && npm run setup-ionic"
+  },
+  "keywords": ["cancer", "prediction", "machine-learning", "ionic", "crisp-dm"],
+  "author": "PTY4614 Team",
+  "license": "MIT"
+}

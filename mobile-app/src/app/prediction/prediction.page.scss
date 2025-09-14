@@ -1,0 +1,31 @@
+.container {
+  padding: 16px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.result-section {
+  margin-bottom: 20px;
+}
+
+.result-section h3 {
+  color: var(--ion-color-primary);
+  margin-bottom: 10px;
+  font-size: 1.2em;
+}
+
+ion-card {
+  margin-bottom: 16px;
+}
+
+ion-button {
+  margin: 8px 0;
+}
+
+ion-chip {
+  margin: 4px;
+}
+
+.ion-text-wrap {
+  white-space: normal !important;
+}
