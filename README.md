@@ -10,8 +10,8 @@ exactitud que un médico y comenzar a tratar los síntomas de la enfermedad cuan
 antes de que llegue a manifestarse.
 
 El objetivo de este proyecto es desarrollar un sistema que prediga el cáncer en pacientes por
-medios de machine learning con metodologías CRISP-DM por medio de Collab Google junto a un app mobile en base de ionic
-con lenguajes TS, JavaScript, Python y R, que permita predecir si un paciente o varios pacientes pueden tener cáncer,
-identificar los factores de riesgos de estos pacientes, responder 5 preguntas de negocio y mostrar
-resultados predictivos utilizando Power BI, considerando la funcionalidad, usabilidad y confiabilidad
-del sistema, teniendo como usuarios finales personal de salud y usuario paciente.
+medios de machine learning con metodologías CRISP-DM junto a un app mobile en base de ionic, que permita 
+predecir si un paciente o varios pacientes pueden tener cáncer,identificar los factores de riesgos de 
+estos pacientes, responder 5 preguntas de negocio y mostrar resultados predictivos utilizando Power BI,
+considerando la funcionalidad, usabilidad y confiabilidad del sistema, teniendo como usuarios finales 
+personal de salud y usuario paciente.
