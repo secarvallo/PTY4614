@@ -1,0 +1,86 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>¡Bienvenido!</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="auth-content">
+  <div class="auth-container">
+
+    <div class="auth-header">
+      <div class="logo-placeholder"></div>
+      <h1>¡Autenticación Exitosa!</h1>
+      <p>Te has conectado exitosamente con tu cuenta de Google</p>
+    </div>
+
+    <div class="auth-form">
+      <ion-card class="user-card">
+        <ion-card-content>
+          <div class="user-info">
+            <ion-avatar>
+              <img [src]="userInfo.photoURL || 'assets/icon/default-avatar.png'" alt="Avatar del usuario" />
+            </ion-avatar>
+            <div class="user-details">
+              <h2>{{ userInfo.nombre || userInfo.displayName }}</h2>
+              <p>{{ userInfo.email }}</p>
+              <ion-chip color="success" *ngIf="userInfo.emailVerified">
+                <ion-icon name="shield-checkmark-outline"></ion-icon>
+                <ion-label>Email Verificado</ion-label>
+              </ion-chip>
+            </div>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <div class="google-info">
+        <ion-chip color="danger">
+          <ion-icon name="logo-google"></ion-icon>
+          <ion-label>Conectado con Google</ion-label>
+        </ion-chip>
+      </div>
+
+      <div class="action-buttons">
+        <ion-button expand="block" class="auth-button primary" (click)="continueToApp()">
+          <ion-icon name="arrow-forward-outline" slot="end"></ion-icon>
+          Continuar a LungLife
+        </ion-button>
+        <ion-button expand="block" fill="outline" color="medium" (click)="logout()">
+          <ion-icon name="log-out-outline" slot="start"></ion-icon>
+          Cerrar Sesión
+        </ion-button>
+      </div>
+
+      <ion-card class="info-card">
+        <ion-card-header>
+          <ion-card-subtitle>Información de Seguridad</ion-card-subtitle>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-list>
+            <ion-item lines="none">
+              <ion-icon name="shield-outline" slot="start" color="success"></ion-icon>
+              <ion-label>
+                <h3>Autenticación Segura</h3>
+                <p>Tu cuenta está protegida por Google Sign-In</p>
+              </ion-label>
+            </ion-item>
+            <ion-item lines="none">
+              <ion-icon name="time-outline" slot="start" color="primary"></ion-icon>
+              <ion-label>
+                <h3>Sesión Automática</h3>
+                <p>No necesitarás volver a iniciar sesión</p>
+              </ion-label>
+            </ion-item>
+            <ion-item lines="none">
+              <ion-icon name="sync-outline" slot="start" color="tertiary"></ion-icon>
+              <ion-label>
+                <h3>Datos Sincronizados</h3>
+                <p>Tu información se mantiene actualizada</p>
+              </ion-label>
+            </ion-item>
+          </ion-list>
+        </ion-card-content>
+      </ion-card>
+    </div>
+
+  </div>
+</ion-content>

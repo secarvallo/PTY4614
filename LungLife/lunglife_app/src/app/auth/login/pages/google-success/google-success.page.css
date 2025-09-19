@@ -1,0 +1,116 @@
+:host {
+  --bg-start: #f6f7fb;
+  --bg-end: #eef2ff;
+  --card-bg: #ffffff;
+  --primary-grad: linear-gradient(135deg, #6c63ff 0%, #7b4dff 50%, #9a60ff 100%);
+}
+
+ion-content.auth-content {
+  --background: linear-gradient(180deg, var(--bg-start) 0%, var(--bg-end) 100%);
+}
+
+.auth-container {
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 32px 20px 24px;
+  display: grid;
+  align-content: center;
+  min-height: 100%;
+}
+
+.auth-header {
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.auth-header .logo-container {
+  width: 76px;
+  height: 76px;
+  margin: 0 auto 12px;
+  border-radius: 18px;
+  background: radial-gradient(62% 62% at 50% 50%, #e7fff3 0%, #f0fff7 100%);
+  display: grid;
+  place-items: center;
+  box-shadow: 0 8px 20px rgba(45, 194, 126, 0.15);
+}
+
+.success-icon {
+  font-size: 34px;
+  color: #2dd36f;
+}
+
+.auth-form {
+  background: var(--card-bg);
+  border-radius: 20px;
+  padding: 18px 16px 16px;
+  box-shadow: 0 18px 40px rgba(29, 33, 84, 0.08);
+}
+
+.user-card {
+  margin-bottom: 12px;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.user-info ion-avatar {
+  width: 64px;
+  height: 64px;
+}
+
+.user-details h2 {
+  margin: 0 0 6px 0;
+}
+
+.user-details p {
+  margin: 0 0 6px 0;
+  color: #6b7280;
+  font-size: 0.95rem;
+}
+
+.google-info {
+  display: flex;
+  justify-content: center;
+  margin: 8px 0 12px;
+}
+
+.action-buttons {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.auth-button.primary {
+  --background: var(--primary-grad);
+  --border-radius: 14px;
+  height: 50px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  box-shadow: 0 10px 24px rgba(108, 99, 255, 0.35);
+}
+
+.info-card ion-item {
+  --padding-start: 0;
+  --padding-end: 0;
+}
+
+.info-card ion-label h3 {
+  margin: 0 0 4px 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.info-card ion-label p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #6b7280;
+}
+
+@media (min-width: 768px) {
+  .action-buttons {
+    grid-template-columns: 1fr 1fr;
+  }
+}/*# sourceMappingURL=google-success.page.css.map */

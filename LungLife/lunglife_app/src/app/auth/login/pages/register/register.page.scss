@@ -1,0 +1,269 @@
+/*
+:host
+Defines CSS custom properties for the component, including background gradients,
+card background, primary gradient, and text colors.
+*/
+:host {
+  --bg-start: #f6f7fb;
+  --bg-end: #eef2ff;
+  --card-bg: #ffffff;
+  --primary-grad: linear-gradient(135deg, #6c63ff 0%, #7b4dff 50%, #9a60ff 100%);
+  --text-color: #2d3748;
+  --muted-color: #718096;
+}
+
+/*
+ion-content.auth-content
+Applies a gradient background to the authentication content area.
+*/
+ion-content.auth-content {
+  --background: linear-gradient(180deg, var(--bg-start) 0%, var(--bg-end) 100%);
+}
+
+/*
+.auth-container
+Centers the authentication container and sets its maximum width, padding,
+and grid layout for alignment.
+*/
+.auth-container {
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 32px 20px 24px;
+  display: grid;
+  align-content: center;
+  min-height: 100%;
+}
+
+/*
+.auth-header
+Styles the header section of the authentication page, including the logo
+container and text alignment.
+*/
+.auth-header {
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.auth-header .logo-container {
+  width: 76px;
+  height: 76px;
+  margin: 0 auto 12px;
+  border-radius: 18px;
+  background: radial-gradient(62% 62% at 50% 50%, #ede7ff 0%, #e7f0ff 100%);
+  display: grid;
+  place-items: center;
+  box-shadow: 0 8px 20px rgba(108, 99, 255, 0.15);
+}
+
+.auth-header .logo-container .logo {
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+}
+
+.auth-header h1 {
+  color: var(--text-color);
+  font-weight: 700;
+  font-size: 22px;
+  margin: 0 0 4px;
+}
+
+.auth-header p {
+  color: var(--muted-color);
+  margin: 0;
+  font-size: 14px;
+}
+
+/*
+.auth-form
+Styles the form container with a card-like appearance, including background,
+border radius, padding, and shadow.
+*/
+.auth-form {
+  background: var(--card-bg);
+  border-radius: 20px;
+  padding: 18px 16px 16px;
+  box-shadow: 0 18px 40px rgba(29, 33, 84, 0.08);
+}
+
+/*
+.form-group
+Adds spacing between form groups.
+*/
+.form-group {
+  margin-bottom: 12px;
+}
+
+/*
+ion-item
+Customizes the appearance of form input items, including background, border,
+and height.
+*/
+ion-item {
+  --background: #f7f8fc;
+  --border-color: transparent;
+  --highlight-background: transparent;
+  --min-height: 56px;
+  --border-radius: 14px;
+  margin: 0 0 6px;
+}
+
+/*
+ion-item.error
+Styles input items with errors, using a red background.
+*/
+ion-item.error {
+  --background: #fff6f6;
+}
+
+/*
+.input-icon
+Sets the color and size of input icons.
+*/
+.input-icon {
+  color: #7f8bb3;
+  font-size: 20px;
+}
+
+/*
+ion-input.invalid
+Changes the caret color for invalid inputs.
+*/
+ion-input.invalid::part(native) {
+  caret-color: #d43c5a;
+}
+
+/*
+.password-toggle
+Styles the password visibility toggle icon.
+*/
+.password-toggle {
+  --padding-start: 8px;
+  --padding-end: 8px;
+  color: #7f8bb3;
+}
+
+/*
+.error-message
+Styles error messages with red text and spacing.
+*/
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #d43c5a;
+  font-size: 12px;
+  padding: 0 4px 6px;
+}
+
+/*
+.password-strength
+Styles the password strength indicator, including the strength bar and label.
+*/
+.password-strength {
+  display: grid;
+  gap: 6px;
+  padding: 0 4px 8px;
+}
+
+.strength-bar {
+  width: 100%;
+  height: 8px;
+  background: #eef1ff;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.strength-fill {
+  height: 100%;
+  border-radius: 10px;
+  transition: width .25s ease;
+}
+
+.strength-label {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/*
+.password-requirements
+Styles the list of password requirements.
+*/
+.password-requirements {
+  display: grid;
+  gap: 6px;
+  padding: 4px 4px 8px;
+}
+
+.requirement-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #7b89b0;
+}
+
+/*
+.terms-item
+Customizes the appearance of terms and conditions checkbox items.
+*/
+.terms-item {
+  --background: transparent;
+  padding-left: 0;
+}
+
+/*
+.custom-checkbox
+Defines the size and colors for custom checkboxes.
+*/
+.custom-checkbox {
+  --size: 18px;
+  --checkmark-color: #fff;
+  --background-checked: #6c63ff;
+}
+
+/*
+.auth-button.primary
+Styles the primary authentication button with a gradient background,
+rounded corners, and shadow.
+*/
+.auth-button.primary {
+  --background: var(--primary-grad);
+  --border-radius: 14px;
+  height: 50px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  box-shadow: 0 10px 24px rgba(108, 99, 255, 0.35);
+}
+
+/*
+.auth-footer
+Styles the footer text in the authentication page.
+*/
+.auth-footer {
+  text-align: center;
+  margin-top: 12px;
+  color: var(--muted-color);
+  font-size: 14px;
+}
+
+/*
+.link-button
+Styles link buttons with a specific color.
+*/
+.link-button {
+  color: #6c63ff;
+  height: auto;
+}
+
+/*
+Responsive styles for larger screens
+Adds extra padding to the authentication container for screens with a
+minimum height of 760px.
+*/
+@media (min-height: 760px) {
+  .auth-container {
+    padding-top: 48px;
+    padding-bottom: 32px;
+  }
+}

@@ -1,0 +1,36 @@
+:host {
+  --bg-start: #f6f7fb;
+  --bg-end: #eef2ff;
+  --card-bg: #ffffff;
+  --primary-grad: linear-gradient(135deg, #6c63ff 0%, #7b4dff 50%, #9a60ff 100%);
+  --text-color: #2d3748;
+  --muted-color: #718096;
+}
+
+ion-content.auth-content { --background: linear-gradient(180deg, var(--bg-start) 0%, var(--bg-end) 100%); }
+
+.auth-container { max-width: 420px; margin: 0 auto; padding: 12px 20px 24px; display: grid; align-content: start; min-height: 100%; }
+
+.auth-header { text-align: center; margin: 8px 0 12px; }
+.auth-header .logo-container { width: 76px; height: 76px; margin: 0 auto 10px; border-radius: 18px; background: radial-gradient(62% 62% at 50% 50%, #ede7ff 0%, #e7f0ff 100%); display: grid; place-items: center; box-shadow: 0 8px 20px rgba(108,99,255,0.15); }
+.shield-icon { font-size: 36px; color: #6c63ff; }
+.auth-header h1 { color: var(--text-color); font-weight: 700; font-size: 22px; margin: 0 0 4px; }
+.auth-header p { color: var(--muted-color); margin: 0; font-size: 14px; }
+.email-info { display: inline-flex; align-items: center; gap: 6px; color: #64748b; margin-top: 6px; font-size: 13px; }
+
+.auth-form { background: var(--card-bg); border-radius: 20px; padding: 18px 16px 16px; box-shadow: 0 18px 40px rgba(29,33,84,0.08); }
+.form-group { margin-bottom: 12px; }
+
+ion-item { --background: #f7f8fc; --border-color: transparent; --highlight-background: transparent; --min-height: 56px; --border-radius: 14px; margin: 0 0 6px; }
+.code-input::part(native) { text-align: center; letter-spacing: 0.2em; font-size: 18px; }
+
+.error-message { display: flex; align-items: center; gap: 6px; color: #d43c5a; font-size: 12px; padding: 0 4px 6px; }
+
+.auth-button.primary { --background: var(--primary-grad); --border-radius: 14px; height: 50px; font-weight: 700; letter-spacing: 0.2px; box-shadow: 0 10px 24px rgba(108,99,255,0.35); }
+
+.verify-options { display: grid; place-items: center; margin-top: 8px; }
+.link-button { color: #6c63ff; height: auto; }
+
+.auth-footer { text-align: center; margin-top: 8px; color: var(--muted-color); font-size: 14px; }
+
+@media (min-height: 760px) { .auth-container { align-content: center; padding-top: 24px; } }

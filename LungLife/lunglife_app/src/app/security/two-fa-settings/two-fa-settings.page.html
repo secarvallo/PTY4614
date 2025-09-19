@@ -1,0 +1,113 @@
+<!-- 🔒 Two-FA Settings Template -->
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button fill="clear" (click)="goBack()">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Two-Factor Authentication</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="security-container">
+
+    @if (currentUser) {
+      <!-- 2FA Status Card -->
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>
+            <ion-icon name="shield-checkmark-outline" slot="start"></ion-icon>
+            Security Status
+          </ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <div class="status-info">
+            <p><strong>Two-Factor Authentication:</strong></p>
+            <ion-badge [color]="currentUser.twoFAEnabled ? 'success' : 'warning'">
+              {{ currentUser.twoFAEnabled ? 'Enabled' : 'Disabled' }}
+            </ion-badge>
+
+            @if (currentUser.twoFAEnabled) {
+              <p class="status-description">Your account is protected with 2FA.</p>
+            } @else {
+              <p class="status-description">Enable 2FA to secure your account.</p>
+            }
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Action Buttons -->
+      <div class="security-actions">
+        @if (!currentUser.twoFAEnabled) {
+          <ion-button expand="block" color="primary" (click)="setup2FA()">
+            <ion-icon name="shield-outline" slot="start"></ion-icon>
+            Enable Two-Factor Authentication
+          </ion-button>
+        } @else {
+          <ion-button expand="block" color="danger" fill="outline" (click)="disable2FA()">
+            <ion-icon name="shield-off-outline" slot="start"></ion-icon>
+            Disable Two-Factor Authentication
+          </ion-button>
+        }
+      </div>
+
+      <!-- QR Code Section -->
+      @if (qrCodeData) {
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>Setup Instructions</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <div class="qr-section">
+              <img [src]="qrCodeData" alt="2FA QR Code" class="qr-code">
+              <p>Scan this QR code with your authenticator app (Google Authenticator, Authy, etc.)</p>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      }
+
+      <!-- Backup Codes Section -->
+      @if (backupCodes.length > 0) {
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>Backup Codes</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <p>Save these backup codes in a safe place. You can use them to access your account if you lose your authenticator device.</p>
+            <div class="backup-codes">
+              @for (code of backupCodes; track code) {
+                <div class="backup-code">{{ code }}</div>
+              }
+            </div>
+          </ion-card-content>
+        </ion-card>
+      }
+
+      <!-- Information Card -->
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>About Two-Factor Authentication</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <p>Two-factor authentication adds an extra layer of security to your account by requiring a code from your mobile device in addition to your password.</p>
+          <ul>
+            <li>Download an authenticator app like Google Authenticator or Authy</li>
+            <li>Scan the QR code with your app</li>
+            <li>Enter the 6-digit code to complete setup</li>
+            <li>Save your backup codes in a secure location</li>
+          </ul>
+        </ion-card-content>
+      </ion-card>
+
+    } @else {
+      <!-- Loading State -->
+      <div class="loading-state">
+        <ion-spinner name="crescent"></ion-spinner>
+        <p>Loading security settings...</p>
+      </div>
+    }
+
+  </div>
+</ion-content>

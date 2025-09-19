@@ -1,0 +1,101 @@
+<!-- 🏠 Dashboard Template - Protected Route with Auth Integration -->
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>LungLife Dashboard</ion-title>
+    <ion-buttons slot="end">
+      <ion-button fill="clear" (click)="onLogout()">
+        <ion-icon name="log-out-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="dashboard-container">
+
+    <!-- Welcome Section -->
+    <div class="welcome-section">
+      <div class="user-avatar">
+        <ion-icon name="person-circle-outline" class="avatar-icon"></ion-icon>
+      </div>
+
+      <div class="welcome-text">
+        <h2>{{ getGreeting() }}, {{ getUserDisplayName() }}!</h2>
+        <p>Welcome back to your LungLife dashboard</p>
+      </div>
+    </div>
+
+    <!-- User Status Cards -->
+    <div class="status-grid">
+
+      <!-- Account Status Card -->
+      <ion-card class="status-card">
+        <ion-card-content>
+          <div class="status-header">
+            <ion-icon name="shield-checkmark-outline" [color]="currentUser?.isEmailVerified ? 'success' : 'warning'"></ion-icon>
+            <h3>Account Status</h3>
+          </div>
+          <div class="status-info">
+            <p>Email: {{ currentUser?.isEmailVerified ? 'Verified' : 'Not Verified' }}</p>
+            <p>2FA: {{ currentUser?.twoFAEnabled ? 'Enabled' : 'Disabled' }}</p>
+          </div>
+          <ion-button fill="clear" size="small" (click)="showUserInfo()">
+            View Details
+          </ion-button>
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Security Card -->
+      <ion-card class="status-card" (click)="goTo2FASettings()">
+        <ion-card-content>
+          <div class="status-header">
+            <ion-icon name="lock-closed-outline" color="primary"></ion-icon>
+            <h3>Security</h3>
+          </div>
+          <div class="status-info">
+            <p>Two-Factor Authentication</p>
+            <p class="status-badge" [class.enabled]="currentUser?.twoFAEnabled">
+              {{ currentUser?.twoFAEnabled ? 'Protected' : 'Setup Required' }}
+            </p>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="actions-section">
+      <h3>Quick Actions</h3>
+
+      <div class="actions-grid">
+        <ion-button expand="block" fill="outline" (click)="goToProfile()">
+          <ion-icon name="person-outline" slot="start"></ion-icon>
+          Edit Profile
+        </ion-button>
+
+        <ion-button expand="block" fill="outline" (click)="goTo2FASettings()">
+          <ion-icon name="shield-outline" slot="start"></ion-icon>
+          Security Settings
+        </ion-button>
+      </div>
+    </div>
+
+    <!-- Authentication State Debug Info (Development Only) -->
+    @if (true) { <!-- Remove this condition in production -->
+      <div class="debug-section">
+        <h4>Auth State (Debug)</h4>
+        <ion-card>
+          <ion-card-content>
+            <div class="debug-info">
+              <p><strong>Authenticated:</strong> {{ (authState$.isAuthenticated$ | async) ? 'Yes' : 'No' }}</p>
+              <p><strong>Loading:</strong> {{ (authState$.loading$ | async) ? 'Yes' : 'No' }}</p>
+              <p><strong>Error:</strong> {{ (authState$.error$ | async) || 'None' }}</p>
+              <p><strong>Requires 2FA:</strong> {{ (authState$.requiresTwoFA$ | async) ? 'Yes' : 'No' }}</p>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </div>
+    }
+
+  </div>
+</ion-content>

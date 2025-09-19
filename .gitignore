@@ -1,0 +1,38 @@
+# Root ignore rules
+# Keep project docs tracked (remove unintended ignores)
+# ...existing code removed: README.md, LICENSE, CAPSTONE_709V.md, .gitignore, .git ...
+
+# Custom project folders
+pulmonpredic-app
+
+# Environments
+.env
+**/.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Node/Angular build artifacts
+node_modules/
+dist/
+build/
+coverage/
+.angular/cache/
+
+# Ionic/Capacitor build output
+LungLife/lunglife_app/www/
+LungLife/lunglife_app/android/
+LungLife/lunglife_app/ios/
+
+# IDE/OS
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db
