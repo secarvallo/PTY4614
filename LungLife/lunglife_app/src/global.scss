@@ -1,0 +1,69 @@
+/*
+ * App Global CSS
+ * ----------------------------------------------------------------------------
+ * Put style rules here that you want to apply globally. These styles are for
+ * the entire app and not just one component. Additionally, this file can be
+ * used as an entry point to import other CSS/Sass files to be included in the
+ * output CSS.
+ * For more information on global stylesheets, visit the documentation:
+ * https://ionicframework.com/docs/layout/global-stylesheets
+ */
+
+/* Core CSS required for Ionic components to work properly */
+@import "@ionic/angular/css/core.css";
+
+/* Basic CSS for apps built with Ionic */
+@import "@ionic/angular/css/normalize.css";
+@import "@ionic/angular/css/structure.css";
+@import "@ionic/angular/css/typography.css";
+@import "@ionic/angular/css/display.css";
+
+/* Optional CSS utils that can be commented out */
+@import "@ionic/angular/css/padding.css";
+@import "@ionic/angular/css/float-elements.css";
+@import "@ionic/angular/css/text-alignment.css";
+@import "@ionic/angular/css/text-transformation.css";
+@import "@ionic/angular/css/flex-utils.css";
+
+/* ===== CLEAN MINIMALIST DESIGN SYSTEM ===== */
+
+:root {
+  /* Light Theme - Pure & Clean */
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --text: #1a1a1a;
+  --text-light: #666666;
+  --border: #e5e5e5;
+  --primary: #007aff;
+  --shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+[data-theme="dark"] {
+  /* Tokyo Night Theme Colors */
+  --bg: #1a1b26;
+  --surface: #24283b;
+  --text: #c0caf5;
+  --text-light: #9aa5ce;
+  --border: #414868;
+  --primary: #7aa2f7;
+  --shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+
+* {
+  transition: all 0.2s ease;
+}
+
+html, body, ion-app {
+  background: var(--bg) !important;
+  color: var(--text) !important;
+}
+
+ion-content {
+  --background: var(--bg) !important;
+}
+
+/* Remove autofill yellow */
+input:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 30px var(--surface) inset !important;
+  -webkit-text-fill-color: var(--text) !important;
+}
