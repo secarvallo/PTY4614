@@ -1,0 +1,18 @@
+/**
+ * Loading Spinner Component Styles
+ */
+
+.loading-content {
+  text-align: center;
+  color: var(--auth-text-color);
+
+  ion-spinner {
+    margin-bottom: 1rem;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.9rem;
+    opacity: 0.8;
+  }
+}

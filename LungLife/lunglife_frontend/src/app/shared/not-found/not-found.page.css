@@ -1,0 +1,67 @@
+@charset "UTF-8";
+/* 🚫 Not Found Page Styles */
+.not-found-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.error-content {
+  text-align: center;
+  max-width: 400px;
+  width: 100%;
+}
+
+.error-icon {
+  margin-bottom: 30px;
+}
+.error-icon ion-icon {
+  font-size: 120px;
+  opacity: 0.7;
+}
+
+.error-message {
+  margin-bottom: 40px;
+}
+.error-message h1 {
+  font-size: 4rem;
+  font-weight: 700;
+  color: var(--ion-color-primary);
+  margin: 0;
+}
+.error-message h2 {
+  font-size: 1.8rem;
+  color: var(--ion-color-dark);
+  margin: 10px 0;
+  font-weight: 600;
+}
+.error-message p {
+  color: var(--ion-color-medium);
+  font-size: 1.1rem;
+  line-height: 1.5;
+  margin: 15px 0;
+}
+
+.error-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .error-message h1 {
+    font-size: 3rem;
+  }
+  .error-message h2 {
+    font-size: 1.5rem;
+  }
+  .error-message p {
+    font-size: 1rem;
+  }
+  .error-icon ion-icon {
+    font-size: 80px;
+  }
+}/*# sourceMappingURL=not-found.page.css.map */

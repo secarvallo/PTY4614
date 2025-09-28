@@ -1,0 +1,101 @@
+@charset "UTF-8";
+/* 🔒 Two-FA Settings Page Styles */
+.security-container {
+  padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.status-info {
+  text-align: center;
+  padding: 15px 0;
+}
+.status-info p {
+  margin: 10px 0;
+}
+.status-info p strong {
+  color: var(--ion-color-primary);
+}
+.status-info ion-badge {
+  font-size: 0.9rem;
+  padding: 6px 12px;
+}
+.status-info .status-description {
+  color: var(--ion-color-medium);
+  font-style: italic;
+  margin-top: 15px;
+}
+
+.security-actions {
+  margin: 20px 0;
+}
+
+.qr-section {
+  text-align: center;
+  padding: 20px 0;
+}
+.qr-section .qr-code {
+  max-width: 200px;
+  width: 100%;
+  height: auto;
+  margin-bottom: 15px;
+  border: 1px solid var(--ion-color-light);
+  border-radius: 8px;
+}
+.qr-section p {
+  color: var(--ion-color-medium);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.backup-codes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 10px;
+  margin-top: 15px;
+}
+.backup-codes .backup-code {
+  background-color: var(--ion-color-light);
+  color: var(--ion-color-dark);
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-family: "Courier New", monospace;
+  font-size: 0.9rem;
+  text-align: center;
+  font-weight: 600;
+}
+
+ion-card-content ul {
+  padding-left: 20px;
+}
+ion-card-content ul li {
+  margin-bottom: 8px;
+  line-height: 1.4;
+  color: var(--ion-color-medium);
+}
+
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 60px 20px;
+}
+.loading-state ion-spinner {
+  --size: 48px;
+  margin-bottom: 20px;
+}
+.loading-state p {
+  color: var(--ion-color-medium);
+  font-size: 1rem;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .security-container {
+    padding: 15px;
+  }
+  .backup-codes {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}/*# sourceMappingURL=two-fa-settings.page.css.map */

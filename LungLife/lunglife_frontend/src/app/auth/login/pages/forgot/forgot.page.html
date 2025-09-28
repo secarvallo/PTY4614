@@ -1,0 +1,45 @@
+<ion-content class="auth-content">
+  <div class="auth-container">
+
+    <!-- Header Section -->
+    <div class="auth-header">
+      <div class="logo-placeholder"></div>
+      <h1>Recuperar Contraseña</h1>
+      <p>Ingresa tu correo para restablecerla</p>
+    </div>
+
+    <!-- Forgot Password Form -->
+    <form (ngSubmit)="onSubmit()" class="auth-form">
+
+      <!-- Email Field -->
+      <div class="form-group">
+        <ion-item lines="none">
+          <ion-input type="email" placeholder="Correo electrónico" [(ngModel)]="email" name="email" required></ion-input>
+        </ion-item>
+      </div>
+
+      <!-- Message Display -->
+      @if (message) {
+        <div class="message" [class.success]="isSuccess" [class.error]="!isSuccess">{{ message }}</div>
+      }
+
+      <!-- Submit Button -->
+      <ion-button type="submit" expand="block" class="auth-button" [disabled]="isLoading || !email">
+        @if (isLoading) {
+          <ion-spinner name="crescent"></ion-spinner>
+        } @else {
+          <span>Enviar Enlace</span>
+        }
+      </ion-button>
+    </form>
+
+    <!-- Footer Actions -->
+    <div class="auth-footer">
+      <p>¿Recordaste tu contraseña?</p>
+      <ion-button fill="clear" (click)="goToLogin()" class="link-button">
+        <strong>Volver al inicio</strong>
+      </ion-button>
+    </div>
+
+  </div>
+</ion-content>
