@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { BaseAuthStrategy } from './base-auth.strategy';
 import { AuthResult } from '../../../interfaces/auth-strategy.interface';
+import { AuthApiService, TwoFASetupRequest, TwoFAVerifyRequest, TwoFAResponse } from '../../infrastructure/auth-api.service';
 
 /**
  * 🔐 Two-Factor Authentication Strategy
@@ -11,9 +11,7 @@ import { AuthResult } from '../../../interfaces/auth-strategy.interface';
  */
 @Injectable({ providedIn: 'root' })
 export class TwoFactorStrategy extends BaseAuthStrategy {
-  constructor(http: HttpClient) {
-    super(http);
-  }
+  constructor(private api: AuthApiService) { super(); }
 
   getStrategyName(): string {
     return 'two-factor';
@@ -28,33 +26,33 @@ export class TwoFactorStrategy extends BaseAuthStrategy {
 
   performAuthentication(data: any): Observable<AuthResult> {
     if (data.setup) {
-      return this.setup2FA();
-    } else {
-      return this.verify2FA(data);
+      return this.setup2FA(data);
     }
+    return this.verify2FA(data);
   }
 
-  private setup2FA(): Observable<AuthResult> {
-    return this.http.post(`${this.API_BASE_URL}/2fa/setup`, {}).pipe(
-      map((response: any) => this.createSuccessResult({
+  private setup2FA(data: any): Observable<AuthResult> {
+    const body: TwoFASetupRequest = { method: data.method || 'totp' }; // allow caller override
+    return this.api.setup2FA(body).pipe(
+      map((response: TwoFAResponse) => this.createSuccessResult({
         metadata: {
-          qrCode: response.qrCode,
-          secret: response.secret,
-          backupCodes: response.backupCodes
+          qrCode: (response as any).qrCode,
+          secret: (response as any).secret,
+          backupCodes: (response as any).backupCodes
         } as any
       }))
     );
   }
 
   private verify2FA(data: any): Observable<AuthResult> {
-    const verifyData = {
+    const verifyData: TwoFAVerifyRequest = {
       code: data.code,
       sessionId: data.sessionId,
-      rememberDevice: data.rememberDevice || false
+      isBackupCode: data.isBackupCode
     };
 
-    return this.http.post(`${this.API_BASE_URL}/2fa/verify`, verifyData).pipe(
-      map((response: any) => this.createSuccessResult({
+    return this.api.verify2FA(verifyData).pipe(
+      map((response: TwoFAResponse) => this.createSuccessResult({
         user: response.user,
         token: response.token,
         refreshToken: response.refreshToken

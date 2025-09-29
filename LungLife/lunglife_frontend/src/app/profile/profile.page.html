@@ -10,15 +10,15 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
+<ion-content [fullscreen]="true" class="profile-content" data-test="profile-page">
   <div class="profile-container">
 
-    @if (currentUser) {
+  @if (currentUser) {
       <!-- User Avatar Section -->
-      <div class="profile-avatar">
+      <div class="profile-avatar" data-test="profile-header">
         <ion-icon name="person-circle-outline" class="avatar-icon"></ion-icon>
-        <h2>{{ currentUser.firstName }} {{ currentUser.lastName }}</h2>
-        <p>{{ currentUser.email }}</p>
+        <h2 data-test="profile-name">{{ currentUser.firstName }} {{ currentUser.lastName }}</h2>
+        <p data-test="profile-email">{{ currentUser.email }}</p>
       </div>
 
       <!-- Profile Information Cards -->
@@ -76,13 +76,27 @@
           <ion-icon name="information-circle-outline" slot="start"></ion-icon>
           View Full Details
         </ion-button>
+        <ion-button expand="block" color="primary" routerLink="/dashboard">
+          <ion-icon name="analytics-outline" slot="start"></ion-icon>
+          Go to Dashboard
+        </ion-button>
+        <ion-button expand="block" color="danger" fill="outline" (click)="logout()">
+          <ion-icon name="log-out-outline" slot="start"></ion-icon>
+          Cerrar Sesión
+        </ion-button>
       </div>
 
-    } @else {
+    } @else if (loadingUser) {
       <!-- Loading State -->
-      <div class="loading-state">
+      <div class="loading-state" data-test="profile-loading">
         <ion-spinner name="crescent"></ion-spinner>
-        <p>Loading profile...</p>
+        <p>Cargando perfil...</p>
+      </div>
+    } @else {
+      <!-- Estado sin usuario tras fallback -->
+      <div class="loading-state" data-test="profile-missing">
+        <ion-icon name="alert-circle-outline" size="large"></ion-icon>
+        <p>No se pudo cargar el perfil.</p>
       </div>
     }
 

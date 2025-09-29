@@ -11,9 +11,7 @@ import { AuthResult } from '../../../interfaces/auth-strategy.interface';
  */
 @Injectable({ providedIn: 'root' })
 export class ForgotPasswordStrategy extends BaseAuthStrategy {
-  constructor(http: HttpClient) {
-    super(http);
-  }
+  constructor(private httpClient: HttpClient) { super(httpClient); }
 
   getStrategyName(): string {
     return 'forgot-password';
@@ -33,7 +31,7 @@ export class ForgotPasswordStrategy extends BaseAuthStrategy {
       resetUrl: data.resetUrl || `${window.location.origin}/auth/reset-password`
     };
 
-    return this.http.post(`${this.API_BASE_URL}/forgot-password`, resetData).pipe(
+  return this.httpClient.post(`${this.API_BASE_URL}/forgot-password`, resetData).pipe(
       map((response: any) => this.createSuccessResult({
         user: { email: data.email }, // Temporary user object for success state
         metadata: {

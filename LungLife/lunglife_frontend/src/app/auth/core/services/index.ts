@@ -17,3 +17,4 @@ export * from '../guards';
 export * from '../interceptors';
 
 export * from './theme.service';
+export * from './core-auth.store';

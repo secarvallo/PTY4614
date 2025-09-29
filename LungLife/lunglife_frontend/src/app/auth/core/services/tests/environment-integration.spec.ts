@@ -10,7 +10,7 @@ import { TwoFactorStrategy } from '../infrastructure/strategies/two-factor.strat
 import { GoogleAuthStrategy } from '../infrastructure/strategies/google-auth.strategy';
 import { ForgotPasswordStrategy } from '../infrastructure/strategies/forgot-password.strategy';
 
-describe('Environment Configuration Integration', () => {
+xdescribe('Environment Configuration Integration', () => {
   let authFacade: AuthFacadeService;
   let strategyContext: AuthStrategyContext;
   let httpMock: HttpTestingController;

@@ -4,6 +4,7 @@ import { Observable, throwError } from 'rxjs';
 import { catchError, tap, finalize } from 'rxjs/operators';
 import { LoggerService } from '../../../core/services/logger.service';
 import { ErrorService } from '../../../core/services/error.service';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class AuthInterceptor implements HttpInterceptor {
@@ -69,43 +70,38 @@ export class AuthInterceptor implements HttpInterceptor {
 
   private addAuthHeaders(req: HttpRequest<any>): HttpRequest<any> {
     const token = this.getAuthToken();
-
     if (token) {
       return req.clone({
-        headers: req.headers
-          .set('Authorization', `Bearer ${token}`)
-          .set('X-Request-ID', this.generateRequestId())
-          .set('X-Client-Version', '1.0.0')
+        setHeaders: {
+          Authorization: `Bearer ${token}`,
+          'X-Request-ID': this.generateRequestId(),
+          'X-Client-Version': '1.0.0'
+        }
       });
     }
-
     return req.clone({
-      headers: req.headers.set('X-Request-ID', this.generateRequestId())
+      setHeaders: {
+        'X-Request-ID': this.generateRequestId()
+      }
     });
   }
 
   private getAuthToken(): string | null {
-    // Try localStorage first
-    let token = localStorage.getItem('authToken');
-
-    // Fallback to sessionStorage
-    if (!token) {
-      token = sessionStorage.getItem('authToken');
-    }
-
+    // Usar claves configuradas en environment
+    const key = environment.auth.tokenKey;
+    const token = localStorage.getItem(key) || sessionStorage.getItem(key);
     return token;
   }
 
   private handleUnauthorized(): void {
     this.logger.warn('🚪 Unauthorized request - token may be expired');
-
-    // Clear invalid tokens
-    localStorage.removeItem('authToken');
-    sessionStorage.removeItem('authToken');
-
-    // TODO: Implement token refresh logic or redirect to login
-    // For now, just log the event
-    this.logger.info('🔄 Token cleared due to unauthorized response');
+    const key = environment.auth.tokenKey;
+    const refreshKey = environment.auth.refreshTokenKey;
+    localStorage.removeItem(key);
+    localStorage.removeItem(refreshKey);
+    sessionStorage.removeItem(key);
+    sessionStorage.removeItem(refreshKey);
+    this.logger.info('🔄 Tokens cleared due to unauthorized response');
   }
 
   private generateRequestId(): string {

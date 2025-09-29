@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Optional } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError, of } from 'rxjs';
 import { catchError, map, timeout } from 'rxjs/operators';
@@ -14,7 +14,8 @@ export abstract class BaseAuthStrategy implements AuthStrategy {
   protected readonly TIMEOUT_MS = 30000; // 30 seconds
   protected readonly API_BASE_URL = environment.apiUrl + '/auth';
 
-  constructor(protected http: HttpClient) {}
+  // HttpClient se mantiene opcional ahora que algunas estrategias usan AuthApiService directamente
+  constructor(@Optional() protected http?: HttpClient) {}
 
   /**
    * Execute the authentication strategy with error handling
@@ -35,14 +36,21 @@ export abstract class BaseAuthStrategy implements AuthStrategy {
 
     return this.performAuthentication(data).pipe(
       timeout(this.TIMEOUT_MS),
-      map(result => ({
-        ...result,
-        metadata: {
+      map(result => {
+        const baseMeta = {
           strategy: this.getStrategyName(),
           timestamp: new Date(),
           duration: Date.now() - startTime
-        }
-      })),
+        };
+        // Preserve existing metadata (e.g. qrCode, secret) if strategy already set it
+        const mergedMetadata = result && result.metadata
+          ? { ...result.metadata, ...baseMeta }
+          : baseMeta;
+        return {
+          ...result,
+            metadata: mergedMetadata
+        } as AuthResult;
+      }),
       catchError(error => this.handleError(error, startTime))
     );
   }

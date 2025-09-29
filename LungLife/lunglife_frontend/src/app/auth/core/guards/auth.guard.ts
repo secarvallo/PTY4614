@@ -1,17 +1,30 @@
-import { Injectable } from '@angular/core';
-import { CanActivate, Router } from '@angular/router';
-import { AuthFacadeService } from '../services';
+import { Injectable, inject } from '@angular/core';
+import { CanActivate, Router, UrlTree } from '@angular/router';
+import { Observable, map } from 'rxjs';
+import { AuthFacadeService } from '../services/application/auth-facade.service';
+import { AppInitService } from '../../../core/services/app-init.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthGuard implements CanActivate {
-  constructor(private authFacade: AuthFacadeService, private router: Router) {}
+  private authFacade = inject(AuthFacadeService);
+  private router = inject(Router);
+  private initSvc = inject(AppInitService);
 
-  canActivate(): boolean {
-    const isAuthenticated = this.authFacade.getAuthState();
-    if (!isAuthenticated) {
-      this.router.navigate(['/login']);
-      return false;
+  canActivate(): Observable<boolean | UrlTree> | boolean | UrlTree {
+    // Si aún estamos inicializando, permitir acceso
+    if (this.initSvc.isInitializingSync()) {
+      return true;
     }
-    return true;
+
+    // Usar observable para verificar estado de autenticación
+    return this.authFacade.isAuthenticated$.pipe(
+      map(isAuthenticated => {
+        if (isAuthenticated) {
+          return true;
+        }
+        console.log('AuthGuard: Usuario no autenticado, devolviendo UrlTree(/auth/login)');
+        return this.router.parseUrl('/auth/login');
+      })
+    );
   }
 }

@@ -1,16 +1,19 @@
-import { ApplicationConfig } from '@angular/core';
+import { ApplicationConfig, APP_INITIALIZER } from '@angular/core';
 import { RouteReuseStrategy, provideRouter, withPreloading, PreloadAllModules } from '@angular/router';
 import { IonicRouteStrategy, provideIonicAngular } from '@ionic/angular/standalone';
 import { provideHttpClient, withInterceptors, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { ErrorHandler } from '@angular/core';
 
 import { routes } from './app.routes';
-import { AuthInterceptor } from './auth/core/interceptors/auth.interceptor';
+import { AuthFacadeService, CoreAuthStore } from './auth/core/services';
+// Interceptor unificado (reemplaza simpleAuth/jwt/auth previos)
+import { unifiedAuthInterceptor } from './auth/core/interceptors/unified-auth.interceptor';
 import { GlobalErrorHandler } from './core/services/error.service';
 import { EnvironmentService } from './core/config/environment.service';
 import { ENVIRONMENT } from './core/config/environment.interface';
 import { EnvironmentAdapter } from '../environments/environment.model';
 import { environment } from '../environments/environment';
+import { AppInitService } from './core/services/app-init.service';
 
 /**
  * 🚀 Application Configuration - Complete Architecture Integration
@@ -30,15 +33,8 @@ export const appConfig: ApplicationConfig = {
 
     // HTTP Client with Authentication Interceptor
     provideHttpClient(
-      withInterceptors([])
+      withInterceptors([unifiedAuthInterceptor])
     ),
-
-    // Auth Interceptor (class-based for compatibility)
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: AuthInterceptor,
-      multi: true
-    },
 
     // Global Error Handler
     {
@@ -51,7 +47,15 @@ export const appConfig: ApplicationConfig = {
       provide: ENVIRONMENT,
       useValue: EnvironmentAdapter.adapt(environment)
     },
-    EnvironmentService
+    EnvironmentService,
+
+    // Bootstrap unificado: sólo CoreAuthStore (reduce race conditions)
+    {
+      provide: APP_INITIALIZER,
+      useFactory: (appInit: AppInitService) => () => appInit.bootstrapSession(),
+      deps: [AppInitService],
+      multi: true
+    }
 
     // Additional providers can be added here for:
     // - Error handling services

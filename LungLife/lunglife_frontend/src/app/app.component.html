@@ -1,3 +1,12 @@
 <ion-app>
-  <ion-router-outlet></ion-router-outlet>
+  <ng-container *ngIf="isInitializing$ | async; else appReady">
+    <div class="init-splash">
+      <div class="spinner"></div>
+      <h2>LungLife</h2>
+      <p>Restaurando sesión...</p>
+    </div>
+  </ng-container>
+  <ng-template #appReady>
+    <ion-router-outlet></ion-router-outlet>
+  </ng-template>
 </ion-app>

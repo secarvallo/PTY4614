@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
-import { IonicModule, AlertController, LoadingController } from '@ionic/angular';
+import { Router, RouterLink } from '@angular/router';
+import { IonicModule, AlertController, LoadingController, ToastController } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { Subject, takeUntil } from 'rxjs';
 
@@ -24,7 +24,7 @@ interface PasswordValidationResult {
   templateUrl: './register.page.html',
   styleUrls: ['./register.page.scss', '../../../auth.styles.scss'],
   standalone: true,
-  imports: [IonicModule, ReactiveFormsModule, CommonModule]
+  imports: [IonicModule, ReactiveFormsModule, CommonModule, RouterLink]
 })
 export class RegisterPage implements OnInit, OnDestroy {
   // Dependency Injection
@@ -34,6 +34,7 @@ export class RegisterPage implements OnInit, OnDestroy {
   private validationService = inject(ValidationService);
   private alertController = inject(AlertController);
   private loadingController = inject(LoadingController);
+  private toastController = inject(ToastController);
 
   // Reactive Form
   registerForm!: FormGroup;
@@ -43,6 +44,7 @@ export class RegisterPage implements OnInit, OnDestroy {
   showConfirmPassword = false;
   passwordValidation: PasswordValidationResult | null = null;
   private destroy$ = new Subject<void>();
+  private registrationInProgress = false;
 
   // Observable State from AuthObserver (Observer Pattern)
   authState$ = this.authFacade.getAuthState();
@@ -120,20 +122,22 @@ export class RegisterPage implements OnInit, OnDestroy {
    * Subscribe to authentication state changes (Observer Pattern)
    */
   private subscribeToAuthState(): void {
-    // Navigate on successful registration
+    // Eliminamos navegación automática por isAuthenticated en registro para evitar autologin
     this.authState$.isAuthenticated$
       .pipe(takeUntil(this.destroy$))
       .subscribe((isAuthenticated: boolean) => {
-        if (isAuthenticated) {
-          this.showSuccessMessage();
+        // Si en otro flujo (login) y autenticado -> redirigir
+        if (isAuthenticated && !this.registrationInProgress) {
+          this.router.navigate(['/dashboard']);
         }
       });
 
-    // Handle errors
+    // Mantener manejo de errores
     this.authState$.error$
       .pipe(takeUntil(this.destroy$))
       .subscribe((error: string | null) => {
-        if (error) {
+        if (error && this.registrationInProgress) {
+          this.registrationInProgress = false;
           this.showErrorAlert(error);
         }
       });
@@ -149,7 +153,6 @@ export class RegisterPage implements OnInit, OnDestroy {
       return;
     }
 
-    // Additional password validation
     if (this.passwordValidation && !this.passwordValidation.isValid) {
       await this.showErrorAlert('Please fix password requirements before continuing.');
       return;
@@ -161,33 +164,71 @@ export class RegisterPage implements OnInit, OnDestroy {
     });
     await loading.present();
 
+    this.registrationInProgress = true;
+
     try {
       const formValue = this.registerForm.value;
       const registerData: RegisterData = {
-        username: formValue.username, // Ensure username is included
         email: formValue.email,
         password: formValue.password,
         firstName: formValue.firstName,
         lastName: formValue.lastName,
-        acceptTerms: formValue.acceptTerms
-      };
+        acceptTerms: formValue.acceptTerms,
+        username: formValue.email // si backend requiere username, reutilizamos email
+      } as RegisterData;
 
-      this.authFacade.register(registerData).subscribe({
-        next: (result) => {
+      // Activamos autologin para llenar inmediatamente el estado y luego normalizamos con datos del form
+      this.authFacade.register(registerData, { autoLogin: true }).subscribe({
+        next: async (result) => {
           loading.dismiss();
-          if (!result.success) {
-            console.error('Registration failed:', result.error);
+          if (result.success) {
+            this.registrationInProgress = false;
+            // Si el backend no envió user.profile, enriquecemos mínimamente
+            if (result.user) {
+              const u: any = result.user;
+              if (!u.firstName) u.firstName = registerData.firstName;
+              if (!u.lastName) u.lastName = registerData.lastName;
+              if (!u.email) u.email = registerData.email;
+              if (!u.profile) {
+                u.profile = {
+                  user_id: u.id || 0,
+                  nombre: registerData.firstName,
+                  apellido: registerData.lastName,
+                  telefono: undefined,
+                  fecha_nacimiento: undefined,
+                  avatar_url: undefined,
+                  created_at: new Date()
+                };
+              }
+            }
+
+            const emailVerificationRequired = (result.metadata as any)?.emailVerificationRequired;
+            if (emailVerificationRequired) {
+              await this.showSuccessToast('Account created! Please verify your email.');
+              // Tras verificación manual, usuario hará login nuevamente, no navegamos a profile
+              return;
+            }
+
+            // Navegación directa a profile porque ya estamos autenticados
+            await this.showSuccessToast('Account created! Redirecting to profile...');
+            this.router.navigate(['/profile'], { replaceUrl: true });
+          } else {
+            this.registrationInProgress = false;
+            this.showErrorAlert(result.error || 'Registration failed');
           }
-          // Auth state changes will be handled by the auth observer
         },
         error: (error) => {
           loading.dismiss();
+            this.registrationInProgress = false;
           console.error('Registration error:', error);
+          this.showErrorAlert('Unexpected error during registration');
         }
       });
     } catch (error) {
       loading.dismiss();
+      this.registrationInProgress = false;
       console.error('Registration error:', error);
+      this.showErrorAlert('Unexpected error during registration');
     }
   }
 
@@ -331,19 +372,17 @@ export class RegisterPage implements OnInit, OnDestroy {
   /**
    * Show success message and navigate
    */
-  private async showSuccessMessage(): Promise<void> {
-    const alert = await this.alertController.create({
-      header: 'Registration Successful!',
-      message: 'Please check your email to verify your account.',
-      buttons: [{
-        text: 'OK',
-        handler: () => {
-          this.router.navigate(['/auth/login']);
-        }
-      }],
-      cssClass: 'success-alert'
+  private async showSuccessMessage(): Promise<void> { /* deprecated replaced by toast */ }
+
+  private async showSuccessToast(message: string = 'Account created!'): Promise<void> {
+    const toast = await this.toastController.create({
+      message,
+      duration: 2500,
+      position: 'bottom',
+      color: 'success',
+      icon: 'checkmark-circle-outline'
     });
-    await alert.present();
+    await toast.present();
   }
 
   /**

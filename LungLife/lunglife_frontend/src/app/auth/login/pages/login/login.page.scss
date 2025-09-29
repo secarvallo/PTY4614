@@ -45,7 +45,7 @@ Styles the header section, including the logo and title.
   text-align: center;
   margin-bottom: 24px;
 
-  .logo-container {
+  .logo-placeholder {
     width: 88px;
     height: 88px;
     margin: 0 auto 16px;
@@ -285,6 +285,7 @@ Styles the loading overlay with a blurred background.
   display: grid;
   place-items: center;
   background: rgba(26, 32, 44, 0.3);
+  -webkit-backdrop-filter: blur(3px);
   backdrop-filter: blur(3px);
   color: #fff;
   gap: 12px;

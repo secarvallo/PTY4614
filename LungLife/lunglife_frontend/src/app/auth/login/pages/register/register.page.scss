@@ -44,7 +44,7 @@ container and text alignment.
   margin-bottom: 16px;
 }
 
-.auth-header .logo-container {
+.auth-header .logo-placeholder {
   width: 76px;
   height: 76px;
   margin: 0 auto 12px;
@@ -54,8 +54,7 @@ container and text alignment.
   place-items: center;
   box-shadow: 0 8px 20px rgba(108, 99, 255, 0.15);
 }
-
-.auth-header .logo-container .logo {
+.auth-header .logo-placeholder .logo {
   width: 42px;
   height: 42px;
   object-fit: contain;

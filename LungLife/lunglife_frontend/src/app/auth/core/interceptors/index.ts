@@ -2,3 +2,4 @@
 // Export all authentication interceptors
 
 export * from './auth.interceptor';
+export * from './simple-auth.interceptor';

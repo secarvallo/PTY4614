@@ -1,0 +1,147 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Configurar Autenticación 2FA</ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div class="setup-container">
+    <div class="header-section">
+      <ion-icon name="shield-checkmark" size="large" color="primary"></ion-icon>
+      <h2>Protege tu cuenta</h2>
+      <p>La autenticación de dos factores agrega una capa extra de seguridad a tu cuenta.</p>
+    </div>
+
+    <!-- Selección de método 2FA -->
+    <div class="method-selection" *ngIf="currentStep === 'method'">
+      <h3>Selecciona tu método preferido</h3>
+
+      <ion-radio-group [(ngModel)]="selectedMethod">
+        <ion-item>
+          <ion-radio slot="start" value="totp"></ion-radio>
+          <ion-label>
+            <h3>Aplicación de Autenticación</h3>
+            <p>Usa Google Authenticator, Authy, o similar</p>
+          </ion-label>
+          <ion-icon name="phone-portrait" slot="end"></ion-icon>
+        </ion-item>
+
+        <ion-item>
+          <ion-radio slot="start" value="sms"></ion-radio>
+          <ion-label>
+            <h3>SMS</h3>
+            <p>Recibe códigos por mensaje de texto</p>
+          </ion-label>
+          <ion-icon name="chatbubble" slot="end"></ion-icon>
+        </ion-item>
+
+        <ion-item>
+          <ion-radio slot="start" value="email"></ion-radio>
+          <ion-label>
+            <h3>Email</h3>
+            <p>Recibe códigos por correo electrónico</p>
+          </ion-label>
+          <ion-icon name="mail" slot="end"></ion-icon>
+        </ion-item>
+      </ion-radio-group>
+
+      <ion-button expand="block" [disabled]="!selectedMethod" (click)="startSetup()">
+        Continuar
+      </ion-button>
+    </div>
+
+    <!-- Configuración TOTP -->
+    <div class="totp-setup" *ngIf="currentStep === 'totp'">
+      <h3>Configurar Aplicación de Autenticación</h3>
+
+      <div class="step-instructions">
+        <div class="step">
+          <div class="step-number">1</div>
+          <div class="step-content">
+            <h4>Escanea el código QR</h4>
+            <p>Usa tu aplicación de autenticación para escanear este código:</p>
+          </div>
+        </div>
+
+        <div class="qr-container" *ngIf="qrCode">
+          <img [src]="qrCode" alt="QR Code" class="qr-code">
+        </div>
+
+        <div class="manual-entry" *ngIf="secretKey">
+          <p><strong>O ingresa manualmente:</strong></p>
+          <ion-item>
+            <ion-input [value]="secretKey" readonly></ion-input>
+            <ion-button fill="clear" slot="end" (click)="copySecret()">
+              <ion-icon name="copy"></ion-icon>
+            </ion-button>
+          </ion-item>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-number">2</div>
+        <div class="step-content">
+          <h4>Verifica el código</h4>
+          <p>Ingresa el código de 6 dígitos de tu aplicación:</p>
+
+          <form [formGroup]="verificationForm" (ngSubmit)="verifySetup()">
+            <ion-item>
+              <ion-input
+                formControlName="code"
+                placeholder="000000"
+                maxlength="6"
+                type="number"
+              ></ion-input>
+            </ion-item>
+
+            <ion-button type="submit" expand="block" [disabled]="!verificationForm.valid || loading">
+              <ion-spinner *ngIf="loading" name="crescent"></ion-spinner>
+              {{ loading ? 'Verificando...' : 'Verificar y Activar' }}
+            </ion-button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Códigos de respaldo -->
+    <div class="backup-codes" *ngIf="currentStep === 'backup'">
+      <h3>Códigos de Respaldo</h3>
+      <p>Guarda estos códigos en un lugar seguro. Puedes usar cada uno solo una vez:</p>
+
+      <div class="codes-container">
+        <div class="code-item" *ngFor="let code of backupCodes">
+          {{ code }}
+        </div>
+      </div>
+
+      <div class="backup-actions">
+        <ion-button fill="outline" (click)="downloadCodes()">
+          <ion-icon name="download" slot="start"></ion-icon>
+          Descargar
+        </ion-button>
+
+        <ion-button fill="outline" (click)="printCodes()">
+          <ion-icon name="print" slot="start"></ion-icon>
+          Imprimir
+        </ion-button>
+      </div>
+
+      <ion-checkbox [(ngModel)]="codesConfirmed">
+        He guardado mis códigos de respaldo de forma segura
+      </ion-checkbox>
+
+      <ion-button expand="block" [disabled]="!codesConfirmed" (click)="completeSetup()">
+        Completar Configuración
+      </ion-button>
+    </div>
+
+    <!-- Error display -->
+    <ion-item *ngIf="error" color="danger">
+  <ion-icon name="alert-circle" slot="start"></ion-icon>
+      <ion-label>{{ error }}</ion-label>
+    </ion-item>
+  </div>
+</ion-content>

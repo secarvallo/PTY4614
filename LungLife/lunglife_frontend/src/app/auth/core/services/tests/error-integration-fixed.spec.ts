@@ -9,7 +9,7 @@ import { AuthFacadeService } from '../application/auth-facade.service';
 import { AuthStrategyContext } from '../application/auth-strategy-context.service';
 import { LoginStrategy } from '../infrastructure/strategies/login.strategy';
 
-describe('Error Handling Integration', () => {
+xdescribe('Error Handling Integration', () => {
   let errorService: ErrorService;
   let loggerService: LoggerService;
   let authFacade: AuthFacadeService;

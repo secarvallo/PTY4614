@@ -38,6 +38,10 @@ export interface AuthResult {
   requiresTwoFA?: boolean;
   sessionId?: string;
   error?: string;
+  // 2FA setup optional payload (used by simplified facade)
+  qrCode?: string;
+  secret?: string;
+  backupCodes?: string[];
   metadata?: {
     strategy: string;
     timestamp: Date;

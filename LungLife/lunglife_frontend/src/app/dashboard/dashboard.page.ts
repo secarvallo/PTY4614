@@ -28,8 +28,11 @@ export class DashboardPage implements OnInit, OnDestroy {
   currentUser: User | null = null;
   private destroy$ = new Subject<void>();
 
-  // Observable State from AuthObserver (Observer Pattern)
-  authState$ = this.authFacade.getAuthState();
+  // Expose facade observables
+  isAuthenticated$ = this.authFacade.isAuthenticated$;
+  loading$ = this.authFacade.loading$;
+  error$ = this.authFacade.error$;
+  requiresTwoFA$ = this.authFacade.requiresTwoFA$;
 
   ngOnInit() {
     this.subscribeToAuthState();
@@ -46,7 +49,7 @@ export class DashboardPage implements OnInit, OnDestroy {
    */
   private subscribeToAuthState(): void {
     // Monitor authentication status
-    this.authState$.isAuthenticated$
+    this.authFacade.isAuthenticated$
       .pipe(takeUntil(this.destroy$))
       .subscribe((isAuthenticated: boolean) => {
         if (!isAuthenticated) {
@@ -55,7 +58,7 @@ export class DashboardPage implements OnInit, OnDestroy {
       });
 
     // Monitor user changes
-    this.authState$.user$
+    this.authFacade.user$
       .pipe(takeUntil(this.destroy$))
       .subscribe((user: User | null) => {
         this.currentUser = user;
@@ -69,23 +72,25 @@ export class DashboardPage implements OnInit, OnDestroy {
   private loadUserData(): void {
     const user = this.authFacade.getCurrentUser();
     if (user) {
-      this.currentUser = {
-        id: user.id,
-        email: user.email || '',
-        firstName: user.firstName || '',
-        lastName: user.lastName || '',
-        isEmailVerified: user.isEmailVerified || false,
-        twoFAEnabled: user.twoFAEnabled || false,
-        createdAt: user.createdAt,
-        updatedAt: user.updatedAt,
-        lastLogin: user.lastLogin,
-        phone: user.phone,
-        birthDate: user.birthDate,
-        isActive: user.isActive || true,
-        avatar: user.avatar,
-        role: user.role
-      };
+      // Ya viene normalizado desde el facade; aseguramos compatibilidad mínima
+      this.ensureCompatibility(user);
+      this.currentUser = user;
     }
+  }
+
+  private ensureCompatibility(user: User): void {
+    // Rellenar camelCase si faltan (fallback a snake_case / profile)
+    user.firstName = user.firstName ?? user.profile?.nombre ?? '';
+    user.lastName = user.lastName ?? user.profile?.apellido ?? '';
+    user.isEmailVerified = user.isEmailVerified ?? user.email_verified;
+    user.twoFAEnabled = user.twoFAEnabled ?? user.two_fa_enabled;
+    user.createdAt = user.createdAt ?? user.created_at;
+    user.updatedAt = user.updatedAt ?? user.updated_at;
+    user.lastLogin = user.lastLogin ?? user.last_login;
+    user.isActive = user.isActive ?? user.is_active;
+    user.phone = user.phone ?? user.profile?.telefono;
+    user.birthDate = user.birthDate ?? user.profile?.fecha_nacimiento;
+    user.avatar = user.avatar ?? user.profile?.avatar_url;
   }
 
   /**
@@ -132,6 +137,7 @@ export class DashboardPage implements OnInit, OnDestroy {
   async showUserInfo(): Promise<void> {
     if (!this.currentUser) return;
 
+    const created = this.currentUser.createdAt || this.currentUser.created_at;
     const alert = await this.alertController.create({
       header: 'User Information',
       message: `
@@ -139,7 +145,7 @@ export class DashboardPage implements OnInit, OnDestroy {
         <strong>Email:</strong> ${this.currentUser.email}<br>
         <strong>Verified:</strong> ${this.currentUser.isEmailVerified ? 'Yes' : 'No'}<br>
         <strong>2FA:</strong> ${this.currentUser.twoFAEnabled ? 'Enabled' : 'Disabled'}<br>
-        <strong>Joined:</strong> ${new Date(this.currentUser.createdAt).toLocaleDateString()}
+        <strong>Joined:</strong> ${created ? new Date(created).toLocaleDateString() : 'N/A'}
       `,
       buttons: ['OK']
     });

@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import { BaseAuthStrategy } from './base-auth.strategy';
 import { AuthResult } from '../../../interfaces/auth-strategy.interface';
+import { AuthApiService, LoginRequest, LoginResponse } from '../../infrastructure/auth-api.service';
 
 /**
  * 🔑 Login Authentication Strategy
@@ -11,9 +11,7 @@ import { AuthResult } from '../../../interfaces/auth-strategy.interface';
  */
 @Injectable({ providedIn: 'root' })
 export class LoginStrategy extends BaseAuthStrategy {
-  constructor(http: HttpClient) {
-    super(http);
-  }
+  constructor(private api: AuthApiService) { super(); }
 
   getStrategyName(): string {
     return 'login';
@@ -28,14 +26,14 @@ export class LoginStrategy extends BaseAuthStrategy {
   }
 
   performAuthentication(data: any): Observable<AuthResult> {
-    const loginData = {
+    const loginData: LoginRequest = {
       email: data.email || data.username,
       password: data.password,
       rememberMe: data.rememberMe || false
     };
 
-    return this.http.post(`${this.API_BASE_URL}/login`, loginData).pipe(
-      map((response: any) => {
+    return this.api.login(loginData).pipe(
+      map((response: LoginResponse) => {
         if (response.requiresTwoFA) {
           return this.createSuccessResult({
             requiresTwoFA: true,
@@ -43,7 +41,6 @@ export class LoginStrategy extends BaseAuthStrategy {
             user: response.user
           });
         }
-
         return this.createSuccessResult({
           user: response.user,
           token: response.token,

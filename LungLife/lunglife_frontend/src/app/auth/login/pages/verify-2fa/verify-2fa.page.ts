@@ -1,9 +1,11 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { IonicModule, AlertController } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthFacadeService } from '../../../core/services';
+import { resolvePostAuthRedirect } from '../../../core/utils/auth-navigation';
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-verify-2fa',
@@ -14,6 +16,7 @@ import { AuthFacadeService } from '../../../core/services';
 })
 export class Verify2faPage implements OnInit {
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
   private authFacade = inject(AuthFacadeService);
   private alertController = inject(AlertController);
 
@@ -23,19 +26,20 @@ export class Verify2faPage implements OnInit {
   userEmail = '';
 
   ngOnInit() {
-    // Check if user should be here
-    const authState = this.authFacade.getAuthState();
-    authState.requiresTwoFA$.subscribe((requires2FA: boolean) => {
-      if (!requires2FA) {
-        this.router.navigate(['/auth/login']);
+    // If no pending 2FA requirement redirect away (guard should already prevent this)
+    this.authFacade.requiresTwoFA$.pipe(take(1)).subscribe(requires => {
+      if (!requires) {
+        if (this.authFacade.isAuthenticatedSync()) {
+          const resolved = resolvePostAuthRedirect(this.route.snapshot.queryParams['returnUrl']);
+          this.router.navigateByUrl(resolved, { replaceUrl: true });
+        } else {
+          this.router.navigate(['/auth/login']);
+        }
       }
     });
 
-    // Get current user email for display
     const currentUser = this.authFacade.getCurrentUser();
-    if (currentUser) {
-      this.userEmail = currentUser.email || '';
-    }
+    if (currentUser) this.userEmail = currentUser.email || '';
   }
 
   async verify2FA(): Promise<void> {
@@ -52,8 +56,9 @@ export class Verify2faPage implements OnInit {
         next: (result) => {
           this.isLoading = false;
           if (result.success) {
-            // 2FA verification successful, user will be redirected by observer
-            console.log('Verificación 2FA exitosa');
+            // On success redirect to profile (state already updated)
+            const resolved = resolvePostAuthRedirect(this.route.snapshot.queryParams['returnUrl']);
+            this.router.navigateByUrl(resolved, { replaceUrl: true });
           } else {
             this.errorMessage = result.error || 'La verificación 2FA falló. Por favor, inténtalo de nuevo.';
           }

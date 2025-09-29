@@ -117,3 +117,60 @@ ion-note {
 ion-item.selected {
   --color: var(--ion-color-primary);
 }
+
+// Splash inicial mientras se restaura la sesión
+.init-splash {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1.2rem;
+  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+  color: #333;
+  text-align: center;
+  padding: 2rem;
+  animation: fadeIn 0.6s ease;
+
+  h2 {
+    font-size: 2.2rem;
+    letter-spacing: 1px;
+    margin: 0;
+    font-weight: 600;
+  }
+
+  p {
+    margin: 0;
+    opacity: 0.85;
+    font-size: 0.95rem;
+  }
+
+  .spinner {
+    width: 70px;
+    height: 70px;
+    position: relative;
+
+    &::before, &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      border: 4px solid rgba(255,255,255,0.25);
+      animation: spin 1.1s linear infinite;
+    }
+
+    &::after {
+      border-color: #fff transparent #fff transparent;
+      animation-duration: 0.9s;
+    }
+  }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}

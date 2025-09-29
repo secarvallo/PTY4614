@@ -1,5 +1,5 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -14,7 +14,7 @@ import { AuthFacadeService } from '../../../core/services';
   templateUrl: './forgot.page.html',
   styleUrls: ['./forgot.page.scss', '../../../auth.styles.scss'],
   standalone: true,
-  imports: [IonicModule, FormsModule, CommonModule]
+  imports: [IonicModule, FormsModule, CommonModule, RouterLink]
 })
 export class ForgotPage implements OnInit {
   // Router service for navigation between pages

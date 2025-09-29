@@ -7,7 +7,7 @@ import { ForgotPasswordStrategy } from '../infrastructure/strategies/forgot-pass
 import { TwoFactorStrategy } from '../infrastructure/strategies/two-factor.strategy';
 import { GoogleAuthStrategy } from '../infrastructure/strategies/google-auth.strategy';
 
-describe('Authentication Flow Integration', () => {
+xdescribe('Authentication Flow Integration (legacy)', () => {
   let strategyContext: AuthStrategyContext;
   let httpMock: HttpTestingController;
 

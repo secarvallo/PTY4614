@@ -1,0 +1,101 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Gestión de Sesiones</ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-buttons slot="end">
+      <ion-button (click)="refreshSessions()">
+        <ion-icon name="refresh"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="sessions-container">
+    <div class="header-section">
+      <h2>Dispositivos Conectados</h2>
+      <p>Administra los dispositivos que tienen acceso a tu cuenta</p>
+    </div>
+
+    <ion-loading *ngIf="loading" message="Cargando sesiones..."></ion-loading>
+
+    <div class="sessions-list" *ngIf="!loading">
+      <div class="current-session-header">
+        <h3>Sesión Actual</h3>
+      </div>
+
+      <!-- Sesión actual -->
+      <ion-card *ngFor="let session of sessions | async" [class.current-session]="session.isCurrent">
+        <ion-card-content>
+          <div class="session-header">
+            <div class="device-info">
+              <ion-icon [name]="getDeviceIcon(session.deviceType)" size="large"></ion-icon>
+              <div class="device-details">
+                <h4>{{ session.deviceName }}</h4>
+                <p class="device-type">{{ getDeviceTypeLabel(session.deviceType) }}</p>
+              </div>
+            </div>
+            <div class="session-status">
+              <ion-badge [color]="session.isActive ? 'success' : 'danger'">
+                {{ session.isActive ? 'Activa' : 'Inactiva' }}
+              </ion-badge>
+              <ion-badge *ngIf="session.isCurrent" color="primary">
+                Actual
+              </ion-badge>
+            </div>
+          </div>
+
+          <div class="session-details">
+            <div class="detail-row">
+              <ion-icon name="location-outline"></ion-icon>
+              <span>{{ getLocationString(session) }}</span>
+            </div>
+            <div class="detail-row">
+              <ion-icon name="globe-outline"></ion-icon>
+              <span>{{ session.ipAddress }}</span>
+            </div>
+            <div class="detail-row">
+              <ion-icon name="time-outline"></ion-icon>
+              <span>Última actividad: {{ formatDate(session.lastActivity) }}</span>
+            </div>
+            <div class="detail-row">
+              <ion-icon name="calendar-outline"></ion-icon>
+              <span>Iniciada: {{ formatDate(session.created_at) }}</span>
+            </div>
+          </div>
+
+          <div class="session-actions" *ngIf="!session.isCurrent">
+            <ion-button fill="clear" color="danger" (click)="revokeSession(session)">
+              <ion-icon name="log-out-outline" slot="start"></ion-icon>
+              Cerrar Sesión
+            </ion-button>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <div class="empty-state" *ngIf="(sessions | async)?.length === 0">
+        <ion-icon name="phone-portrait-outline" size="large"></ion-icon>
+        <h3>No hay sesiones activas</h3>
+        <p>No se encontraron otras sesiones en tu cuenta</p>
+      </div>
+    </div>
+
+    <div class="danger-zone">
+      <h3>Zona de Peligro</h3>
+      <p>Estas acciones no se pueden deshacer</p>
+
+      <ion-button expand="block" fill="outline" color="danger" (click)="revokeAllSessions()">
+        <ion-icon name="log-out-outline" slot="start"></ion-icon>
+        Cerrar Todas las Sesiones
+      </ion-button>
+    </div>
+
+    <!-- Error display -->
+    <ion-item *ngIf="error" color="danger">
+      <ion-icon name="alert-circle" slot="start"></ion-icon>
+      <ion-label>{{ error }}</ion-label>
+    </ion-item>
+  </div>
+</ion-content>

@@ -20,7 +20,7 @@
     </div>
 
     <!-- 2FA Form -->
-    <form (ngSubmit)="verify2FA()" class="auth-form">
+  <form (ngSubmit)="verify2FA()" class="auth-form refresh">
       <div class="form-group">
         <ion-item lines="none">
           <ion-input
@@ -40,7 +40,7 @@
       <ion-button
         type="submit"
         expand="block"
-        class="auth-button"
+        class="auth-button primary"
         [disabled]="!code || code.length !== 6 || isLoading">
         <ion-spinner name="crescent" *ngIf="isLoading"></ion-spinner>
         <span *ngIf="!isLoading">

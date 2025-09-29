@@ -10,7 +10,7 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
+<ion-content [fullscreen]="true" class="dashboard-content">
   <div class="dashboard-container">
 
     <!-- Welcome Section -->
@@ -87,10 +87,10 @@
         <ion-card>
           <ion-card-content>
             <div class="debug-info">
-              <p><strong>Authenticated:</strong> {{ (authState$.isAuthenticated$ | async) ? 'Yes' : 'No' }}</p>
-              <p><strong>Loading:</strong> {{ (authState$.loading$ | async) ? 'Yes' : 'No' }}</p>
-              <p><strong>Error:</strong> {{ (authState$.error$ | async) || 'None' }}</p>
-              <p><strong>Requires 2FA:</strong> {{ (authState$.requiresTwoFA$ | async) ? 'Yes' : 'No' }}</p>
+              <p><strong>Authenticated:</strong> {{ (isAuthenticated$ | async) ? 'Yes' : 'No' }}</p>
+              <p><strong>Loading:</strong> {{ (loading$ | async) ? 'Yes' : 'No' }}</p>
+              <p><strong>Error:</strong> {{ (error$ | async) || 'None' }}</p>
+              <p><strong>Requires 2FA:</strong> {{ (requiresTwoFA$ | async) ? 'Yes' : 'No' }}</p>
             </div>
           </ion-card-content>
         </ion-card>

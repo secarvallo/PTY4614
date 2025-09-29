@@ -12,7 +12,7 @@ ion-content.auth-content { --background: linear-gradient(180deg, var(--bg-start)
 .auth-container { max-width: 420px; margin: 0 auto; padding: 12px 20px 24px; display: grid; align-content: start; min-height: 100%; }
 
 .auth-header { text-align: center; margin: 8px 0 12px; }
-.auth-header .logo-container { width: 76px; height: 76px; margin: 0 auto 10px; border-radius: 18px; background: radial-gradient(62% 62% at 50% 50%, #ede7ff 0%, #e7f0ff 100%); display: grid; place-items: center; box-shadow: 0 8px 20px rgba(108,99,255,0.15); }
+.auth-header .logo-placeholder { width: 76px; height: 76px; margin: 0 auto 10px; border-radius: 18px; background: radial-gradient(62% 62% at 50% 50%, #ede7ff 0%, #e7f0ff 100%); display: grid; place-items: center; box-shadow: 0 8px 20px rgba(108,99,255,0.15); }
 .shield-icon { font-size: 36px; color: #6c63ff; }
 .auth-header h1 { color: var(--text-color); font-weight: 700; font-size: 22px; margin: 0 0 4px; }
 .auth-header p { color: var(--muted-color); margin: 0; font-size: 14px; }

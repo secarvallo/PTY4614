@@ -11,9 +11,7 @@ import { AuthResult } from '../../../interfaces/auth-strategy.interface';
  */
 @Injectable({ providedIn: 'root' })
 export class GoogleAuthStrategy extends BaseAuthStrategy {
-  constructor(http: HttpClient) {
-    super(http);
-  }
+  constructor(private httpClient: HttpClient) { super(httpClient); }
 
   getStrategyName(): string {
     return 'google-auth';
@@ -48,7 +46,7 @@ export class GoogleAuthStrategy extends BaseAuthStrategy {
   }
 
   private authenticateWithCode(data: any): Observable<AuthResult> {
-    return this.http.post(`${this.API_BASE_URL}/google/callback`, data).pipe(
+  return this.httpClient.post(`${this.API_BASE_URL}/google/callback`, data).pipe(
       map((response: any) => this.createSuccessResult({
         user: response.user,
         token: response.token,
@@ -58,7 +56,7 @@ export class GoogleAuthStrategy extends BaseAuthStrategy {
   }
 
   private authenticateWithIdToken(data: any): Observable<AuthResult> {
-    return this.http.post(`${this.API_BASE_URL}/google/id-token`, data).pipe(
+  return this.httpClient.post(`${this.API_BASE_URL}/google/id-token`, data).pipe(
       map((response: any) => this.createSuccessResult({
         user: response.user,
         token: response.token,
@@ -68,7 +66,7 @@ export class GoogleAuthStrategy extends BaseAuthStrategy {
   }
 
   private authenticateWithAccessToken(data: any): Observable<AuthResult> {
-    return this.http.post(`${this.API_BASE_URL}/google/access-token`, data).pipe(
+  return this.httpClient.post(`${this.API_BASE_URL}/google/access-token`, data).pipe(
       map((response: any) => this.createSuccessResult({
         user: response.user,
         token: response.token,
