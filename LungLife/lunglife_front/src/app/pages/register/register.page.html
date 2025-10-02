@@ -1,0 +1,71 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Crear Cuenta</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="form-container fade-in">
+    <!-- Nombre -->
+    <ion-item>
+      <ion-input
+        label="Nombre completo"
+        formControlName="name"
+        placeholder="Ej: Juan Pérez"
+        type="text"
+        [clearInput]="true"
+      ></ion-input>
+    </ion-item>
+
+    <!-- Email -->
+    <ion-item>
+      <ion-input
+        label="Email"
+        formControlName="email"
+        placeholder="ejemplo@correo.com"
+        type="email"
+        [clearInput]="true"
+      ></ion-input>
+    </ion-item>
+
+    <!-- Contraseña -->
+    <ion-item>
+      <ion-input
+        label="Contraseña"
+        formControlName="password"
+        placeholder="Mínimo 6 caracteres"
+        type="password"
+        [clearInput]="true"
+      ></ion-input>
+    </ion-item>
+
+    <!-- Botón de Registro -->
+    <ion-button
+      type="submit"
+      expand="block"
+      [disabled]="!registerForm.valid || isLoading"
+      class="ion-margin-top"
+    >
+      <ion-spinner *ngIf="isLoading"></ion-spinner>
+      {{ isLoading ? 'Creando cuenta...' : 'Registrarse' }}
+    </ion-button>
+  </form>
+
+  <!-- Link a Login -->
+  <div class="ion-text-center ion-margin-top">
+    <p class="text-muted">¿Ya tienes cuenta?
+      <a (click)="navigateToLogin()" style="cursor: pointer; color: var(--ion-color-primary);">
+        Inicia sesión aquí
+      </a>
+    </p>
+  </div>
+
+  <!-- Alerta -->
+  <ion-alert
+    [isOpen]="showAlert"
+    [header]="alertHeader"
+    [message]="alertMessage"
+    [buttons]="['OK']"
+    (didDismiss)="showAlert = false"
+  ></ion-alert>
+</ion-content>

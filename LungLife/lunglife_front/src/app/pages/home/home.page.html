@@ -1,0 +1,26 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Inicio</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="logout()">Cerrar Sesión</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-card *ngIf="currentUser" class="custom-card fade-in">
+    <ion-card-header>
+      <ion-card-title>¡Bienvenido!</ion-card-title>
+    </ion-card-header>
+
+    <ion-card-content>
+      <p><strong>Nombre:</strong> {{ currentUser.name }}</p>
+      <p><strong>Email:</strong> {{ currentUser.email }}</p>
+      <p><strong>ID:</strong> {{ currentUser.id }}</p>
+    </ion-card-content>
+  </ion-card>
+
+  <div class="ion-text-center ion-margin-top">
+    <p>¡Has iniciado sesión exitosamente!</p>
+  </div>
+</ion-content>
