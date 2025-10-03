@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, Output, signal} from '@angular/core';
-import {CommonModule} from '@angular/common';
+
 import {
   IonInfiniteScroll,
   IonInfiniteScrollContent,
@@ -22,13 +22,12 @@ export interface InfiniteScrollConfig {
   styleUrls: ['./infinite-scroll.component.scss'],
   standalone: true,
   imports: [
-    CommonModule,
     IonInfiniteScroll,
     IonInfiniteScrollContent,
     IonItem,
     IonLabel,
     IonSkeletonText
-  ]
+]
 })
 export class InfiniteScrollComponent {
   @Input() config: InfiniteScrollConfig = {};

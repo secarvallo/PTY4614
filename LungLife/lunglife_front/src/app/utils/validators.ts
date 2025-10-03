@@ -1,5 +1,4 @@
 import {AbstractControl, ValidationErrors, ValidatorFn} from '@angular/forms';
-import {Helpers} from './helpers';
 
 /**
  * Validadores personalizados para formularios reactivos
@@ -16,7 +15,7 @@ export class CustomValidators {
     const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
     if (!emailPattern.test(control.value)) {
-      return { invalidEmail: true };
+      return {invalidEmail: true};
     }
 
     return null;
@@ -31,7 +30,7 @@ export class CustomValidators {
     const hasNumbers = /\d/.test(control.value);
 
     if (hasNumbers) {
-      return { noNumbers: true };
+      return {noNumbers: true};
     }
 
     return null;
@@ -48,7 +47,7 @@ export class CustomValidators {
       if (!password || !confirmPassword) return null;
 
       if (password !== confirmPassword) {
-        return { passwordMismatch: true };
+        return {passwordMismatch: true};
       }
 
       return null;
@@ -68,7 +67,7 @@ export class CustomValidators {
       const confirmPassword = confirmPasswordControl.value;
 
       if (password !== confirmPassword) {
-        return { passwordsNotMatch: true };
+        return {passwordsNotMatch: true};
       }
 
       return null;
@@ -109,7 +108,7 @@ export class CustomValidators {
     const phonePattern = /^[+]?[\d\s\-\(\)]{8,15}$/;
 
     if (!phonePattern.test(control.value)) {
-      return { invalidPhone: true };
+      return {invalidPhone: true};
     }
 
     return null;

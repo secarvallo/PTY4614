@@ -1,0 +1,24 @@
+<ion-card (click)="onCardClick()"
+          [attr.aria-label]="feature?.ariaLabel || feature?.title || 'feature-card'"
+          [attr.data-feature-id]="feature?.id ?? null"
+          class="feature-card">
+  @if (feature) {
+  <ion-card-content class="feature-content">
+    <div class="feature-icon-wrapper">
+      <ion-icon [name]="feature.icon" [color]="feature.color" class="feature-icon"></ion-icon>
+    </div>
+    <div class="text-block">
+      <h3>{{ feature.title }}</h3>
+      <p>{{ feature.description }}</p>
+    </div>
+  </ion-card-content>
+  } @else {
+  <ion-card-content class="feature-skeleton">
+    <div class="icon-skel"></div>
+    <div class="lines">
+      <div class="line short"></div>
+      <div class="line long"></div>
+    </div>
+  </ion-card-content>
+  }
+</ion-card>

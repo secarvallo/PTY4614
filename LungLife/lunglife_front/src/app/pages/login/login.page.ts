@@ -1,5 +1,5 @@
 import {AfterViewInit, Component, ElementRef, inject, OnInit, signal, ViewChild} from '@angular/core';
-import {CommonModule} from '@angular/common';
+
 import {FormBuilder, ReactiveFormsModule, Validators} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
 import {
@@ -35,12 +35,23 @@ import {CustomValidators} from '../../utils/validators';
   styleUrls: ['./login.page.scss'],
   standalone: true,
   imports: [
-    CommonModule, ReactiveFormsModule,
-    IonHeader, IonToolbar, IonTitle, IonContent,
-    IonItem, IonInput, IonButton, IonSpinner,
-    IonIcon, IonCard, IonCardContent, IonCardHeader, IonCardTitle,
-    IonProgressBar, SkeletonComponent
-  ]
+    ReactiveFormsModule,
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonContent,
+    IonItem,
+    IonInput,
+    IonButton,
+    IonSpinner,
+    IonIcon,
+    IonCard,
+    IonCardContent,
+    IonCardHeader,
+    IonCardTitle,
+    IonProgressBar,
+    SkeletonComponent
+]
 })
 export class LoginPage implements OnInit, AfterViewInit {
   @ViewChild('loginCard', {read: ElementRef}) loginCard!: ElementRef;

@@ -1,112 +1,89 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>LungLife</ion-title>
-    <ion-buttons slot="end" *ngIf="isLoggedIn">
-      <ion-button (click)="logout()" color="danger">
-        <ion-icon name="log-out" slot="icon-only"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
-
 <ion-content class="ion-padding">
-  <!-- Global Loading State -->
-  <div *ngIf="isLoading()" class="loading-container" aria-live="polite">
-    <ion-spinner color="primary"></ion-spinner>
-    <p>Cargando LungLife...</p>
-  </div>
-
-  <!-- Main Content -->
-  <div *ngIf="!isLoading()" class="home-content">
-
-    <!-- Auto Redirect Banner -->
-    <div *ngIf="autoRedirectActive() && autoRedirectSeconds() !== null" class="redirect-banner" role="status"
-         aria-live="assertive">
-      <span>Redirigiendo al dashboard en <strong>{{ autoRedirectSeconds() }}s</strong></span>
-      <ion-button size="small" fill="clear" color="medium" (click)="cancelAutoRedirect()">Cancelar</ion-button>
+  <!-- Loading State -->
+  @if (isLoading()) {
+    <div class="loading-container">
+      <ion-icon name="heart-circle" color="primary" class="main-logo"></ion-icon>
+      <h2>Bienvenido a LungLife</h2>
+      <ion-spinner name="crescent" color="primary"></ion-spinner>
+      <p>Cargando aplicación...</p>
     </div>
+  } @else {
 
-    <!-- Welcome Section -->
-    <div class="welcome-section">
-      <div class="hero-content">
-        <h1 class="hero-title">
-          <ion-icon name="heart" color="primary" aria-hidden="true"></ion-icon>
-          LungLife
-        </h1>
-        <p class="hero-subtitle">Tu salud pulmonar es nuestra prioridad</p>
+    <!-- Welcome Content -->
+    <div class="welcome-container">
+
+      <!-- Hero Section -->
+      <div class="hero-section">
+        <ion-icon name="heart-circle" color="primary" class="main-logo"></ion-icon>
+        <h1>LungLife</h1>
+        <p class="subtitle">Tu salud pulmonar es nuestra prioridad</p>
       </div>
 
-      <!-- User Greeting (if logged in) -->
-      <ion-card *ngIf="currentUser(); else guestActions" class="user-card" data-testid="user-greeting-card">
-        <ion-card-content>
-          <div class="user-greeting">
-            <h2>¡Hola, {{ currentUser()?.name }}!</h2>
-            <p>Bienvenido de vuelta a tu panel de salud</p>
-            <ion-button
-              expand="block"
-              (click)="navigateToDashboard()"
-              color="primary">
-              <ion-icon name="arrow-forward" slot="start"></ion-icon>
-              Ir al Dashboard ahora
-            </ion-button>
-          </div>
-        </ion-card-content>
-      </ion-card>
+      <!-- Action Button -->
+      <div class="action-section">
+        <ion-button (click)="navigateToLogin()" color="primary" shape="round" size="large" expand="block">
+          Continuar al Login
+        </ion-button>
+      </div>
 
-      <!-- Guest Actions -->
-      <ng-template #guestActions>
-        <div class="auth-actions">
-          <ion-button
-            expand="block"
-            size="large"
-            (click)="navigateToLogin()"
-            class="login-btn">
-            <ion-icon name="log-in" slot="start"></ion-icon>
-            Iniciar Sesión
-          </ion-button>
+      <!-- Features Section -->
+      <div class="features-section">
+        <h2>¿Por qué elegir LungLife?</h2>
 
-          <ion-button
-            expand="block"
-            size="large"
-            fill="outline"
-            (click)="navigateToRegister()"
-            class="register-btn">
-            <ion-icon name="person-add" slot="start"></ion-icon>
-            Crear Cuenta
-          </ion-button>
+        <div class="features-column">
+          <!-- Detección Temprana -->
+          <app-feature-card
+            [feature]="{
+              id: 1,
+              title: 'Detección Temprana',
+              description: 'Análisis avanzado con IA para detectar signos tempranos de cáncer de pulmón',
+              icon: 'analytics',
+              color: 'primary'
+            }"
+            (featureClick)="onFeatureClick($event)"
+            class="feature-card-item">
+          </app-feature-card>
+
+          <!-- Seguimiento Personalizado -->
+          <app-feature-card
+            [feature]="{
+              id: 2,
+              title: 'Seguimiento Personalizado',
+              description: 'Monitoreo continuo y planes de tratamiento personalizados',
+              icon: 'heart',
+              color: 'tertiary'
+            }"
+            (featureClick)="onFeatureClick($event)"
+            class="feature-card-item">
+          </app-feature-card>
+
+          <!-- Seguridad de Datos -->
+          <app-feature-card
+            [feature]="{
+              id: 3,
+              title: 'Seguridad de Datos',
+              description: 'Protección avanzada de tu información médica personal',
+              icon: 'shield',
+              color: 'warning'
+            }"
+            (featureClick)="onFeatureClick($event)"
+            class="feature-card-item">
+          </app-feature-card>
+
+          <!-- Comunidad de Apoyo -->
+          <app-feature-card
+            [feature]="{
+              id: 4,
+              title: 'Comunidad de Apoyo',
+              description: 'Conecta con otros pacientes y profesionales de la salud',
+              icon: 'people',
+              color: 'dark'
+            }"
+            (featureClick)="onFeatureClick($event)"
+            class="feature-card-item">
+          </app-feature-card>
         </div>
-      </ng-template>
+      </div>
     </div>
-
-    <!-- Features Section -->
-    <div class="features-section" aria-labelledby="featuresTitle">
-      <h2 id="featuresTitle" class="section-title">¿Por qué elegir LungLife?</h2>
-
-      <!-- Skeletons -->
-      <ion-grid *ngIf="showFeatureSkeletons(); else featuresGrid">
-        <ion-row>
-          <ion-col size="12" size-md="6" *ngFor="let sk of [1,2,3,4]">
-            <app-feature-card [feature]="null"></app-feature-card>
-          </ion-col>
-        </ion-row>
-      </ion-grid>
-
-      <!-- Features Loaded -->
-      <ng-template #featuresGrid>
-        <ion-grid>
-          <ion-row>
-            <ion-col
-              size="12"
-              size-md="6"
-              *ngFor="let feature of appFeatures; trackBy: trackByFeatureId">
-              <app-feature-card
-                [feature]="feature"
-                (featureClick)="onFeatureCardClick(feature)">
-              </app-feature-card>
-            </ion-col>
-          </ion-row>
-        </ion-grid>
-      </ng-template>
-    </div>
-  </div>
+  }
 </ion-content>

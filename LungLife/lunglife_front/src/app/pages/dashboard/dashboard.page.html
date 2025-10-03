@@ -20,107 +20,109 @@
   </ion-refresher>
 
   <!-- Skeleton Loading State -->
-  <app-skeleton
-    *ngIf="dashboardLoading().isLoading && !isRefreshing"
-    type="dashboard">
-  </app-skeleton>
+  @if (dashboardLoading().isLoading && !isRefreshing) {
+    <app-skeleton
+      type="dashboard">
+    </app-skeleton>
+  }
 
   <!-- Dashboard Content -->
-  <div *ngIf="!dashboardLoading().isLoading" class="dashboard-content fade-in">
-    <!-- Bienvenida -->
-    <ion-card class="welcome-card">
-      <ion-card-header>
-        <ion-card-title>
-          <ion-icon name="person" color="primary"></ion-icon>
-          ¡Bienvenido, {{ currentUser?.name }}!
-        </ion-card-title>
-      </ion-card-header>
-      <ion-card-content>
-        <p>Aquí tienes un resumen de tu actividad reciente.</p>
-      </ion-card-content>
-    </ion-card>
-
-    <!-- Estadísticas -->
-    <ion-card>
-      <ion-card-header>
-        <ion-card-title>
-          <ion-icon name="stats-chart" color="primary"></ion-icon>
-          Resumen General
-        </ion-card-title>
-      </ion-card-header>
-      <ion-card-content>
-        <ion-grid>
-          <ion-row>
-            <ion-col size="6" size-md="3">
-              <div class="stat-card">
-                <ion-icon name="rocket" color="primary" class="stat-icon"></ion-icon>
-                <h3>{{ stats.totalProjects }}</h3>
-                <p>Proyectos Totales</p>
-              </div>
-            </ion-col>
-            <ion-col size="6" size-md="3">
-              <div class="stat-card">
-                <ion-icon name="checkmark-circle" color="success" class="stat-icon"></ion-icon>
-                <h3>{{ stats.completedTasks }}</h3>
-                <p>Tareas Completadas</p>
-              </div>
-            </ion-col>
-            <ion-col size="6" size-md="3">
-              <div class="stat-card">
-                <ion-icon name="time" color="warning" class="stat-icon"></ion-icon>
-                <h3>{{ stats.pendingTasks }}</h3>
-                <p>Tareas Pendientes</p>
-              </div>
-            </ion-col>
-            <ion-col size="6" size-md="3">
-              <div class="stat-card">
-                <ion-icon name="calendar" color="danger" class="stat-icon"></ion-icon>
-                <h3>{{ stats.upcomingDeadlines }}</h3>
-                <p>Próximos Vencimientos</p>
-              </div>
-            </ion-col>
-          </ion-row>
-        </ion-grid>
-      </ion-card-content>
-    </ion-card>
-
-    <!-- Actividad Reciente -->
-    <ion-card>
-      <ion-card-header>
-        <ion-card-title>
-          <ion-icon name="time" color="primary"></ion-icon>
-          Actividad Reciente
-        </ion-card-title>
-      </ion-card-header>
-      <ion-card-content>
-        <div *ngFor="let activity of recentActivities; trackBy: trackByActivityId" class="activity-item">
-          <ion-item button>
-            <ion-icon
-              [name]="getActivityIcon(activity.type)"
-              [color]="getStatusColor(activity.status)"
-              slot="start">
-            </ion-icon>
-            <ion-label>
-              <h3>{{ activity.title }}</h3>
-              <p>{{ activity.description }}</p>
-              <p class="activity-time">{{ getRelativeTime(activity.timestamp) }}</p>
-            </ion-label>
-            <ion-badge
-              [color]="getStatusColor(activity.status)"
-              slot="end">
-              {{ activity.status }}
-            </ion-badge>
-          </ion-item>
-        </div>
-
-        <ion-button
-          fill="clear"
-          expand="full"
-          class="view-all-button">
-          Ver toda la actividad
-          <ion-icon name="chevron-forward" slot="end"></ion-icon>
-        </ion-button>
-      </ion-card-content>
-    </ion-card>
-  </div>
+  @if (!dashboardLoading().isLoading) {
+    <div class="dashboard-content fade-in">
+      <!-- Bienvenida -->
+      <ion-card class="welcome-card">
+        <ion-card-header>
+          <ion-card-title>
+            <ion-icon name="person" color="primary"></ion-icon>
+            ¡Bienvenido, {{ currentUser?.name }}!
+          </ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <p>Aquí tienes un resumen de tu actividad reciente.</p>
+        </ion-card-content>
+      </ion-card>
+      <!-- Estadísticas -->
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>
+            <ion-icon name="stats-chart" color="primary"></ion-icon>
+            Resumen General
+          </ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-grid>
+            <ion-row>
+              <ion-col size="6" size-md="3">
+                <div class="stat-card">
+                  <ion-icon name="rocket" color="primary" class="stat-icon"></ion-icon>
+                  <h3>{{ stats.totalProjects }}</h3>
+                  <p>Proyectos Totales</p>
+                </div>
+              </ion-col>
+              <ion-col size="6" size-md="3">
+                <div class="stat-card">
+                  <ion-icon name="checkmark-circle" color="success" class="stat-icon"></ion-icon>
+                  <h3>{{ stats.completedTasks }}</h3>
+                  <p>Tareas Completadas</p>
+                </div>
+              </ion-col>
+              <ion-col size="6" size-md="3">
+                <div class="stat-card">
+                  <ion-icon name="time" color="warning" class="stat-icon"></ion-icon>
+                  <h3>{{ stats.pendingTasks }}</h3>
+                  <p>Tareas Pendientes</p>
+                </div>
+              </ion-col>
+              <ion-col size="6" size-md="3">
+                <div class="stat-card">
+                  <ion-icon name="calendar" color="danger" class="stat-icon"></ion-icon>
+                  <h3>{{ stats.upcomingDeadlines }}</h3>
+                  <p>Próximos Vencimientos</p>
+                </div>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-card-content>
+      </ion-card>
+      <!-- Actividad Reciente -->
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>
+            <ion-icon name="time" color="primary"></ion-icon>
+            Actividad Reciente
+          </ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          @for (activity of recentActivities; track trackByActivityId($index, activity)) {
+            <div class="activity-item">
+              <ion-item button>
+                <ion-icon
+                  [name]="getActivityIcon(activity.type)"
+                  [color]="getStatusColor(activity.status)"
+                  slot="start">
+                </ion-icon>
+                <ion-label>
+                  <h3>{{ activity.title }}</h3>
+                  <p>{{ activity.description }}</p>
+                  <p class="activity-time">{{ getRelativeTime(activity.timestamp) }}</p>
+                </ion-label>
+                <ion-badge
+                  [color]="getStatusColor(activity.status)"
+                  slot="end">
+                  {{ activity.status }}
+                </ion-badge>
+              </ion-item>
+            </div>
+          }
+          <ion-button
+            fill="clear"
+            expand="full"
+            class="view-all-button">
+            Ver toda la actividad
+            <ion-icon name="chevron-forward" slot="end"></ion-icon>
+          </ion-button>
+        </ion-card-content>
+      </ion-card>
+    </div>
+  }
 </ion-content>

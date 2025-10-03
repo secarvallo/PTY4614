@@ -6,13 +6,12 @@
 
 <ion-content class="ion-padding">
   <!-- Skeleton Loading State -->
-  <app-skeleton
-    *ngIf="showSkeleton()"
-    type="form">
-  </app-skeleton>
+  @if (showSkeleton()) {
+    <app-skeleton type="form"></app-skeleton>
+  } @else {
 
   <!-- Login Form -->
-  <div *ngIf="!showSkeleton()" class="form-container">
+  <div class="form-container">
     <ion-card #loginCard class="login-card">
       <ion-card-header>
         <ion-card-title class="form-title">
@@ -73,15 +72,17 @@
             [disabled]="!isFormValid || isLoading() || authLoading().isLoading"
             [class.loading]="isLoading() || authLoading().isLoading">
 
-            <span *ngIf="!isLoading() && !authLoading().isLoading">
-              <ion-icon name="log-in" slot="start"></ion-icon>
-              Iniciar Sesión
-            </span>
-
-            <span *ngIf="isLoading() || authLoading().isLoading" class="loading-content">
-              <ion-spinner name="circular" color="light"></ion-spinner>
-              {{ authLoading().message || 'Iniciando sesión...' }}
-            </span>
+            @if (!isLoading() && !authLoading().isLoading) {
+              <span>
+                <ion-icon name="log-in" slot="start"></ion-icon>
+                Iniciar Sesión
+              </span>
+            } @else {
+              <span class="loading-content">
+                <ion-spinner name="circular" color="light"></ion-spinner>
+                {{ authLoading().message || 'Iniciando sesión...' }}
+              </span>
+            }
           </ion-button>
 
           <!-- Forgot Password Link -->
@@ -109,12 +110,15 @@
     </ion-card>
 
     <!-- Loading Progress (Optional) -->
-    <div *ngIf="authLoading().isLoading && authLoading().progress" class="loading-progress">
+    @if (authLoading().isLoading && authLoading().progress) {
+    <div class="loading-progress">
       <ion-progress-bar
         [value]="authLoading().progress! / 100"
         color="primary">
       </ion-progress-bar>
       <p class="progress-text">{{ authLoading().message }}</p>
     </div>
+    }
   </div>
+  }
 </ion-content>

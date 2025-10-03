@@ -1,5 +1,5 @@
 import {AfterViewInit, Component, ElementRef, inject, OnInit, signal, ViewChild} from '@angular/core';
-import {CommonModule} from '@angular/common';
+
 import {FormBuilder, ReactiveFormsModule, Validators} from '@angular/forms';
 import {Router} from '@angular/router';
 import {
@@ -35,13 +35,25 @@ import {CustomValidators} from '../../utils/validators';
   styleUrls: ['./forgot-pass.page.scss'],
   standalone: true,
   imports: [
-    CommonModule, ReactiveFormsModule,
-    IonBackButton, IonButton, IonButtons, IonCard,
-    IonCardContent, IonCardHeader, IonCardTitle, IonContent,
-    IonHeader, IonIcon, IonInput, IonItem,
-    IonSpinner, IonTitle, IonToolbar, IonProgressBar,
+    ReactiveFormsModule,
+    IonBackButton,
+    IonButton,
+    IonButtons,
+    IonCard,
+    IonCardContent,
+    IonCardHeader,
+    IonCardTitle,
+    IonContent,
+    IonHeader,
+    IonIcon,
+    IonInput,
+    IonItem,
+    IonSpinner,
+    IonTitle,
+    IonToolbar,
+    IonProgressBar,
     IonSkeletonText
-  ]
+]
 })
 export class ForgotPassPage implements OnInit, AfterViewInit {
   @ViewChild('forgotCard', {read: ElementRef}) forgotCard!: ElementRef;

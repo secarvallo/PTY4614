@@ -91,6 +91,24 @@ html, body {
   padding: 20px;
 }
 
+// Estilos para botones de Ionic
+ion-button[shape="round"] {
+  --border-radius: 50px !important;
+  border-radius: 50px !important;
+}
+
+ion-button[expand="block"] {
+  display: block;
+  width: 100%;
+}
+
+// Fix para botones con shape round y expand block
+ion-button[shape="round"][expand="block"] {
+  --border-radius: 50px !important;
+  border-radius: 50px !important;
+  margin: 0 auto;
+}
+
 // Animaciones
 .fade-in {
   animation: fadeIn 0.3s ease-in;

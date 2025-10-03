@@ -11,13 +11,17 @@
 </ion-infinite-scroll>
 
 <!-- Loading skeleton for new items -->
-<div *ngIf="isLoadingMore()" class="loading-more-items">
-  <ion-item *ngFor="let item of skeletonItems" class="skeleton-item">
-    <ion-skeleton-text animated slot="start" class="skeleton-avatar"></ion-skeleton-text>
-    <ion-label>
-      <ion-skeleton-text animated class="skeleton-title"></ion-skeleton-text>
-      <ion-skeleton-text animated class="skeleton-subtitle"></ion-skeleton-text>
-    </ion-label>
-    <ion-skeleton-text animated slot="end" class="skeleton-action"></ion-skeleton-text>
-  </ion-item>
-</div>
+@if (isLoadingMore()) {
+  <div class="loading-more-items">
+    @for (item of skeletonItems; track item) {
+      <ion-item class="skeleton-item">
+        <ion-skeleton-text animated slot="start" class="skeleton-avatar"></ion-skeleton-text>
+        <ion-label>
+          <ion-skeleton-text animated class="skeleton-title"></ion-skeleton-text>
+          <ion-skeleton-text animated class="skeleton-subtitle"></ion-skeleton-text>
+        </ion-label>
+        <ion-skeleton-text animated slot="end" class="skeleton-action"></ion-skeleton-text>
+      </ion-item>
+    }
+  </div>
+}

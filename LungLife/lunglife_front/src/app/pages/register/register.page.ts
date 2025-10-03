@@ -1,5 +1,5 @@
 import {AfterViewInit, Component, ElementRef, inject, OnInit, signal, ViewChild} from '@angular/core';
-import {CommonModule} from '@angular/common';
+
 import {FormBuilder, ReactiveFormsModule, Validators} from '@angular/forms';
 import {Router} from '@angular/router';
 import {
@@ -38,12 +38,25 @@ import {AppConstants} from '../../utils/constants';
   styleUrls: ['./register.page.scss'],
   standalone: true,
   imports: [
-    CommonModule, ReactiveFormsModule,
-    IonHeader, IonToolbar, IonTitle, IonContent,
-    IonItem, IonInput, IonButton, IonSpinner,
-    IonIcon, IonCard, IonCardContent, IonCardHeader, IonCardTitle,
-    IonProgressBar, IonCheckbox, IonLabel, SkeletonComponent
-  ]
+    ReactiveFormsModule,
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonContent,
+    IonItem,
+    IonInput,
+    IonButton,
+    IonSpinner,
+    IonIcon,
+    IonCard,
+    IonCardContent,
+    IonCardHeader,
+    IonCardTitle,
+    IonProgressBar,
+    IonCheckbox,
+    IonLabel,
+    SkeletonComponent
+]
 })
 export class RegisterPage implements OnInit, AfterViewInit {
   @ViewChild('registerCard', {read: ElementRef}) registerCard!: ElementRef;

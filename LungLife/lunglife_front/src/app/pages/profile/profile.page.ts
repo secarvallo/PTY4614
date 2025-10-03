@@ -1,5 +1,5 @@
 import {AfterViewInit, Component, ElementRef, inject, OnInit, signal, ViewChild} from '@angular/core';
-import {CommonModule} from '@angular/common';
+
 import {FormBuilder, ReactiveFormsModule, Validators} from '@angular/forms';
 import {
   IonAvatar,
@@ -51,12 +51,28 @@ import {AppConstants} from '../../utils/constants';
   styleUrls: ['./profile.page.scss'],
   standalone: true,
   imports: [
-    CommonModule, ReactiveFormsModule,
-    IonHeader, IonToolbar, IonTitle, IonContent, IonItem,
-    IonInput, IonButton, IonSpinner, IonCard,
-    IonCardHeader, IonCardTitle, IonCardContent, IonIcon, IonBackButton, IonButtons, IonText, IonAvatar,
-    IonFabButton, IonProgressBar, SkeletonComponent
-  ]
+    ReactiveFormsModule,
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonContent,
+    IonItem,
+    IonInput,
+    IonButton,
+    IonSpinner,
+    IonCard,
+    IonCardHeader,
+    IonCardTitle,
+    IonCardContent,
+    IonIcon,
+    IonBackButton,
+    IonButtons,
+    IonText,
+    IonAvatar,
+    IonFabButton,
+    IonProgressBar,
+    SkeletonComponent
+]
 })
 export class ProfilePage implements OnInit, AfterViewInit {
   @ViewChild('profileCard', {read: ElementRef}) profileCard!: ElementRef;

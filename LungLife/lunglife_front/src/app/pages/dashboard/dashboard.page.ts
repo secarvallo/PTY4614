@@ -1,5 +1,5 @@
 import {AfterViewInit, Component, ElementRef, inject, OnInit, QueryList, ViewChildren} from '@angular/core';
-import {CommonModule} from '@angular/common';
+
 import {
   IonBadge,
   IonButton,
@@ -66,14 +66,27 @@ interface RecentActivity {
   styleUrls: ['./dashboard.page.scss'],
   standalone: true,
   imports: [
-    CommonModule,
-    IonHeader, IonToolbar, IonTitle, IonContent,
-    IonCard, IonCardHeader, IonCardTitle, IonCardContent,
-    IonGrid, IonRow, IonCol, IonButton, IonIcon,
-    IonRefresher, IonRefresherContent,
-    IonItem, IonLabel, IonBadge, IonButtons,
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonContent,
+    IonCard,
+    IonCardHeader,
+    IonCardTitle,
+    IonCardContent,
+    IonGrid,
+    IonRow,
+    IonCol,
+    IonButton,
+    IonIcon,
+    IonRefresher,
+    IonRefresherContent,
+    IonItem,
+    IonLabel,
+    IonBadge,
+    IonButtons,
     SkeletonComponent
-  ]
+]
 })
 export class DashboardPage implements OnInit, AfterViewInit {
   @ViewChildren(IonCard, {read: ElementRef}) cards!: QueryList<ElementRef>;

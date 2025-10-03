@@ -6,13 +6,12 @@
 
 <ion-content class="ion-padding">
   <!-- Skeleton Loading State -->
-  <app-skeleton
-    *ngIf="showSkeleton()"
-    type="form">
-  </app-skeleton>
+  @if (showSkeleton()) {
+    <app-skeleton type="form"></app-skeleton>
+  } @else {
 
   <!-- Register Form -->
-  <div *ngIf="!showSkeleton()" class="form-container">
+  <div class="form-container">
     <ion-card #registerCard class="register-card">
       <ion-card-header>
         <ion-card-title class="form-title">
@@ -83,15 +82,17 @@
           </ion-item>
 
           <!-- Password Strength Indicator -->
-          <div *ngIf="passwordControl?.value" class="password-strength">
-            <ion-progress-bar
-              [value]="passwordStrength / 5"
-              [color]="passwordStrengthColor">
-            </ion-progress-bar>
-            <p class="strength-text" [style.color]="'var(--ion-color-' + passwordStrengthColor + ')'">
-              Seguridad: {{ passwordStrengthText }}
-            </p>
-          </div>
+          @if (passwordControl?.value) {
+            <div class="password-strength">
+              <ion-progress-bar
+                [value]="passwordStrength / 5"
+                [color]="passwordStrengthColor">
+              </ion-progress-bar>
+              <p class="strength-text" [style.color]="'var(--ion-color-' + passwordStrengthColor + ')'">
+                Seguridad: {{ passwordStrengthText }}
+              </p>
+            </div>
+          }
 
           <!-- Confirm Password Input -->
           <ion-item
@@ -142,15 +143,17 @@
             [disabled]="!isFormValid || isLoading() || authLoading().isLoading"
             [class.loading]="isLoading() || authLoading().isLoading">
 
-            <span *ngIf="!isLoading() && !authLoading().isLoading">
-              <ion-icon name="person-add" slot="start"></ion-icon>
-              Crear Cuenta
-            </span>
-
-            <span *ngIf="isLoading() || authLoading().isLoading" class="loading-content">
-              <ion-spinner name="circular" color="light"></ion-spinner>
-              {{ authLoading().message || 'Creando cuenta...' }}
-            </span>
+            @if (!isLoading() && !authLoading().isLoading) {
+              <span>
+                <ion-icon name="person-add" slot="start"></ion-icon>
+                Crear Cuenta
+              </span>
+            } @else {
+              <span class="loading-content">
+                <ion-spinner name="circular" color="light"></ion-spinner>
+                {{ authLoading().message || 'Creando cuenta...' }}
+              </span>
+            }
           </ion-button>
 
           <!-- Login Link -->
@@ -169,12 +172,15 @@
     </ion-card>
 
     <!-- Loading Progress -->
-    <div *ngIf="authLoading().isLoading && authLoading().progress" class="loading-progress">
-      <ion-progress-bar
-        [value]="authLoading().progress! / 100"
-        color="primary">
-      </ion-progress-bar>
-      <p class="progress-text">{{ authLoading().message }}</p>
-    </div>
+    @if (authLoading().isLoading && authLoading().progress) {
+      <div class="loading-progress">
+        <ion-progress-bar
+          [value]="authLoading().progress! / 100"
+          color="primary">
+        </ion-progress-bar>
+        <p class="progress-text">{{ authLoading().message }}</p>
+      </div>
+    }
   </div>
+  }
 </ion-content>
