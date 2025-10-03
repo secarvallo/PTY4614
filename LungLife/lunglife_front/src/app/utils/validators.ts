@@ -1,5 +1,5 @@
-import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
-import { Helpers } from './helpers';
+import {AbstractControl, ValidationErrors, ValidatorFn} from '@angular/forms';
+import {Helpers} from './helpers';
 
 /**
  * Validadores personalizados para formularios reactivos
@@ -8,7 +8,55 @@ import { Helpers } from './helpers';
 export class CustomValidators {
 
   /**
-   * Valida que las contraseñas coincidan
+   * Valida formato de email
+   */
+  static email(control: AbstractControl): ValidationErrors | null {
+    if (!control.value) return null;
+
+    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+    if (!emailPattern.test(control.value)) {
+      return { invalidEmail: true };
+    }
+
+    return null;
+  }
+
+  /**
+   * Valida que no contenga números
+   */
+  static noNumbers(control: AbstractControl): ValidationErrors | null {
+    if (!control.value) return null;
+
+    const hasNumbers = /\d/.test(control.value);
+
+    if (hasNumbers) {
+      return { noNumbers: true };
+    }
+
+    return null;
+  }
+
+  /**
+   * Valida que las contraseñas coincidan (para formularios)
+   */
+  static passwordMatch(passwordField: string, confirmPasswordField: string): ValidatorFn {
+    return (formGroup: AbstractControl): ValidationErrors | null => {
+      const password = formGroup.get(passwordField)?.value;
+      const confirmPassword = formGroup.get(confirmPasswordField)?.value;
+
+      if (!password || !confirmPassword) return null;
+
+      if (password !== confirmPassword) {
+        return { passwordMismatch: true };
+      }
+
+      return null;
+    };
+  }
+
+  /**
+   * Valida que las contraseñas coincidan (para controles individuales)
    */
   static passwordsMatch(confirmPasswordControlName: string): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
@@ -35,12 +83,16 @@ export class CustomValidators {
 
     if (!password) return null;
 
-    const validation = Helpers.isStrongPassword(password);
+    // Basic validation - can be enhanced with Helpers if available
+    const hasMinLength = password.length >= 6;
+    const hasUpper = /[A-Z]/.test(password);
+    const hasLower = /[a-z]/.test(password);
+    const hasNumber = /\d/.test(password);
 
-    if (!validation.isValid) {
+    if (!hasMinLength || !hasUpper || !hasLower || !hasNumber) {
       return {
         weakPassword: {
-          message: validation.errors.join(', ')
+          message: 'La contraseña debe tener al menos 6 caracteres, una mayúscula, una minúscula y un número'
         }
       };
     }
@@ -49,41 +101,15 @@ export class CustomValidators {
   }
 
   /**
-   * Valida formato de email
+   * Valida números de teléfono
    */
-  static emailFormat(control: AbstractControl): ValidationErrors | null {
-    const email = control.value;
+  static phone(control: AbstractControl): ValidationErrors | null {
+    if (!control.value) return null;
 
-    if (!email) return null;
+    const phonePattern = /^[+]?[\d\s\-\(\)]{8,15}$/;
 
-    if (!Helpers.isValidEmail(email)) {
-      return { invalidEmail: true };
-    }
-
-    return null;
-  }
-
-  /**
-   * Valida que se acepten los términos y condiciones
-   */
-  static acceptTerms(control: AbstractControl): ValidationErrors | null {
-    const accepted = control.value;
-
-    if (!accepted) {
-      return { termsNotAccepted: true };
-    }
-
-    return null;
-  }
-
-  /**
-   * Valida que no sea solo espacios en blanco
-   */
-  static notEmpty(control: AbstractControl): ValidationErrors | null {
-    const value = control.value;
-
-    if (value && value.trim().length === 0) {
-      return { empty: true };
+    if (!phonePattern.test(control.value)) {
+      return { invalidPhone: true };
     }
 
     return null;

@@ -1,89 +1,68 @@
-import { Injectable, inject } from '@angular/core';
-import { Observable } from 'rxjs';
-import { tap, catchError } from 'rxjs/operators';
+import {inject, Injectable} from '@angular/core';
+import {Observable} from 'rxjs';
+import {map} from 'rxjs/operators';
 
-import { ApiService } from './api.service';
-import { StorageService } from './storage.service';
-import { User, UserProfile, UserResponse } from '../models/user.model';
-import { AppConstants } from '../utils/constants';
-import { Helpers } from '../utils/helpers';
+import {ApiService} from './api.service';
+import {User, UserDeleteResponse, UserProfile, UserResponse, UserUpdateRequest} from '../models/user.model';
+import {ApiResponse} from '../models/api.model';
+import {AppConstants} from '../utils/constants';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
   private apiService = inject(ApiService);
-  private storageService = inject(StorageService);
-
-  /**
-   * Obtiene el perfil del usuario actual
-   */
-  getProfile(): Observable<UserResponse> {
-    return this.apiService.get<UserResponse>(
-      AppConstants.API_ENDPOINTS.USERS.PROFILE
-    ).pipe(
-      tap(response => {
-        if (response.success && response.user) {
-          // Actualizar usuario en almacenamiento
-          this.storageService.setItem(
-            AppConstants.STORAGE_KEYS.USER_DATA,
-            JSON.stringify(response.user)
-          );
-        }
-      }),
-      catchError(error => {
-        console.error('Error fetching user profile:', error);
-        throw error;
-      })
-    );
-  }
 
   /**
    * Actualiza el perfil del usuario
    */
-  updateProfile(userData: Partial<User>): Observable<UserResponse> {
-    return this.apiService.put<UserResponse>(
-      AppConstants.API_ENDPOINTS.USERS.UPDATE,
-      userData
+  updateProfile(userData: UserUpdateRequest): Observable<UserResponse> {
+    // Clean undefined/null values
+    const cleanedData = this.cleanUserData(userData);
+
+    return this.apiService.put<User>(
+      AppConstants.API_ENDPOINTS.USER.PROFILE,
+      cleanedData
     ).pipe(
-      tap(response => {
-        if (response.success && response.user) {
-          // Actualizar usuario en almacenamiento
-          this.storageService.setItem(
-            AppConstants.STORAGE_KEYS.USER_DATA,
-            JSON.stringify(response.user)
-          );
-        }
-      }),
-      catchError(error => {
-        console.error('Error updating user profile:', error);
-        throw error;
-      })
+      map(response => ({
+        success: response.success,
+        message: response.message,
+        user: response.data
+      }))
     );
   }
 
   /**
-   * Cambia la contraseña del usuario
+   * Obtiene el perfil del usuario
    */
-  changePassword(currentPassword: string, newPassword: string): Observable<{ success: boolean; message?: string }> {
-    return this.apiService.post<{ success: boolean; message?: string }>(
-      `${AppConstants.API_ENDPOINTS.USERS.BASE}/change-password`,
-      { currentPassword, newPassword }
-    ).pipe(
-      catchError(error => {
-        console.error('Error changing password:', error);
-        throw error;
-      })
+  getProfile(): Observable<ApiResponse<UserProfile>> {
+    return this.apiService.get<UserProfile>(AppConstants.API_ENDPOINTS.USER.PROFILE);
+  }
+
+  /**
+   * Elimina la cuenta del usuario
+   */
+  deleteAccount(): Observable<UserDeleteResponse> {
+    return this.apiService.delete(AppConstants.API_ENDPOINTS.USER.DELETE).pipe(
+      map(response => ({
+        success: response.success,
+        message: response.message
+      }))
     );
   }
 
   /**
-   * Verifica si un email está disponible
+   * Limpia los datos del usuario removiendo valores undefined/null/empty
    */
-  checkEmailAvailability(email: string): Observable<{ available: boolean }> {
-    return this.apiService.get<{ available: boolean }>(
-      `${AppConstants.API_ENDPOINTS.USERS.BASE}/check-email`,
-      { params: { email } }
-    );
+  private cleanUserData(userData: Partial<User>): Partial<User> {
+    const cleaned: Partial<User> = {};
+
+    Object.entries(userData).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== '') {
+        (cleaned as any)[key] = value;
+      }
+    });
+
+    return cleaned;
   }
 }

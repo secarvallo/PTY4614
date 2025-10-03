@@ -1,4 +1,4 @@
-import { User } from './user.model';
+import {User} from './user.model';
 
 export interface LoginCredentials {
   email: string;
@@ -6,6 +6,13 @@ export interface LoginCredentials {
 }
 
 export interface RegisterData {
+  name: string;
+  email: string;
+  password: string;
+  confirmPassword?: string;
+}
+
+export interface RegisterCredentials {
   name: string;
   email: string;
   password: string;
@@ -23,12 +30,36 @@ export interface AuthState {
   user: User | null;
   token: string | null;
   isLoading: boolean;
-  error: string | null; // added to support error handling in AuthService
+  error: string | null;
 }
 
-// JWT payload minimal shape
 export interface TokenPayload {
-  exp: number; // expiration timestamp (seconds)
-  iat?: number; // issued at
-  [key: string]: any; // allow additional claims
+  userId: number;
+  email: string;
+  iat?: number;
+  exp?: number;
+}
+
+export interface RefreshTokenRequest {
+  refreshToken: string;
+}
+
+export interface RefreshTokenResponse {
+  success: boolean;
+  token?: string;
+  refreshToken?: string;
+}
+
+export interface LogoutRequest {
+  refreshToken?: string;
+}
+
+export interface PasswordResetRequest {
+  email: string;
+}
+
+export interface PasswordResetConfirm {
+  token: string;
+  newPassword: string;
+  confirmPassword?: string;
 }

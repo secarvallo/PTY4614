@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 
 @Injectable({
   providedIn: 'root'
@@ -49,7 +49,14 @@ export class StorageService {
   }
 
   /**
-   * Limpia todo el almacenamiento
+   * Elimina un valor de localStorage (alias para removeItem)
+   */
+  async remove(key: string): Promise<void> {
+    this.removeItem(key);
+  }
+
+  /**
+   * Limpia todo el localStorage
    */
   clear(): void {
     try {
@@ -60,22 +67,27 @@ export class StorageService {
   }
 
   /**
-   * Verifica si una clave existe
+   * Verifica si existe una clave en localStorage
    */
   hasItem(key: string): boolean {
-    return localStorage.getItem(key) !== null;
+    try {
+      return localStorage.getItem(key) !== null;
+    } catch (error) {
+      console.error('Error checking key in localStorage:', error);
+      return false;
+    }
   }
 
   /**
-   * Obtiene todas las claves del almacenamiento
+   * Obtiene todas las claves de localStorage
    */
   getKeys(): string[] {
-    const keys: string[] = [];
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      if (key) keys.push(key);
+    try {
+      return Object.keys(localStorage);
+    } catch (error) {
+      console.error('Error getting keys from localStorage:', error);
+      return [];
     }
-    return keys;
   }
 
   /**

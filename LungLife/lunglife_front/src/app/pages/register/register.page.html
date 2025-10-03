@@ -5,67 +5,176 @@
 </ion-header>
 
 <ion-content class="ion-padding">
-  <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="form-container fade-in">
-    <!-- Nombre -->
-    <ion-item>
-      <ion-input
-        label="Nombre completo"
-        formControlName="name"
-        placeholder="Ej: Juan Pérez"
-        type="text"
-        [clearInput]="true"
-      ></ion-input>
-    </ion-item>
+  <!-- Skeleton Loading State -->
+  <app-skeleton
+    *ngIf="showSkeleton()"
+    type="form">
+  </app-skeleton>
 
-    <!-- Email -->
-    <ion-item>
-      <ion-input
-        label="Email"
-        formControlName="email"
-        placeholder="ejemplo@correo.com"
-        type="email"
-        [clearInput]="true"
-      ></ion-input>
-    </ion-item>
+  <!-- Register Form -->
+  <div *ngIf="!showSkeleton()" class="form-container">
+    <ion-card #registerCard class="register-card">
+      <ion-card-header>
+        <ion-card-title class="form-title">
+          <ion-icon name="person-add" color="primary"></ion-icon>
+          Crear tu cuenta
+        </ion-card-title>
+      </ion-card-header>
 
-    <!-- Contraseña -->
-    <ion-item>
-      <ion-input
-        label="Contraseña"
-        formControlName="password"
-        placeholder="Mínimo 6 caracteres"
-        type="password"
-        [clearInput]="true"
-      ></ion-input>
-    </ion-item>
+      <ion-card-content>
+        <form #registerForm [formGroup]="registerFormGroup" (ngSubmit)="onRegister()" class="register-form">
 
-    <!-- Botón de Registro -->
-    <ion-button
-      type="submit"
-      expand="block"
-      [disabled]="!registerForm.valid || isLoading"
-      class="ion-margin-top"
-    >
-      <ion-spinner *ngIf="isLoading"></ion-spinner>
-      {{ isLoading ? 'Creando cuenta...' : 'Registrarse' }}
-    </ion-button>
-  </form>
+          <!-- Name Input -->
+          <ion-item
+            class="form-item"
+            [class.item-has-error]="nameErrors">
+            <ion-icon name="person" slot="start" color="medium"></ion-icon>
+            <ion-input
+              label="Nombre completo"
+              labelPlacement="floating"
+              formControlName="name"
+              placeholder="Ej: Juan Pérez"
+              type="text"
+              [clearInput]="true"
+              autocomplete="name">
+            </ion-input>
+          </ion-item>
 
-  <!-- Link a Login -->
-  <div class="ion-text-center ion-margin-top">
-    <p class="text-muted">¿Ya tienes cuenta?
-      <a (click)="navigateToLogin()" style="cursor: pointer; color: var(--ion-color-primary);">
-        Inicia sesión aquí
-      </a>
-    </p>
+          <!-- Email Input -->
+          <ion-item
+            class="form-item"
+            [class.item-has-error]="emailErrors">
+            <ion-icon name="mail" slot="start" color="medium"></ion-icon>
+            <ion-input
+              label="Email"
+              labelPlacement="floating"
+              formControlName="email"
+              placeholder="ejemplo@correo.com"
+              type="email"
+              [clearInput]="true"
+              autocomplete="email">
+            </ion-input>
+          </ion-item>
+
+          <!-- Password Input -->
+          <ion-item
+            class="form-item"
+            [class.item-has-error]="passwordErrors">
+            <ion-icon name="lock-closed" slot="start" color="medium"></ion-icon>
+            <ion-input
+              label="Contraseña"
+              labelPlacement="floating"
+              formControlName="password"
+              placeholder="Mínimo 6 caracteres"
+              [type]="showPassword() ? 'text' : 'password'"
+              [clearInput]="true"
+              autocomplete="new-password">
+            </ion-input>
+            <ion-button
+              fill="clear"
+              slot="end"
+              (click)="togglePasswordVisibility()"
+              [attr.aria-label]="showPassword() ? 'Ocultar contraseña' : 'Mostrar contraseña'">
+              <ion-icon
+                [name]="showPassword() ? 'eye-off' : 'eye'"
+                color="medium">
+              </ion-icon>
+            </ion-button>
+          </ion-item>
+
+          <!-- Password Strength Indicator -->
+          <div *ngIf="passwordControl?.value" class="password-strength">
+            <ion-progress-bar
+              [value]="passwordStrength / 5"
+              [color]="passwordStrengthColor">
+            </ion-progress-bar>
+            <p class="strength-text" [style.color]="'var(--ion-color-' + passwordStrengthColor + ')'">
+              Seguridad: {{ passwordStrengthText }}
+            </p>
+          </div>
+
+          <!-- Confirm Password Input -->
+          <ion-item
+            class="form-item"
+            [class.item-has-error]="confirmPasswordErrors">
+            <ion-icon name="lock-closed" slot="start" color="medium"></ion-icon>
+            <ion-input
+              label="Confirmar contraseña"
+              labelPlacement="floating"
+              formControlName="confirmPassword"
+              placeholder="Repite tu contraseña"
+              [type]="showConfirmPassword() ? 'text' : 'password'"
+              [clearInput]="true"
+              autocomplete="new-password">
+            </ion-input>
+            <ion-button
+              fill="clear"
+              slot="end"
+              (click)="toggleConfirmPasswordVisibility()"
+              [attr.aria-label]="showConfirmPassword() ? 'Ocultar contraseña' : 'Mostrar contraseña'">
+              <ion-icon
+                [name]="showConfirmPassword() ? 'eye-off' : 'eye'"
+                color="medium">
+              </ion-icon>
+            </ion-button>
+          </ion-item>
+
+          <!-- Terms and Conditions -->
+          <ion-item class="terms-item">
+            <ion-checkbox
+              slot="start"
+              [checked]="acceptTerms()"
+              (ionChange)="toggleTerms()">
+            </ion-checkbox>
+            <ion-label class="terms-label">
+              Acepto los
+              <a href="#" class="terms-link">términos y condiciones</a>
+              y la
+              <a href="#" class="terms-link">política de privacidad</a>
+            </ion-label>
+          </ion-item>
+
+          <!-- Register Button -->
+          <ion-button
+            expand="block"
+            type="submit"
+            class="register-button"
+            [disabled]="!isFormValid || isLoading() || authLoading().isLoading"
+            [class.loading]="isLoading() || authLoading().isLoading">
+
+            <span *ngIf="!isLoading() && !authLoading().isLoading">
+              <ion-icon name="person-add" slot="start"></ion-icon>
+              Crear Cuenta
+            </span>
+
+            <span *ngIf="isLoading() || authLoading().isLoading" class="loading-content">
+              <ion-spinner name="circular" color="light"></ion-spinner>
+              {{ authLoading().message || 'Creando cuenta...' }}
+            </span>
+          </ion-button>
+
+          <!-- Login Link -->
+          <div class="login-section">
+            <p class="login-text">¿Ya tienes una cuenta?</p>
+            <ion-button
+              fill="clear"
+              expand="full"
+              class="login-btn"
+              (click)="navigateToLogin()">
+              Iniciar sesión
+            </ion-button>
+          </div>
+        </form>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Loading Progress -->
+    <div *ngIf="authLoading().isLoading && authLoading().progress" class="loading-progress">
+      <ion-progress-bar
+        [value]="authLoading().progress! / 100"
+        color="primary">
+      </ion-progress-bar>
+      <p class="progress-text">{{ authLoading().message }}</p>
+    </div>
   </div>
-
-  <!-- Alerta -->
-  <ion-alert
-    [isOpen]="showAlert"
-    [header]="alertHeader"
-    [message]="alertMessage"
-    [buttons]="['OK']"
-    (didDismiss)="showAlert = false"
-  ></ion-alert>
 </ion-content>

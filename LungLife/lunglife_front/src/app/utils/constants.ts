@@ -1,5 +1,3 @@
-// src/app/utils/constants.ts
-
 export const AppConstants = {
   // Claves de almacenamiento
   STORAGE_KEYS: {
@@ -17,6 +15,12 @@ export const AppConstants = {
       LOGOUT: '/auth/logout',
       REFRESH: '/auth/refresh',
       PROFILE: '/auth/profile'
+    },
+    USER: {
+      BASE: '/users',
+      PROFILE: '/users/profile',
+      UPDATE: '/users/update',
+      DELETE: '/users/delete'
     },
     USERS: {
       BASE: '/users',

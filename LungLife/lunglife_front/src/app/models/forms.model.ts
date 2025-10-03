@@ -11,7 +11,6 @@ export interface FormState<T> {
   isDirty: boolean;
 }
 
-// Interfaces específicas para formularios
 export interface LoginForm {
   email: string;
   password: string;

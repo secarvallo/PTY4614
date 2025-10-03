@@ -1,13 +1,204 @@
-<ion-header [translucent]="true">
+<ion-header>
   <ion-toolbar>
-    <ion-title>profile</ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/dashboard"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Mi Perfil</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="logout()" color="danger">
+        <ion-icon slot="icon-only" name="log-out"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">profile</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content class="ion-padding">
+  <!-- Skeleton Loading State -->
+  <app-skeleton
+    *ngIf="showSkeleton()"
+    type="profile">
+  </app-skeleton>
+
+  <!-- Profile Content -->
+  <div *ngIf="!showSkeleton()" class="profile-container">
+    <!-- User Avatar and Basic Info -->
+    <ion-card #profileCard class="profile-header-card">
+      <ion-card-content class="profile-header">
+        <div class="avatar-section">
+          <ion-avatar class="profile-avatar">
+            <img
+              [src]="'https://ui-avatars.com/api/?name=' + (currentUser()?.name || 'User') + '&background=3880ff&color=fff&size=128'"
+              [alt]="currentUser()?.name">
+          </ion-avatar>
+          <ion-fab-button
+            size="small"
+            class="avatar-edit-btn"
+            color="primary">
+            <ion-icon name="camera"></ion-icon>
+          </ion-fab-button>
+        </div>
+
+        <div class="user-info">
+          <h2>{{ currentUser()?.name }}</h2>
+          <p>{{ currentUser()?.email }}</p>
+          <small *ngIf="currentUser()?.created_at">
+            Miembro desde {{ getFormattedDate(currentUser()?.created_at) }}
+          </small>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Edit/View Profile Form -->
+    <ion-card class="profile-form-card">
+      <ion-card-header>
+        <ion-card-title class="form-title">
+          <ion-icon [name]="isEditing() ? 'create' : 'person'" color="primary"></ion-icon>
+          {{ isEditing() ? 'Editando Perfil' : 'Información Personal' }}
+        </ion-card-title>
+      </ion-card-header>
+
+      <ion-card-content>
+        <form #profileForm [formGroup]="profileFormGroup" class="profile-form">
+
+          <!-- Name Field -->
+          <ion-item
+            class="form-item"
+            [class.item-has-error]="nameErrors && isEditing()">
+            <ion-icon name="person" slot="start" color="medium"></ion-icon>
+            <ion-input
+              label="Nombre completo"
+              labelPlacement="floating"
+              formControlName="name"
+              [readonly]="!isEditing()"
+              [clearInput]="isEditing()"
+              placeholder="Tu nombre completo">
+            </ion-input>
+          </ion-item>
+
+          <!-- Email Field (Always readonly) -->
+          <ion-item class="form-item">
+            <ion-icon name="mail" slot="start" color="medium"></ion-icon>
+            <ion-input
+              label="Email"
+              labelPlacement="floating"
+              formControlName="email"
+              readonly="true"
+              placeholder="tu@email.com">
+            </ion-input>
+            <ion-text slot="helper" color="medium">
+              <small>El email no se puede modificar</small>
+            </ion-text>
+          </ion-item>
+
+          <!-- Phone Field -->
+          <ion-item
+            class="form-item"
+            [class.item-has-error]="phoneErrors && isEditing()">
+            <ion-icon name="call" slot="start" color="medium"></ion-icon>
+            <ion-input
+              label="Teléfono"
+              labelPlacement="floating"
+              formControlName="phone"
+              [readonly]="!isEditing()"
+              [clearInput]="isEditing()"
+              placeholder="+56 9 1234 5678"
+              type="tel">
+            </ion-input>
+          </ion-item>
+
+          <!-- Action Buttons -->
+          <div class="action-buttons">
+            <!-- View Mode Buttons -->
+            <div *ngIf="!isEditing()" class="view-mode-buttons">
+              <ion-button
+                expand="block"
+                fill="solid"
+                color="primary"
+                (click)="enableEditing()">
+                <ion-icon name="pencil" slot="start"></ion-icon>
+                Editar Perfil
+              </ion-button>
+            </div>
+
+            <!-- Edit Mode Buttons -->
+            <div *ngIf="isEditing()" class="edit-mode-buttons">
+              <ion-button
+                expand="block"
+                fill="solid"
+                color="success"
+                (click)="saveProfile()"
+                [disabled]="isLoading() || profileLoading().isLoading"
+                class="save-button">
+
+                <span *ngIf="!isLoading() && !profileLoading().isLoading">
+                  <ion-icon name="save" slot="start"></ion-icon>
+                  Guardar Cambios
+                </span>
+
+                <span *ngIf="isLoading() || profileLoading().isLoading" class="loading-content">
+                  <ion-spinner name="circular" color="light"></ion-spinner>
+                  {{ profileLoading().message || 'Guardando...' }}
+                </span>
+              </ion-button>
+
+              <ion-button
+                expand="block"
+                fill="outline"
+                color="medium"
+                (click)="cancelEditing()"
+                [disabled]="isLoading() || profileLoading().isLoading"
+                class="cancel-button">
+                <ion-icon name="close-circle" slot="start"></ion-icon>
+                Cancelar
+              </ion-button>
+
+              <!-- Unsaved Changes Indicator -->
+              <ion-text *ngIf="hasUnsavedChanges" color="warning" class="unsaved-indicator">
+                <small>
+                  <ion-icon name="warning" size="small"></ion-icon>
+                  Tienes cambios sin guardar
+                </small>
+              </ion-text>
+            </div>
+          </div>
+        </form>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Account Actions -->
+    <ion-card class="account-actions-card">
+      <ion-card-header>
+        <ion-card-title class="danger-title">
+          <ion-icon name="warning" color="danger"></ion-icon>
+          Zona de Peligro
+        </ion-card-title>
+      </ion-card-header>
+
+      <ion-card-content>
+        <p class="danger-description">
+          Estas acciones son permanentes y no se pueden deshacer.
+        </p>
+
+        <ion-button
+          expand="block"
+          fill="outline"
+          color="danger"
+          (click)="deleteAccount()"
+          [disabled]="isLoading() || profileLoading().isLoading"
+          class="delete-account-btn">
+          <ion-icon name="trash" slot="start"></ion-icon>
+          Eliminar Cuenta
+        </ion-button>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Loading Progress -->
+    <div *ngIf="profileLoading().isLoading && profileLoading().progress" class="loading-progress">
+      <ion-progress-bar
+        [value]="profileLoading().progress! / 100"
+        color="primary">
+      </ion-progress-bar>
+      <p class="progress-text">{{ profileLoading().message }}</p>
+    </div>
+  </div>
 </ion-content>

@@ -24,6 +24,5 @@ export interface ApiError {
 export interface HttpOptions {
   headers?: Record<string, string>;
   params?: Record<string, any>;
-  // Only allow JSON to keep strong typing with HttpClient<ResponseType>
-  responseType?: 'json';
+  responseType?: 'json' | 'text' | 'blob' | 'arraybuffer';
 }

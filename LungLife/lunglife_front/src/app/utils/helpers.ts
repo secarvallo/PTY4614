@@ -1,26 +1,23 @@
-// src/app/utils/helpers.ts
-
-import { AppConstants } from './constants';
-import { TokenPayload } from '../models/auth.model';
+import {AppConstants} from './constants';
+import {TokenPayload} from '../models/auth.model';
 
 /**
- * Utilidades generales para la aplicación
+ * Utilidades modernas para la aplicación
  */
 
 export class Helpers {
 
   /**
-   * Valida si un email tiene formato válido
+   * Valida formato de email
    */
-  static isValidEmail(email: string): boolean {
-    const emailRegex = AppConstants.VALIDATION.EMAIL.PATTERN;
-    return emailRegex.test(email);
-  }
+  static readonly isValidEmail = (email: string): boolean => {
+    return AppConstants.VALIDATION.EMAIL.PATTERN.test(email);
+  };
 
   /**
-   * Valida la fortaleza de una contraseña
+   * Valida fortaleza de contraseña
    */
-  static isStrongPassword(password: string): { isValid: boolean; errors: string[] } {
+  static readonly isStrongPassword = (password: string): { isValid: boolean; errors: string[] } => {
     const errors: string[] = [];
 
     if (password.length < AppConstants.VALIDATION.PASSWORD.MIN_LENGTH) {
@@ -35,91 +32,82 @@ export class Helpers {
       errors.push('La contraseña debe incluir al menos una letra mayúscula, una minúscula y un número');
     }
 
-    return {
-      isValid: errors.length === 0,
-      errors
-    };
-  }
+    return {isValid: errors.length === 0, errors};
+  };
 
   /**
-   * Decodifica un token JWT (sin verificar firma)
+   * Decodifica token JWT
    */
-  static decodeJWT(token: string): TokenPayload | null {
+  static readonly decodeJWT = (token: string): TokenPayload | null => {
     try {
       const payload = token.split('.')[1];
       const decoded = atob(payload);
       return JSON.parse(decoded);
-    } catch (error) {
-      console.error('Error decoding JWT:', error);
+    } catch {
+      console.error('Error decoding JWT');
       return null;
     }
-  }
+  };
 
   /**
-   * Verifica si un token JWT está expirado
+   * Verifica si token está expirado
    */
-  static isTokenExpired(token: string): boolean {
+  static readonly isTokenExpired = (token: string): boolean => {
     const payload = this.decodeJWT(token);
-    if (!payload || !payload.exp) return true;
-
-    const currentTime = Math.floor(Date.now() / 1000);
-    return payload.exp < currentTime;
-  }
+    return !payload?.exp || payload.exp < Math.floor(Date.now() / 1000);
+  };
 
   /**
-   * Calcula el tiempo restante para que expire un token
+   * Calcula tiempo hasta expiración
    */
-  static getTokenExpiryTime(token: string): number {
+  static readonly getTokenExpiryTime = (token: string): number => {
     const payload = this.decodeJWT(token);
-    if (!payload || !payload.exp) return 0;
+    if (!payload?.exp) return 0;
 
-    const currentTime = Math.floor(Date.now() / 1000);
-    return (payload.exp - currentTime) * 1000; // En milisegundos
-  }
-
-  /**
-   * Formatea errores de API a mensajes legibles
-   */
-  static formatApiErrors(errors: Record<string, string[]>): string[] {
-    const formattedErrors: string[] = [];
-
-    for (const [field, messages] of Object.entries(errors)) {
-      messages.forEach(message => {
-        formattedErrors.push(`${this.capitalizeFirst(field)}: ${message}`);
-      });
-    }
-
-    return formattedErrors;
-  }
-
-  /**
-   * Capitaliza la primera letra de un string
-   */
-  static capitalizeFirst(str: string): string {
-    return str.charAt(0).toUpperCase() + str.slice(1);
-  }
-
-  /**
-   * Genera un ID único simple
-   */
-  static generateId(): string {
-    return Date.now().toString(36) + Math.random().toString(36).substr(2);
-  }
+    return (payload.exp - Math.floor(Date.now() / 1000)) * 1000;
+  };
 
   /**
    * Maneja errores de manera consistente
    */
-  static handleError(error: any): string {
+  static readonly handleError = (error: unknown): string => {
     if (typeof error === 'string') return error;
 
-    if (error?.error?.message) {
-      return error.error.message;
-    }
-
-    if (error?.message) {
-      return error.message;
+    if (error && typeof error === 'object') {
+      const err = error as any;
+      if (err?.error?.message) return err.error.message;
+      if (err?.message) return err.message;
     }
 
     return AppConstants.ERROR_MESSAGES.GENERIC_ERROR;
-  }
+  };
+
+  /**
+   * Formatea errores de API
+   */
+  static readonly formatApiErrors = (errors: Record<string, string[]>): string[] => {
+    const formattedErrors: string[] = [];
+
+    for (const [field, messages] of Object.entries(errors)) {
+      for (const message of messages) {
+        formattedErrors.push(`${this.capitalizeFirst(field)}: ${message}`);
+      }
+    }
+
+    return formattedErrors;
+  };
+
+  /**
+   * Capitaliza primera letra
+   */
+  static readonly capitalizeFirst = (str: string): string => {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  };
+
+  /**
+   * Genera ID único
+   */
+  static readonly generateId = (): string => {
+    return Date.now().toString(36) + Math.random().toString(36).slice(2);
+  };
 }

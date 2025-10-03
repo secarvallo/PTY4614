@@ -1,0 +1,90 @@
+<!-- Dashboard Skeleton -->
+<div *ngIf="type === 'dashboard'">
+  <!-- Welcome Card Skeleton -->
+  <ion-card>
+    <ion-card-content>
+      <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+      <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Stats Grid Skeleton -->
+  <ion-card>
+    <ion-card-content>
+      <ion-skeleton-text animated style="width: 50%; margin-bottom: 16px"></ion-skeleton-text>
+      <div class="skeleton-grid">
+        <div class="skeleton-stat" *ngFor="let item of [1,2,3,4]">
+          <ion-skeleton-text animated style="width: 40px; height: 40px; border-radius: 50%"></ion-skeleton-text>
+          <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+          <ion-skeleton-text animated style="width: 40%"></ion-skeleton-text>
+        </div>
+      </div>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Activity List Skeleton -->
+  <ion-card>
+    <ion-card-content>
+      <ion-skeleton-text animated style="width: 60%; margin-bottom: 16px"></ion-skeleton-text>
+      <div *ngFor="let item of [1,2,3,4]">
+        <ion-item>
+          <ion-skeleton-text animated slot="start"
+                             style="width: 40px; height: 40px; border-radius: 50%"></ion-skeleton-text>
+          <ion-label>
+            <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
+            <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+          </ion-label>
+          <ion-skeleton-text animated slot="end" style="width: 60px"></ion-skeleton-text>
+        </ion-item>
+      </div>
+    </ion-card-content>
+  </ion-card>
+</div>
+
+<!-- Profile Skeleton -->
+<div *ngIf="type === 'profile'">
+  <ion-card>
+    <ion-card-content>
+      <div class="profile-skeleton">
+        <ion-skeleton-text animated
+                           class="avatar-skeleton"></ion-skeleton-text>
+        <ion-skeleton-text animated class="name-skeleton"></ion-skeleton-text>
+        <ion-skeleton-text animated class="email-skeleton"></ion-skeleton-text>
+      </div>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card>
+    <ion-card-content>
+      <div *ngFor="let item of [1,2,3]" class="form-field-skeleton">
+        <ion-skeleton-text animated class="label-skeleton"></ion-skeleton-text>
+        <ion-skeleton-text animated class="input-skeleton"></ion-skeleton-text>
+      </div>
+    </ion-card-content>
+  </ion-card>
+</div>
+
+<!-- Form Skeleton -->
+<div *ngIf="type === 'form'">
+  <div class="form-skeleton">
+    <ion-skeleton-text animated class="form-title-skeleton"></ion-skeleton-text>
+    <div *ngFor="let item of [1,2,3]" class="form-field-skeleton">
+      <ion-skeleton-text animated class="input-skeleton"></ion-skeleton-text>
+    </div>
+    <ion-skeleton-text animated class="button-skeleton"></ion-skeleton-text>
+  </div>
+</div>
+
+<!-- List Skeleton -->
+<div *ngIf="type === 'list'">
+  <div *ngFor="let item of items" class="skeleton-list-item">
+    <ion-item>
+      <ion-skeleton-text animated slot="start" class="avatar-skeleton-small"></ion-skeleton-text>
+      <ion-label>
+        <ion-skeleton-text animated class="list-title-skeleton"></ion-skeleton-text>
+        <ion-skeleton-text animated class="list-subtitle-skeleton"></ion-skeleton-text>
+      </ion-label>
+      <ion-skeleton-text animated slot="end" class="list-action-skeleton"></ion-skeleton-text>
+    </ion-item>
+  </div>
+</div>

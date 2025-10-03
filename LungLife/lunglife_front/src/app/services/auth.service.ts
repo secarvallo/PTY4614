@@ -1,19 +1,15 @@
-import { Injectable, inject } from '@angular/core';
-import { Router } from '@angular/router';
-import { Observable, BehaviorSubject, throwError } from 'rxjs';
-import { tap, catchError } from 'rxjs/operators';
+import {inject, Injectable} from '@angular/core';
+import {Router} from '@angular/router';
+import {BehaviorSubject, Observable, throwError} from 'rxjs';
+import {catchError, tap} from 'rxjs/operators';
 
-import { ApiService } from './api.service';
-import { StorageService } from './storage.service';
-import {
-  LoginCredentials,
-  RegisterData,
-  AuthResponse,
-  AuthState
-} from '../models/auth.model';
-import { User } from '../models/user.model';
-import { AppConstants } from '../utils/constants';
-import { Helpers } from '../utils/helpers';
+import {ApiService} from './api.service';
+import {StorageService} from './storage.service';
+import {AuthResponse, AuthState, LoginCredentials, RegisterData} from '../models/auth.model';
+import {User} from '../models/user.model';
+import {ApiResponse} from '../models/api.model';
+import {AppConstants} from '../utils/constants';
+import {Helpers} from '../utils/helpers';
 
 @Injectable({
   providedIn: 'root'
@@ -23,18 +19,25 @@ export class AuthService {
   private storageService = inject(StorageService);
   private router = inject(Router);
 
+  // Add missing currentUserSubject property
+  private currentUserSubject = new BehaviorSubject<User | null>(null);
+  public currentUser$ = this.currentUserSubject.asObservable();
+
   // Estado de autenticación reactivo
   private authState = new BehaviorSubject<AuthState>(this.getInitialState());
   public authState$ = this.authState.asObservable();
 
   constructor() {
     this.checkTokenExpiry();
+    // Initialize currentUserSubject with stored user data
+    const currentUser = this.getCurrentUser();
+    this.currentUserSubject.next(currentUser);
   }
 
   /**
    * Registra un nuevo usuario
    */
-  register(userData: RegisterData): Observable<AuthResponse> {
+  register(userData: RegisterData): Observable<ApiResponse<AuthResponse>> {
     this.setLoading(true);
 
     return this.apiService.post<AuthResponse>(
@@ -42,8 +45,8 @@ export class AuthService {
       userData
     ).pipe(
       tap(response => {
-        if (response.success && response.token && response.user) {
-          this.handleAuthSuccess(response.token, response.user);
+        if (response.success && response.data?.token && response.data?.user) {
+          this.handleAuthSuccess(response.data.token, response.data.user);
         }
         this.setLoading(false);
       }),
@@ -58,7 +61,7 @@ export class AuthService {
   /**
    * Inicia sesión con email y contraseña
    */
-  login(credentials: LoginCredentials): Observable<AuthResponse> {
+  login(credentials: LoginCredentials): Observable<ApiResponse<AuthResponse>> {
     this.setLoading(true);
 
     return this.apiService.post<AuthResponse>(
@@ -66,8 +69,8 @@ export class AuthService {
       credentials
     ).pipe(
       tap(response => {
-        if (response.success && response.token && response.user) {
-          this.handleAuthSuccess(response.token, response.user);
+        if (response.success && response.data?.token && response.data?.user) {
+          this.handleAuthSuccess(response.data.token, response.data.user);
         }
         this.setLoading(false);
       }),
@@ -80,24 +83,24 @@ export class AuthService {
   }
 
   /**
-   * Cierra la sesión del usuario
+   * Logout user with improved UX and corrected flow
    */
-  logout(): void {
-    // Limpiar almacenamiento local
-    this.storageService.removeItem(AppConstants.STORAGE_KEYS.AUTH_TOKEN);
-    this.storageService.removeItem(AppConstants.STORAGE_KEYS.USER_DATA);
+  async logout(): Promise<void> {
+    try {
+      // Clear user session
+      await this.storageService.remove(AppConstants.STORAGE_KEYS.AUTH_TOKEN);
+      await this.storageService.remove(AppConstants.STORAGE_KEYS.USER_DATA);
 
-    // Actualizar estado
-    this.authState.next({
-      isAuthenticated: false,
-      user: null,
-      token: null,
-      isLoading: false,
-      error: null
-    });
+      // Reset current user
+      this.currentUserSubject.next(null);
 
-    // Redirigir al login
-    this.router.navigate(['/login']);
+      // CORRECTED FLOW: Redirect to Home page after logout
+      await this.router.navigate(['/home']);
+
+    } catch (error) {
+      console.error('Logout error:', error);
+      throw error;
+    }
   }
 
   /**
@@ -142,7 +145,10 @@ export class AuthService {
     this.storageService.setItem(AppConstants.STORAGE_KEYS.AUTH_TOKEN, token);
     this.storageService.setItem(AppConstants.STORAGE_KEYS.USER_DATA, JSON.stringify(user));
 
-    // Actualizar estado
+    // Actualizar estado reactivo de usuario (normalización añadida)
+    this.currentUserSubject.next(user);
+
+    // Actualizar estado de autenticación
     this.authState.next({
       isAuthenticated: true,
       user,

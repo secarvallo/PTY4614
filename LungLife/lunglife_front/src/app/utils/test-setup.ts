@@ -1,8 +1,3 @@
-import { AuthService } from '../services/auth.service';
-import { ApiService } from '../services/api.service';
-import { UserService } from '../services/user.service';
-import { StorageService } from '../services/storage.service';
-
 // Verificación de que los servicios pueden ser instanciados
 export function testServices() {
   console.log('Modelos y servicios implementados correctamente');
