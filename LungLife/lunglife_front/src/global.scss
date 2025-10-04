@@ -68,6 +68,50 @@ html, body {
   height: 100%;
 }
 
+// Logo Placeholder Styles (Movido fuera del media query)
+.logo-placeholder {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  margin: 0 auto 24px;
+  background: linear-gradient(135deg, #007aff 0%, #005ce6 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 24px rgba(0, 122, 255, 0.3);
+  position: relative;
+}
+
+[data-theme=dark] .logo-placeholder {
+  box-shadow: 0 8px 24px rgba(0, 122, 255, 0.2);
+}
+
+.logo-placeholder::before {
+  content: "🫁";
+  font-size: 40px;
+  filter: brightness(0) invert(1);
+}
+
+// Animación pulse para el logo
+.logo-placeholder.pulse {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 8px 24px rgba(0, 122, 255, 0.3);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 12px 32px rgba(0, 122, 255, 0.5);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 8px 24px rgba(0, 122, 255, 0.3);
+  }
+}
+
 // Estilos para formularios
 .form-container {
   max-width: 400px;
@@ -134,5 +178,16 @@ ion-button[shape="round"][expand="block"] {
   .custom-card {
     margin: 8px;
     padding: 16px;
+  }
+
+  // Logo responsive adjustments
+  .logo-placeholder {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 16px;
+
+    &::before {
+      font-size: 32px;
+    }
   }
 }

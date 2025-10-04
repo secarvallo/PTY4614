@@ -1,7 +1,7 @@
 import {Component, inject, OnDestroy, OnInit, signal} from '@angular/core';
 
 import {Router} from '@angular/router';
-import {IonButton, IonContent, IonIcon, IonSpinner} from '@ionic/angular/standalone';
+import {IonButton, IonContent, IonSpinner} from '@ionic/angular/standalone';
 import {addIcons} from 'ionicons';
 import {analytics, arrowForward, heart, heartCircle, people, shield} from 'ionicons/icons';
 import {CardComponent} from '../../components/feature-card/card.component';
@@ -15,7 +15,6 @@ import {Feature} from '../../models/feature.model';
   imports: [
     IonContent,
     IonButton,
-    IonIcon,
     IonSpinner,
     CardComponent
   ]

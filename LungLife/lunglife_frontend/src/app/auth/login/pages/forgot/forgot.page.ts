@@ -1,9 +1,9 @@
-import { Component, OnInit, inject } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
-import { IonicModule } from '@ionic/angular';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { AuthFacadeService } from '../../../core/services';
+import {Component, inject, OnInit} from '@angular/core';
+import {Router, RouterLink} from '@angular/router';
+import {IonicModule} from '@ionic/angular';
+import {CommonModule} from '@angular/common';
+import {FormsModule} from '@angular/forms';
+import {AuthFacadeService} from '../../../core/services';
 
 /**
  * Component for the "Forgot Password" page.
@@ -31,7 +31,8 @@ export class ForgotPage implements OnInit {
   // Indicates whether the last operation was successful
   isSuccess = false;
 
-  ngOnInit() {}
+  ngOnInit() {
+  }
 
   /**
    * Handles the password reset process.
@@ -48,7 +49,7 @@ export class ForgotPage implements OnInit {
     this.message = '';
 
     try {
-      this.authFacade.forgotPassword({ email: this.email }).subscribe({
+      this.authFacade.forgotPassword({email: this.email}).subscribe({
         next: (result) => {
           this.isLoading = false;
           if (result.success) {

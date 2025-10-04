@@ -2,7 +2,7 @@
   <!-- Loading State -->
   @if (isLoading()) {
     <div class="loading-container">
-      <ion-icon name="heart-circle" color="primary" class="main-logo"></ion-icon>
+      <div class="logo-placeholder pulse"></div>
       <h2>Bienvenido a LungLife</h2>
       <ion-spinner name="crescent" color="primary"></ion-spinner>
       <p>Cargando aplicación...</p>
@@ -14,8 +14,10 @@
 
       <!-- Hero Section -->
       <div class="hero-section">
-        <ion-icon name="heart-circle" color="primary" class="main-logo"></ion-icon>
-        <h1>LungLife</h1>
+        <div class="logo-container">
+          <div class="logo-placeholder"></div>
+          <div class="logo-label">LungLife</div>
+        </div>
         <p class="subtitle">Tu salud pulmonar es nuestra prioridad</p>
       </div>
 
@@ -31,7 +33,6 @@
         <h2>¿Por qué elegir LungLife?</h2>
 
         <div class="features-column">
-          <!-- Detección Temprana -->
           <app-feature-card
             [feature]="{
               id: 1,
@@ -44,7 +45,6 @@
             class="feature-card-item">
           </app-feature-card>
 
-          <!-- Seguimiento Personalizado -->
           <app-feature-card
             [feature]="{
               id: 2,
@@ -57,7 +57,6 @@
             class="feature-card-item">
           </app-feature-card>
 
-          <!-- Seguridad de Datos -->
           <app-feature-card
             [feature]="{
               id: 3,
@@ -70,7 +69,6 @@
             class="feature-card-item">
           </app-feature-card>
 
-          <!-- Comunidad de Apoyo -->
           <app-feature-card
             [feature]="{
               id: 4,
