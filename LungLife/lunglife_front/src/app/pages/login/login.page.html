@@ -1,0 +1,124 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Iniciar Sesión</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <!-- Skeleton Loading State -->
+  @if (showSkeleton()) {
+    <app-skeleton type="form"></app-skeleton>
+  } @else {
+
+  <!-- Login Form -->
+  <div class="form-container">
+    <ion-card #loginCard class="login-card">
+      <ion-card-header>
+        <ion-card-title class="form-title">
+          <ion-icon name="log-in" color="primary"></ion-icon>
+          Bienvenido de vuelta
+        </ion-card-title>
+      </ion-card-header>
+
+      <ion-card-content>
+        <form #loginFormRef="ngForm" [formGroup]="loginFormGroup" (ngSubmit)="onLogin()" class="login-form">
+          <!-- Email Input -->
+          <ion-item
+            class="form-item"
+            [class.item-has-error]="emailErrors">
+            <ion-icon name="mail" slot="start" color="medium"></ion-icon>
+            <ion-input
+              label="Email"
+              labelPlacement="floating"
+              formControlName="email"
+              placeholder="ejemplo@correo.com"
+              type="email"
+              [clearInput]="true"
+              autocomplete="email">
+            </ion-input>
+          </ion-item>
+
+          <!-- Password Input -->
+          <ion-item
+            class="form-item"
+            [class.item-has-error]="passwordErrors">
+            <ion-icon name="lock-closed" slot="start" color="medium"></ion-icon>
+            <ion-input
+              label="Contraseña"
+              labelPlacement="floating"
+              formControlName="password"
+              placeholder="Tu contraseña"
+              [type]="showPassword() ? 'text' : 'password'"
+              [clearInput]="true"
+              autocomplete="current-password">
+            </ion-input>
+            <ion-button
+              fill="clear"
+              slot="end"
+              (click)="togglePasswordVisibility()"
+              [attr.aria-label]="showPassword() ? 'Ocultar contraseña' : 'Mostrar contraseña'">
+              <ion-icon
+                [name]="showPassword() ? 'eye-off' : 'eye'"
+                color="medium">
+              </ion-icon>
+            </ion-button>
+          </ion-item>
+
+          <!-- Login Button -->
+          <ion-button
+            expand="block"
+            type="submit"
+            class="login-button"
+            [disabled]="!isFormValid || isLoading() || authLoading().isLoading"
+            [class.loading]="isLoading() || authLoading().isLoading">
+
+            @if (!isLoading() && !authLoading().isLoading) {
+              <span>
+                <ion-icon name="log-in" slot="start"></ion-icon>
+                Iniciar Sesión
+              </span>
+            } @else {
+              <span class="loading-content">
+                <ion-spinner name="circular" color="light"></ion-spinner>
+                {{ authLoading().message || 'Iniciando sesión...' }}
+              </span>
+            }
+          </ion-button>
+
+          <!-- Forgot Password Link -->
+          <ion-button
+            fill="clear"
+            expand="full"
+            class="forgot-password-btn"
+            (click)="navigateToForgotPassword()">
+            ¿Olvidaste tu contraseña?
+          </ion-button>
+
+          <!-- Register Link -->
+          <div class="register-section">
+            <p class="register-text">¿No tienes una cuenta?</p>
+            <ion-button
+              fill="outline"
+              expand="block"
+              class="register-btn"
+              (click)="navigateToRegister()">
+              Crear cuenta
+            </ion-button>
+          </div>
+        </form>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Loading Progress (Optional) -->
+    @if (authLoading().isLoading && authLoading().progress) {
+    <div class="loading-progress">
+      <ion-progress-bar
+        [value]="authLoading().progress! / 100"
+        color="primary">
+      </ion-progress-bar>
+      <p class="progress-text">{{ authLoading().message }}</p>
+    </div>
+    }
+  </div>
+  }
+</ion-content>

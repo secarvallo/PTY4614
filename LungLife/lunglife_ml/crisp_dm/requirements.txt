@@ -1,0 +1,17 @@
+# Procesamiento de datos
+pandas==1.5.3
+numpy==1.24.3
+scikit-learn==1.2.2
+
+# Visualización
+matplotlib==3.7.1
+seaborn==0.12.2
+plotly==5.14.1
+
+# Machine Learning
+xgboost==1.7.5
+joblib==1.2.0
+
+# Utilidades
+pyyaml==6.0
+python-dotenv==1.0.0

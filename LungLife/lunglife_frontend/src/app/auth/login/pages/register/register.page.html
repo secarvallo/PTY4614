@@ -1,0 +1,93 @@
+<ion-content class="auth-content" data-test="register-page">
+  <div class="auth-container">
+
+    <!-- Header Section -->
+    <div class="auth-header">
+      <div class="logo-placeholder"></div>
+      <h1>Crear Cuenta</h1>
+      <p>Regístrate para comenzar</p>
+    </div>
+
+    <!-- Registration Form -->
+  <form [formGroup]="registerForm" (ngSubmit)="onRegister()" class="auth-form refresh" data-test="register-form">
+
+      <!-- Name Fields -->
+      <div class="form-group">
+        <ion-item lines="none">
+          <ion-input type="text" placeholder="Nombre" formControlName="firstName" data-test="register-firstName"></ion-input>
+        </ion-item>
+        @if (hasError('firstName')) { <div class="error-message">{{ getErrorMessage('firstName') }}</div> }
+      </div>
+
+      <div class="form-group">
+        <ion-item lines="none">
+          <ion-input type="text" placeholder="Apellido" formControlName="lastName" data-test="register-lastName"></ion-input>
+        </ion-item>
+        @if (hasError('lastName')) { <div class="error-message">{{ getErrorMessage('lastName') }}</div> }
+      </div>
+
+      <!-- Email Field -->
+      <div class="form-group">
+        <ion-item lines="none">
+          <ion-input type="email" placeholder="Correo electrónico" formControlName="email" data-test="register-email"></ion-input>
+        </ion-item>
+        @if (hasError('email')) { <div class="error-message">{{ getErrorMessage('email') }}</div> }
+      </div>
+
+      <!-- Password Field -->
+      <div class="form-group">
+        <ion-item lines="none">
+          <ion-input [type]="showPassword ? 'text' : 'password'" placeholder="Contraseña" formControlName="password" data-test="register-password"></ion-input>
+          <ion-button fill="clear" slot="end" (click)="togglePasswordVisibility()">
+            <ion-icon [name]="showPassword ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
+          </ion-button>
+        </ion-item>
+        @if (hasError('password')) { <div class="error-message">{{ getErrorMessage('password') }}</div> }
+      </div>
+
+      <!-- Confirm Password Field -->
+      <div class="form-group">
+        <ion-item lines="none">
+          <ion-input [type]="showConfirmPassword ? 'text' : 'password'" placeholder="Confirmar contraseña" formControlName="confirmPassword" data-test="register-confirmPassword"></ion-input>
+          <ion-button fill="clear" slot="end" (click)="toggleConfirmPasswordVisibility()">
+            <ion-icon [name]="showConfirmPassword ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
+          </ion-button>
+        </ion-item>
+        @if (hasError('confirmPassword')) { <div class="error-message">{{ getErrorMessage('confirmPassword') }}</div> }
+      </div>
+
+      <!-- Terms and Conditions -->
+      <div class="form-group">
+        <ion-item lines="none">
+          <ion-checkbox formControlName="acceptTerms" slot="start"></ion-checkbox>
+          <ion-label>Acepto los <a (click)="openTerms()">Términos y Condiciones</a></ion-label>
+        </ion-item>
+        @if (hasError('acceptTerms')) { <div class="error-message">{{ getErrorMessage('acceptTerms') }}</div> }
+      </div>
+
+      <!-- Register Button -->
+  <ion-button type="submit" expand="block" class="auth-button primary" data-test="register-submit" [disabled]="registerForm.invalid || (authState$.loading$ | async)">
+        @if (authState$.loading$ | async) {
+          <ion-spinner name="crescent"></ion-spinner>
+        } @else {
+          <span>Crear Cuenta</span>
+        }
+      </ion-button>
+    </form>
+
+    <!-- Footer Actions -->
+    <div class="auth-footer">
+      <p>¿Ya tienes una cuenta?</p>
+      <ion-button
+        fill="clear"
+        type="button"
+        routerLink="/auth/login"
+        routerDirection="back"
+        class="link-button"
+      >
+        <strong>Inicia sesión aquí</strong>
+      </ion-button>
+    </div>
+
+  </div>
+</ion-content>

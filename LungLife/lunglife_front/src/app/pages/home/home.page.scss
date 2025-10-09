@@ -1,0 +1,157 @@
+// Logo Container Styles (mover al nivel principal)
+.logo-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+
+  .logo-label {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--ion-color-primary);
+    letter-spacing: -0.02em;
+  }
+}
+
+// Loading State
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-height: 70vh;
+  gap: 1.5rem;
+
+  h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0;
+    color: var(--ion-color-primary);
+  }
+
+  p {
+    font-size: 1rem;
+    margin: 0;
+    color: var(--ion-color-medium);
+  }
+
+  ion-spinner {
+    --size: 60px;
+  }
+}
+
+// Welcome Container
+.welcome-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 1rem 0;
+}
+
+// Hero Section
+.hero-section {
+  text-align: center;
+  margin-bottom: 2rem;
+
+  .subtitle {
+    font-size: 1.1rem;
+    margin: 1rem 0 0 0;
+    color: var(--ion-color-medium);
+  }
+}
+
+// Action Section
+.action-section {
+  text-align: center;
+  margin-bottom: 3rem;
+
+  ion-button {
+    font-weight: 600;
+    height: 52px;
+    --padding-start: 2rem;
+    --padding-end: 2rem;
+    margin: 0 auto;
+    max-width: 280px;
+  }
+}
+
+// Features Section
+.features-section {
+  margin-bottom: 2rem;
+
+  h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 2rem;
+    color: var(--ion-text-color);
+  }
+
+  .features-column {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    align-items: center;
+
+    .feature-card-item {
+      width: 100%;
+      max-width: 480px;
+    }
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .welcome-container {
+    max-width: 100%;
+    padding: 0.5rem;
+  }
+
+  .hero-section {
+    margin-bottom: 1.5rem;
+
+    .subtitle {
+      font-size: 1rem;
+    }
+  }
+
+  .action-section {
+    margin-bottom: 2rem;
+
+    ion-button {
+      height: 44px;
+      max-width: 240px;
+    }
+  }
+
+  .features-section {
+    .features-column {
+      gap: 1.25rem;
+
+      .feature-card-item {
+        max-width: 100%;
+      }
+    }
+  }
+
+  .logo-container {
+    .logo-label {
+      font-size: 1.75rem;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .features-section {
+    .features-column {
+      gap: 1rem;
+    }
+  }
+
+  .logo-container {
+    .logo-label {
+      font-size: 1.5rem;
+    }
+  }
+}

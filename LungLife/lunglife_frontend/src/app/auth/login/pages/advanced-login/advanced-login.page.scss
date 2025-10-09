@@ -1,0 +1,120 @@
+.login-container {
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.logo-section {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.logo {
+  width: 80px;
+  height: 80px;
+  margin-bottom: 1rem;
+}
+
+.logo-section h1 {
+  margin: 1rem 0 0.5rem 0;
+  color: var(--ion-color-primary);
+}
+
+.logo-section p {
+  color: var(--ion-color-medium);
+  margin-bottom: 0;
+}
+
+.form-item {
+  margin-bottom: 1rem;
+}
+
+.checkbox-item {
+  margin: 1.5rem 0;
+}
+
+.login-button,
+.verify-button {
+  margin: 2rem 0 1rem 0;
+  --border-radius: 8px;
+  height: 48px;
+}
+
+.forgot-password {
+  text-align: center;
+  margin: 1rem 0;
+}
+
+.two-factor-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.two-factor-header ion-icon {
+  margin-bottom: 1rem;
+}
+
+.backup-options {
+  text-align: center;
+  margin: 1rem 0;
+}
+
+.backup-code-section {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: var(--ion-color-light);
+  border-radius: 8px;
+}
+
+.social-login {
+  margin: 2rem 0;
+}
+
+.divider {
+  text-align: center;
+  margin: 2rem 0 1rem 0;
+  position: relative;
+}
+
+.divider::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--ion-color-light-shade);
+}
+
+.divider span {
+  background: var(--ion-background-color);
+  padding: 0 1rem;
+  color: var(--ion-color-medium);
+  font-size: 0.9rem;
+}
+
+.social-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.error-item {
+  margin: 1rem 0;
+  --background: var(--ion-color-danger-tint);
+}
+
+.register-link {
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.register-link p {
+  color: var(--ion-color-medium);
+}
+
+@media (max-width: 480px) {
+  .login-container {
+    padding: 1rem;
+  }
+}

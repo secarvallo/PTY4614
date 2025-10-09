@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infografía: Cáncer Pulmonar y Diagnóstico Temprano</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 320px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 384px;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <div class="container mx-auto p-4 sm:p-6 md:p-8">
+
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-bold text-[#00449E] mb-2">El Cáncer Pulmonar: Un Desafío Global</h1>
+            <p class="text-lg text-gray-600 max-w-3xl mx-auto">Una mirada profunda al impacto de la enfermedad y el poder del diagnóstico temprano a través de la tecnología.</p>
+        </header>
+
+        <main id="infographic-content" class="space-y-12">
+            
+            <section id="global-impact" class="bg-white rounded-lg shadow-md p-6 md:p-8">
+                <h2 class="text-3xl font-bold text-[#005CB9] mb-4 text-center">Impacto a Nivel Mundial</h2>
+                <p class="text-center text-gray-600 mb-8 max-w-2xl mx-auto">El cáncer pulmonar es una de las formas más comunes y letales de cáncer en todo el mundo. Las cifras revelan la magnitud del problema y la urgente necesidad de soluciones efectivas.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                    <div class="flex flex-col items-center justify-center text-center">
+                        <p class="text-2xl font-semibold text-gray-700 mb-2">Nuevos Diagnósticos Anuales</p>
+                        <p class="text-7xl font-bold text-[#0074D4]">2.2M</p>
+                        <p class="text-gray-500 mt-2">millones de personas son diagnosticadas cada año, lo que subraya su alta incidencia global.</p>
+                    </div>
+                    <div class="flex flex-col items-center">
+                         <p class="text-2xl font-semibold text-gray-700 mb-4 text-center">Proporción de Todos los Cánceres</p>
+                        <div class="chart-container">
+                            <canvas id="globalPrevalenceChart"></canvas>
+                        </div>
+                        <p class="text-center text-gray-500 mt-4">Representa el 12.4% de todos los casos de cáncer diagnosticados, siendo uno de los más prevalentes.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="chile-context" class="bg-white rounded-lg shadow-md p-6 md:p-8">
+                <h2 class="text-3xl font-bold text-[#005CB9] mb-4 text-center">La Situación en Chile (2022)</h2>
+                <p class="text-center text-gray-600 mb-8 max-w-2xl mx-auto">En 2022, el cáncer de pulmón continuó siendo un desafío significativo para la salud pública chilena.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                     <div class="flex flex-col items-center">
+                         <p class="text-2xl font-semibold text-gray-700 mb-4 text-center">Incidencia vs. Mortalidad en Chile</p>
+                        <div class="chart-container">
+                            <canvas id="incidenceMortalityChart"></canvas>
+                        </div>
+                        <p class="text-center text-gray-500 mt-4">En 2022, se registraron más de 4,000 nuevos casos y casi 3,700 muertes por la enfermedad.</p>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <p class="text-2xl font-semibold text-gray-700 mb-4 text-center">Atención en el Sistema de Salud</p>
+                        <div class="chart-container">
+                             <canvas id="attentionChart"></canvas>
+                        </div>
+                        <p class="text-center text-gray-500 mt-4">Se estima que el sistema de salud público atiende a la gran mayoría de los pacientes con cáncer de pulmón en el país.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="factors-trends" class="bg-white rounded-lg shadow-md p-6 md:p-8">
+                 <h2 class="text-3xl font-bold text-[#005CB9] mb-4 text-center">Factores y Tendencias Clave</h2>
+                 <p class="text-center text-gray-600 mb-8 max-w-2xl mx-auto">La incidencia de la enfermedad ha crecido de manera constante, mostrando además una fuerte disparidad regional, con focos importantes en el norte y sur del país.</p>
+                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                     <div class="flex flex-col items-center">
+                        <p class="text-2xl font-semibold text-gray-700 mb-4 text-center">Tasa de Incidencia por Región (TAM)</p>
+                        <div class="chart-container">
+                            <canvas id="regionalIncidenceChart"></canvas>
+                        </div>
+                        <p class="text-center text-gray-500 mt-4">Antofagasta y Magallanes presentan tasas de incidencia significativamente más altas en comparación con la media nacional.</p>
+                    </div>
+                    <div class="flex flex-col items-center justify-center text-center">
+                        <p class="text-2xl font-semibold text-gray-700 mb-2">Crecimiento Anual de Incidencia</p>
+                        <p class="text-7xl font-bold text-[#0074D4]">~4%</p>
+                        <p class="text-3xl text-gray-600">anual desde 2018</p>
+                        <p class="text-gray-500 mt-2">Este crecimiento constante subraya la urgencia de implementar nuevas estrategias de detección y prevención.</p>
+                    </div>
+                 </div>
+            </section>
+            
+            <section id="early-detection" class="bg-[#00449E] text-white rounded-lg shadow-md p-6 md:p-8">
+                <h2 class="text-3xl font-bold mb-4 text-center">El Poder de la Detección Temprana</h2>
+                <p class="text-center text-blue-200 mb-8 max-w-2xl mx-auto">Detectar la enfermedad en sus fases iniciales es la clave para mejorar el pronóstico y las opciones de tratamiento. Las tasas de supervivencia varían drásticamente según el momento del diagnóstico.</p>
+                <div class="chart-container bg-white/10 rounded-lg p-4">
+                    <canvas id="survivalRateChart"></canvas>
+                </div>
+                <p class="text-center text-blue-200 mt-4">Mientras que la supervivencia global es baja (~20%), la detección en **Estadio I** puede elevar la tasa a un **90%**, en comparación con un 70% en Estadio IV.</p>
+            </section>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <section id="subtypes" class="bg-white rounded-lg shadow-md p-6 md:p-8">
+                    <h2 class="text-3xl font-bold text-[#005CB9] mb-4 text-center">Tipos de Cáncer Pulmonar</h2>
+                    <p class="text-center text-gray-600 mb-8">No todo el cáncer de pulmón es igual. Se divide principalmente en dos subtipos, con uno de ellos siendo mucho más común.</p>
+                    <div class="chart-container">
+                        <canvas id="subtypesChart"></canvas>
+                    </div>
+                    <p class="text-center text-gray-500 mt-4">El Carcinoma de Células No Pequeñas (NSCLC) constituye la gran mayoría de los casos, requiriendo enfoques de tratamiento específicos.</p>
+                </section>
+
+                <section id="ai-role" class="bg-white rounded-lg shadow-md p-6 md:p-8">
+                    <h2 class="text-3xl font-bold text-[#005CB9] mb-4 text-center">El Rol de la Inteligencia Artificial</h2>
+                    <p class="text-center text-gray-600 mb-8">El Machine Learning (ML) está revolucionando el diagnóstico al analizar grandes volúmenes de datos para detectar patrones imperceptibles para el ojo humano.</p>
+                    <div class="space-y-4">
+                        <div class="flex items-center">
+                            <div class="bg-[#7DB8ED] text-[#00449E] rounded-full h-12 w-12 flex items-center justify-center font-bold text-xl">1</div>
+                            <p class="ml-4 text-gray-700"><strong>Recopilación de Datos:</strong> Se reúnen datos clínicos, imágenes (TC) y genómicos del paciente.</p>
+                        </div>
+                        <div class="ml-6 h-8 border-l-2 border-dashed border-[#7DB8ED]"></div>
+                        <div class="flex items-center">
+                            <div class="bg-[#4192E1] text-white rounded-full h-12 w-12 flex items-center justify-center font-bold text-xl">2</div>
+                            <p class="ml-4 text-gray-700"><strong>Procesamiento y Análisis:</strong> El algoritmo de ML procesa los datos en busca de anomalías y patrones de riesgo.</p>
+                        </div>
+                        <div class="ml-6 h-8 border-l-2 border-dashed border-[#4192E1]"></div>
+                        <div class="flex items-center">
+                            <div class="bg-[#0074D4] text-white rounded-full h-12 w-12 flex items-center justify-center font-bold text-xl">3</div>
+                            <p class="ml-4 text-gray-700"><strong>Predicción de Riesgo:</strong> El sistema genera una puntuación de probabilidad de cáncer, alertando a los médicos.</p>
+                        </div>
+                         <div class="ml-6 h-8 border-l-2 border-dashed border-[#0074D4]"></div>
+                        <div class="flex items-center">
+                            <div class="bg-[#005CB9] text-white rounded-full h-12 w-12 flex items-center justify-center font-bold text-xl">4</div>
+                            <p class="ml-4 text-gray-700"><strong>Validación Clínica:</strong> Los especialistas validan el resultado para un diagnóstico definitivo y plan de acción.</p>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <section id="collaboration" class="bg-white rounded-lg shadow-md p-6 md:p-8">
+                <h2 class="text-3xl font-bold text-[#005CB9] mb-4 text-center">Un Enfoque Colaborativo</h2>
+                <p class="text-center text-gray-600 mb-8 max-w-3xl mx-auto">La lucha contra el cáncer pulmonar no es tarea de una sola disciplina. Requiere la sinergia de múltiples campos de la ciencia y la medicina para lograr un manejo integral del paciente.</p>
+                <div class="flex flex-wrap justify-center gap-4">
+                    <span class="bg-[#7DB8ED] text-[#00449E] font-semibold py-2 px-4 rounded-full">Oncología</span>
+                    <span class="bg-[#7DB8ED] text-[#00449E] font-semibold py-2 px-4 rounded-full">Radiología</span>
+                    <span class="bg-[#7DB8ED] text-[#00449E] font-semibold py-2 px-4 rounded-full">Patología</span>
+                    <span class="bg-[#4192E1] text-white font-semibold py-2 px-4 rounded-full">Bioinformática</span>
+                    <span class="bg-[#4192E1] text-white font-semibold py-2 px-4 rounded-full">Ciencia de Datos</span>
+                    <span class="bg-[#0074D4] text-white font-semibold py-2 px-4 rounded-full">Ingeniería de Software</span>
+                    <span class="bg-[#0074D4] text-white font-semibold py-2 px-4 rounded-full">Epidemiología</span>
+                </div>
+            </section>
+
+            <!-- Gemini API features -->
+            <section id="gemini-features" class="bg-[#00449E] text-white rounded-lg shadow-md p-6 md:p-8">
+                <h2 class="text-3xl font-bold mb-4 text-center">Explora con IA ✨</h2>
+                <p class="text-center text-blue-200 mb-8 max-w-2xl mx-auto">
+                    Utiliza el poder de la Inteligencia Artificial para obtener resúmenes rápidos o hacer preguntas detalladas sobre el cáncer de pulmón.
+                </p>
+
+                <!-- Resumen de la infografía -->
+                <div class="mb-8">
+                    <h3 class="text-2xl font-semibold mb-4 text-center">Generar Resumen ✨</h3>
+                    <div class="flex flex-col items-center">
+                        <button id="summarizeButton" class="bg-white text-[#005CB9] font-bold py-2 px-6 rounded-full shadow-lg hover:bg-gray-200 transition-colors duration-300">
+                            Resumir Infografía
+                        </button>
+                        <p id="summaryOutput" class="mt-4 text-gray-200 italic text-center text-sm"></p>
+                    </div>
+                </div>
+
+                <!-- Preguntas y Respuestas -->
+                <div>
+                    <h3 class="text-2xl font-semibold mb-4 text-center">Preguntar a Gemini ✨</h3>
+                    <div class="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-4">
+                        <input id="questionInput" type="text" placeholder="Escribe tu pregunta sobre el cáncer de pulmón..." class="flex-1 w-full md:w-auto p-3 rounded-full text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0074D4] transition-all duration-200">
+                        <button id="askButton" class="bg-white text-[#005CB9] font-bold py-3 px-6 rounded-full shadow-lg hover:bg-gray-200 transition-colors duration-300">
+                            Preguntar
+                        </button>
+                    </div>
+                    <div id="answerOutput" class="mt-4 p-4 bg-white/20 rounded-lg text-sm transition-all duration-300 overflow-hidden">
+                        <p class="text-gray-200 italic">Aquí aparecerá la respuesta de la IA.</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="text-center mt-12 pt-8 border-t border-gray-300">
+            <p class="text-gray-500">Infografía generada a partir de datos sobre el impacto del cáncer pulmonar y la aplicación de IA en el diagnóstico.</p>
+        </footer>
+
+        <div class="text-center mt-8">
+            <button id="downloadButton" class="bg-[#005CB9] text-white font-bold py-3 px-6 rounded-full shadow-lg hover:bg-[#00449E] transition-colors duration-300">Descargar Infografía</button>
+        </div>
+
+    </div>
+
+    <script>
+        const brilliantBlues = ['#0074D4', '#7DB8ED', '#00449E', '#4192E1', '#005CB9'];
+        const tooltipTitleCallback = (tooltipItems) => {
+            const item = tooltipItems[0];
+            let label = item.chart.data.labels[item.dataIndex];
+            if (Array.isArray(label)) {
+                return label.join(' ');
+            }
+            return label;
+        };
+        
+        const wrapLabel = (label, maxLength = 16) => {
+            if (label.length <= maxLength) return label;
+            const words = label.split(' ');
+            const lines = [];
+            let currentLine = '';
+            words.forEach(word => {
+                if ((currentLine + word).length > maxLength) {
+                    lines.push(currentLine.trim());
+                    currentLine = '';
+                }
+                currentLine += word + ' ';
+            });
+            lines.push(currentLine.trim());
+            return lines.filter(line => line.length > 0);
+        };
+
+        const defaultChartOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        color: '#4A5568',
+                        font: {
+                            size: 14
+                        }
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        title: tooltipTitleCallback
+                    },
+                    backgroundColor: '#1A202C',
+                    titleFont: { size: 16 },
+                    bodyFont: { size: 14 },
+                    padding: 12,
+                    cornerRadius: 6
+                }
+            }
+        };
+
+        const createCharts = () => {
+            const globalPrevalenceCtx = document.getElementById('globalPrevalenceChart').getContext('2d');
+            new Chart(globalPrevalenceCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Cáncer Pulmonar', 'Otros Tipos de Cáncer'],
+                    datasets: [{
+                        label: 'Prevalencia Global',
+                        data: [12.4, 87.6],
+                        backgroundColor: [brilliantBlues[0], brilliantBlues[1]],
+                        borderColor: '#FFFFFF',
+                        borderWidth: 2
+                    }]
+                },
+                options: { ...defaultChartOptions }
+            });
+
+            const incidenceMortalityCtx = document.getElementById('incidenceMortalityChart').getContext('2d');
+            new Chart(incidenceMortalityCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Incidencia (casos nuevos)', 'Mortalidad (defunciones)'],
+                    datasets: [{
+                        label: 'Número de Casos (2022)',
+                        data: [4014, 3699],
+                        backgroundColor: [brilliantBlues[3], brilliantBlues[2]],
+                        borderColor: brilliantBlues[2],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    ...defaultChartOptions,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: '#E2E8F0' },
+                            ticks: { color: '#4A5568' }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#4A5568' }
+                        }
+                    },
+                    plugins: {
+                        ...defaultChartOptions.plugins,
+                        legend: { display: false }
+                    }
+                }
+            });
+
+            const attentionCtx = document.getElementById('attentionChart').getContext('2d');
+            new Chart(attentionCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Atendido por sistema público', 'Otros sistemas de salud'],
+                    datasets: [{
+                        data: [80, 20],
+                        backgroundColor: [brilliantBlues[0], brilliantBlues[1]],
+                        borderColor: '#FFFFFF',
+                        borderWidth: 2
+                    }]
+                },
+                options: { ...defaultChartOptions }
+            });
+
+            const regionalIncidenceCtx = document.getElementById('regionalIncidenceChart').getContext('2d');
+            new Chart(regionalIncidenceCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Antofagasta', 'Magallanes'],
+                    datasets: [{
+                        label: 'Tasa Ajustada por Edad (ASR)',
+                        data: [31.2, 15.5],
+                        backgroundColor: brilliantBlues[3],
+                        borderColor: brilliantBlues[2],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    ...defaultChartOptions,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: '#E2E8F0' },
+                            ticks: { color: '#4A5568' }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#4A5568' }
+                        }
+                    },
+                    plugins: {
+                        ...defaultChartOptions.plugins,
+                        legend: { display: false }
+                    }
+                }
+            });
+            
+            const survivalRateCtx = document.getElementById('survivalRateChart').getContext('2d');
+            new Chart(survivalRateCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Diagnóstico Tardío', 'Diagnóstico Temprano'],
+                    datasets: [{
+                        label: 'Tasa de Supervivencia a 5 años',
+                        data: [20, 90],
+                        backgroundColor: [brilliantBlues[1], '#FFFFFF'],
+                        borderColor: ['#FFFFFF', brilliantBlues[0]],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    ...defaultChartOptions,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            grid: { color: 'rgba(255, 255, 255, 0.2)' },
+                            ticks: {
+                                color: '#FFFFFF',
+                                callback: function(value) { return value + '%' }
+                            }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: {
+                                color: '#FFFFFF',
+                                font: { size: 14 }
+                            }
+                        }
+                    },
+                    plugins: {
+                        ...defaultChartOptions.plugins,
+                        legend: { display: false }
+                    }
+                }
+            });
+
+            const subtypesCtx = document.getElementById('subtypesChart').getContext('2d');
+            new Chart(subtypesCtx, {
+                type: 'pie',
+                data: {
+                    labels: [wrapLabel('Carcinoma de Células No Pequeñas (NSCLC)'), 'Carcinoma de Células Pequeñas (SCLC)'],
+                    datasets: [{
+                        data: [85, 15],
+                        backgroundColor: [brilliantBlues[0], brilliantBlues[3]],
+                        borderColor: '#FFFFFF',
+                        borderWidth: 2
+                    }]
+                },
+                options: { ...defaultChartOptions }
+            });
+        };
+
+        const downloadButton = document.getElementById('downloadButton');
+        downloadButton.addEventListener('click', () => {
+            const element = document.getElementById('infographic-content');
+            html2canvas(element, {
+                scale: 2,
+                useCORS: true,
+                logging: false,
+                backgroundColor: '#F7FAFC'
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = 'infografia-cancer-pulmonar.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            });
+        });
+
+        // Gemini API Logic
+        const API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent";
+        const API_KEY = ""; // Reemplazar con la clave de API real si es necesario
+
+        const summarizeButton = document.getElementById('summarizeButton');
+        const summaryOutput = document.getElementById('summaryOutput');
+
+        const questionInput = document.getElementById('questionInput');
+        const askButton = document.getElementById('askButton');
+        const answerOutput = document.getElementById('answerOutput');
+
+        let lastSummaryTimestamp = 0;
+        const SUMMARY_COOLDOWN = 10000; // 10 seconds
+
+        const callGeminiAPI = async (payload) => {
+            const url = `${API_URL}?key=${API_KEY}`;
+            const headers = { 'Content-Type': 'application/json' };
+            
+            let response;
+            let retries = 0;
+            const maxRetries = 5;
+            const baseDelay = 1000;
+
+            while (retries < maxRetries) {
+                try {
+                    response = await fetch(url, {
+                        method: 'POST',
+                        headers,
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (response.ok) {
+                        return await response.json();
+                    } else if (response.status === 429) {
+                        retries++;
+                        const delay = baseDelay * Math.pow(2, retries - 1);
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                        continue;
+                    } else {
+                        console.error('Error al llamar a la API:', response.statusText);
+                        break;
+                    }
+                } catch (error) {
+                    console.error('Error de red:', error);
+                    break;
+                }
+            }
+            return null;
+        };
+
+        const getSummary = async () => {
+            const infographicText = document.getElementById('infographic-content').innerText;
+            
+            const prompt = `Por favor, genera un resumen conciso y en una sola oración del siguiente texto de infografía. El resumen debe capturar los puntos clave sobre el cáncer de pulmón, su impacto y el rol de la IA. Aquí está el texto: "${infographicText}"`;
+
+            const payload = {
+                contents: [{ parts: [{ text: prompt }] }],
+                systemInstruction: { parts: [{ text: "Actúa como un experto en salud pública y análisis de datos. Responde de manera profesional y directa." }] },
+            };
+            
+            return await callGeminiAPI(payload);
+        };
+
+        const getAnswer = async (question) => {
+            const payload = {
+                contents: [{ parts: [{ text: question }] }],
+                tools: [{ "google_search": {} }],
+                systemInstruction: { parts: [{ text: "Actúa como un asistente de investigación médica. Proporciona información clara y respaldada por fuentes, utilizando los datos más recientes si es posible." }] },
+            };
+            return await callGeminiAPI(payload);
+        };
+        
+        summarizeButton.addEventListener('click', async () => {
+            const now = Date.now();
+            if (now - lastSummaryTimestamp < SUMMARY_COOLDOWN) {
+                summaryOutput.innerHTML = '<span class="text-red-300">Espera un momento antes de volver a resumir.</span>';
+                return;
+            }
+
+            summaryOutput.innerHTML = 'Generando resumen...';
+            const response = await getSummary();
+
+            if (response && response.candidates && response.candidates[0].content && response.candidates[0].content.parts[0].text) {
+                summaryOutput.innerHTML = response.candidates[0].content.parts[0].text;
+            } else {
+                summaryOutput.innerHTML = '<span class="text-red-300">Error al generar el resumen. Intenta de nuevo más tarde.</span>';
+            }
+            lastSummaryTimestamp = now;
+        });
+
+        askButton.addEventListener('click', async () => {
+            const question = questionInput.value.trim();
+            if (!question) {
+                answerOutput.innerHTML = '<p class="text-red-300">Por favor, escribe una pregunta.</p>';
+                return;
+            }
+
+            answerOutput.innerHTML = 'Buscando respuesta...';
+            const response = await getAnswer(question);
+            
+            if (response && response.candidates && response.candidates[0].content && response.candidates[0].content.parts[0].text) {
+                const answerText = response.candidates[0].content.parts[0].text;
+                let sourcesHtml = '';
+                
+                const groundingMetadata = response.candidates[0].groundingMetadata;
+                if (groundingMetadata && groundingMetadata.groundingAttributions) {
+                    const sources = groundingMetadata.groundingAttributions
+                        .map(attribution => ({ uri: attribution.web?.uri, title: attribution.web?.title }))
+                        .filter(source => source.uri && source.title);
+                        
+                    if (sources.length > 0) {
+                        sourcesHtml = '<div class="mt-4 pt-2 border-t border-white/30 text-xs italic"><p>Fuentes:</p><ul>';
+                        sources.forEach(source => {
+                            sourcesHtml += `<li><a href="${source.uri}" target="_blank" class="underline hover:text-white">${source.title}</a></li>`;
+                        });
+                        sourcesHtml += '</ul></div>';
+                    }
+                }
+                
+                answerOutput.innerHTML = `<p>${answerText}</p>${sourcesHtml}`;
+            } else {
+                answerOutput.innerHTML = '<p class="text-red-300">No se pudo encontrar una respuesta. Por favor, reformula tu pregunta.</p>';
+            }
+        });
+
+        window.onload = createCharts;
+    </script>
+</body>
+</html>

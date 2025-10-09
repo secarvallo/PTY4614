@@ -1,0 +1,155 @@
+/* 👤 Profile Page Styles */
+
+ion-content.profile-content {
+  --background: linear-gradient(180deg, rgba(102, 126, 234, 0.22) 0%, rgba(255, 255, 255, 1) 85%);
+}
+
+[data-theme="dark"] ion-content.profile-content {
+  --background: linear-gradient(180deg, rgba(26, 27, 38, 1) 0%, rgba(36, 40, 59, 1) 100%);
+}
+
+.profile-container {
+  padding: 24px;
+  max-width: 820px;
+  margin: 0 auto;
+  background: rgba(255, 255, 255, 0.88);
+  border-radius: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.32);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  box-shadow: 0 20px 48px rgba(26, 32, 44, 0.14);
+}
+
+[data-theme="dark"] .profile-container {
+  background: rgba(36, 40, 55, 0.88);
+  border: 1px solid rgba(122, 162, 247, 0.18);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  box-shadow: 0 20px 48px rgba(10, 12, 25, 0.45);
+}
+
+.profile-avatar {
+  text-align: center;
+  padding: 36px 24px;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.95) 0%, rgba(118, 75, 162, 0.95) 100%);
+  border-radius: 24px;
+  color: white;
+  margin-bottom: 24px;
+  box-shadow: 0 16px 40px rgba(102, 126, 234, 0.35);
+
+  .avatar-icon {
+    font-size: 80px;
+    margin-bottom: 15px;
+    opacity: 0.9;
+  }
+
+  h2 {
+    margin: 0;
+    font-size: 1.8rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  p {
+    margin: 10px 0 0 0;
+    opacity: 0.9;
+    font-size: 1.1rem;
+  }
+}
+
+.profile-cards {
+  margin-bottom: 20px;
+
+  ion-card {
+    margin-bottom: 18px;
+    border-radius: 22px;
+    box-shadow: 0 12px 32px rgba(26, 32, 44, 0.08);
+  }
+}
+
+.status-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  padding: 8px 0;
+
+  ion-icon {
+    margin-right: 10px;
+    font-size: 20px;
+  }
+
+  span {
+    flex: 1;
+    margin-right: 10px;
+  }
+
+  ion-badge {
+    font-size: 0.8rem;
+    padding: 4px 10px;
+    border-radius: 999px;
+  }
+}
+
+.detail-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--ion-color-light);
+
+  &:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+  }
+
+  strong {
+    color: var(--ion-color-dark);
+  }
+
+  span {
+    color: var(--ion-color-medium);
+  }
+}
+
+.profile-actions {
+  margin-top: 24px;
+  display: grid;
+  gap: 12px;
+}
+
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 72px 20px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.32);
+
+  ion-spinner {
+    --size: 48px;
+    margin-bottom: 20px;
+  }
+
+  p {
+    color: var(--ion-color-medium);
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .profile-container {
+    padding: 20px;
+    border-radius: 24px;
+  }
+
+  .profile-avatar {
+    padding: 28px 20px;
+  }
+
+  .profile-actions {
+    grid-template-columns: 1fr;
+  }
+}

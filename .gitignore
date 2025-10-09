@@ -1,0 +1,513 @@
+# ============================================
+# GITIGNORE GLOBAL - Proyecto PTY4614 LungLife
+# ============================================
+# Este archivo cubre: Node.js, Python, Angular, Ionic, Bases de Datos, IDEs, y más
+
+# ============================================
+# PYTHON
+# ============================================
+# Entornos virtuales
+.venv/
+venv/
+ENV/
+env/
+env.bak/
+venv.bak/
+.virtualenv/
+virtualenv/
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Archivos de distribución y empaquetado
+*.egg
+*.egg-info/
+dist/
+build/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.manifest
+*.spec
+
+# PyInstaller
+*.spec
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+*.ipynb_checkpoints/
+*/.ipynb_checkpoints/*
+
+# IPython
+profile_default/
+ipython_config.py
+
+# pyenv
+.python-version
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# mypy type checker
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# pytest
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+
+# Machine Learning específico
+*.pkl
+*.h5
+*.hdf5
+*.model
+*.weights
+*.joblib
+checkpoints/
+data/processed/
+data/external/
+data/interim/
+*.csv.gz
+*.parquet
+mlruns/
+wandb/
+
+# ============================================
+# NODE.JS / NPM / YARN
+# ============================================
+# Dependencias
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+pnpm-debug.log*
+
+# Testing
+coverage/
+*.lcov
+.nyc_output
+
+# Grunt intermediate storage
+.grunt
+
+# Bower dependency directory
+bower_components
+
+# node-waf configuration
+.lock-wscript
+
+# Compiled binary addons
+build/Release
+
+# TypeScript cache
+*.tsbuildinfo
+.tsbuildinfo
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Optional stylelint cache
+.stylelintcache
+
+# Microbundle cache
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+.pnp.*
+
+# Package lock files (mantener solo uno por proyecto)
+# package-lock.json  # Descomentar si prefieres yarn
+# yarn.lock          # Descomentar si prefieres npm
+
+# ============================================
+# ANGULAR / IONIC / CAPACITOR
+# ============================================
+# Angular cache
+.angular/
+.angular/cache/
+
+# Compiled output
+dist/
+tmp/
+out-tsc/
+bazel-out/
+
+# Ionic
+www/
+platforms/
+plugins/
+.sourcemaps/
+
+# Capacitor
+.capacitor/
+android/
+ios/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# ============================================
+# BASES DE DATOS
+# ============================================
+# PostgreSQL
+*.sql.backup
+*.sql.bak
+pgdata/
+pg_log/
+postgresql-data/
+
+# SQLite
+*.db
+*.sqlite
+*.sqlite3
+*.db-shm
+*.db-wal
+
+# MySQL
+*.sql.gz
+mysql-data/
+
+# Archivos de respaldo generales
+*.bak
+*.backup
+*.old
+dumps/
+
+# ============================================
+# IDEs y EDITORES
+# ============================================
+# Visual Studio Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+.history/
+
+# JetBrains IDEs (WebStorm, PyCharm, IntelliJ IDEA)
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+cmake-build-*/
+
+# Sublime Text
+*.sublime-workspace
+*.sublime-project
+
+# Vim
+[._]*.s[a-v][a-z]
+[._]*.sw[a-p]
+[._]s[a-rt-v][a-z]
+[._]ss[a-gi-z]
+[._]sw[a-p]
+*~
+tags
+.netrwhist
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# Eclipse
+.metadata
+.settings/
+*.project
+*.classpath
+
+# NetBeans
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+# ============================================
+# SISTEMAS OPERATIVOS
+# ============================================
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# ============================================
+# VARIABLES DE ENTORNO Y CONFIGURACIÓN SENSIBLE
+# ============================================
+# Archivos de entorno
+.env
+.env.local
+.env.*.local
+.env.development.local
+.env.test.local
+.env.production.local
+.envrc
+
+# Configuraciones sensibles
+config.local.js
+config.local.json
+config.local.ts
+secrets.json
+credentials.json
+*.pem
+*.key
+*.cert
+*.crt
+*.p12
+*.pfx
+
+# Excepción para archivos de ejemplo
+!.env.example
+!config.example.json
+
+# ============================================
+# LOGS Y ARCHIVOS TEMPORALES
+# ============================================
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+pnpm-debug.log*
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Archivos temporales
+*.tmp
+*.temp
+*.swp
+*.swo
+*~.nib
+local.properties
+.cache
+
+# ============================================
+# DOCUMENTACIÓN Y REPORTES
+# ============================================
+# Documentos temporales de Microsoft Office
+~$*.doc*
+~$*.xls*
+~$*.ppt*
+*.tmp
+
+# Reportes y cobertura
+reports/
+htmlcov/
+test-results/
+
+# ============================================
+# DEPENDENCIAS Y PAQUETES COMPRIMIDOS
+# ============================================
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+
+# ============================================
+# ARCHIVOS DE BUILD Y COMPILACIÓN
+# ============================================
+# Archivos compilados generales
+*.com
+*.class
+*.dll
+*.exe
+*.o
+*.so
+
+# Build directories
+build/
+dist/
+out/
+target/
+
+# ============================================
+# TESTING Y DEBUG
+# ============================================
+# Test output
+test-results/
+coverage/
+.nyc_output/
+*.test.js.snap
+e2e/screenshots/
+e2e/videos/
+
+# Debug files
+debug/
+*.debug
+.vscode-test/
+
+# ============================================
+# ESPECÍFICO DEL PROYECTO LUNGLIFE
+# ============================================
+# Backend Node.js (TypeScript)
+lunglife_backend/dist/
+lunglife_backend/build/
+lunglife_backend/node_modules/
+lunglife_backend/.env
+
+# Frontend Angular/Ionic (lunglife_front)
+lunglife_front/.angular/
+lunglife_front/www/
+lunglife_front/node_modules/
+lunglife_front/dist/
+lunglife_front/platforms/
+lunglife_front/plugins/
+
+# Frontend Angular/Ionic (lunglife_frontend)
+lunglife_frontend/.angular/
+lunglife_frontend/www/
+lunglife_frontend/node_modules/
+lunglife_frontend/dist/
+lunglife_frontend/platforms/
+lunglife_frontend/plugins/
+
+# Machine Learning (Python CRISP-DM)
+lunglife_ml/.venv/
+lunglife_ml/crisp_dm/.venv/
+lunglife_ml/crisp_dm/data/processed/
+lunglife_ml/crisp_dm/data/external/
+lunglife_ml/crisp_dm/data/interim/
+lunglife_ml/crisp_dm/models/*.pkl
+lunglife_ml/crisp_dm/models/*.h5
+lunglife_ml/crisp_dm/models/*.joblib
+lunglife_ml/crisp_dm/mlruns/
+lunglife_ml/crisp_dm/wandb/
+
+# Base de datos (scripts de respaldo sensibles)
+lunglife_bd/*.backup
+lunglife_bd/*.bak
+lunglife_bd/dumps/
+
+# Documentación (archivos temporales)
+lunglife_docs/~$*
+lunglife_docs/*.tmp
+
+# ============================================
+# CACHÉ Y TEMPORALES DE FRAMEWORKS
+# ============================================
+.cache/
+.parcel-cache/
+.next/
+.nuxt/
+.vuepress/dist
+.serverless/
+.fusebox/
+.dynamodb/
+.tern-port
+.vscode-test
+
+# ============================================
+# SASS
+# ============================================
+.sass-cache/
+*.css.map
+*.sass.map
+*.scss.map
+
+# ============================================
+# OTROS
+# ============================================
+*.orig
+connect.lock
+typings/
+libpeerconnection.log
+testem.log
+nul

@@ -1,0 +1,18 @@
+// Estilos específicos para la página de registro
+ion-content {
+  --background: var(--ion-color-app-background);
+}
+
+.form-container {
+  margin-top: 2rem;
+}
+
+ion-item {
+  --border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+ion-button {
+  --border-radius: 8px;
+  margin-top: 1rem;
+}

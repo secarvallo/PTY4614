@@ -1,0 +1,87 @@
+<ion-content class="ion-padding">
+  <!-- Loading State -->
+  @if (isLoading()) {
+    <div class="loading-container">
+      <div class="logo-placeholder pulse"></div>
+      <h2>Bienvenido a LungLife</h2>
+      <ion-spinner name="crescent" color="primary"></ion-spinner>
+      <p>Cargando aplicación...</p>
+    </div>
+  } @else {
+
+    <!-- Welcome Content -->
+    <div class="welcome-container">
+
+      <!-- Hero Section -->
+      <div class="hero-section">
+        <div class="logo-container">
+          <div class="logo-placeholder"></div>
+          <div class="logo-label">LungLife</div>
+        </div>
+        <p class="subtitle">Tu salud pulmonar es nuestra prioridad</p>
+      </div>
+
+      <!-- Action Button -->
+      <div class="action-section">
+        <ion-button (click)="navigateToLogin()" color="primary" shape="round" size="large" expand="block">
+          Continuar al Login
+        </ion-button>
+      </div>
+
+      <!-- Features Section -->
+      <div class="features-section">
+        <h2>¿Por qué elegir LungLife?</h2>
+
+        <div class="features-column">
+          <app-feature-card
+            [feature]="{
+              id: 1,
+              title: 'Detección Temprana',
+              description: 'Análisis avanzado con IA para detectar signos tempranos de cáncer de pulmón',
+              icon: 'analytics',
+              color: 'primary'
+            }"
+            (featureClick)="onFeatureClick($event)"
+            class="feature-card-item">
+          </app-feature-card>
+
+          <app-feature-card
+            [feature]="{
+              id: 2,
+              title: 'Seguimiento Personalizado',
+              description: 'Monitoreo continuo y planes de tratamiento personalizados',
+              icon: 'heart',
+              color: 'tertiary'
+            }"
+            (featureClick)="onFeatureClick($event)"
+            class="feature-card-item">
+          </app-feature-card>
+
+          <app-feature-card
+            [feature]="{
+              id: 3,
+              title: 'Seguridad de Datos',
+              description: 'Protección avanzada de tu información médica personal',
+              icon: 'shield',
+              color: 'warning'
+            }"
+            (featureClick)="onFeatureClick($event)"
+            class="feature-card-item">
+          </app-feature-card>
+
+          <app-feature-card
+            [feature]="{
+              id: 4,
+              title: 'Comunidad de Apoyo',
+              description: 'Conecta con otros pacientes y profesionales de la salud',
+              icon: 'people',
+              color: 'dark'
+            }"
+            (featureClick)="onFeatureClick($event)"
+            class="feature-card-item">
+          </app-feature-card>
+        </div>
+      </div>
+    </div>
+  }
+</ion-content>

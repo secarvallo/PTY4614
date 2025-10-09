@@ -1,0 +1,64 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="cancelLogin()">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Verificación 2FA</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="auth-content">
+  <div class="auth-container">
+
+    <!-- Header Section -->
+    <div class="auth-header">
+      <div class="logo-placeholder"></div>
+      <h1>Verificación de Dos Factores</h1>
+      <p>Ingresa el código de 6 dígitos enviado a tu correo.</p>
+    </div>
+
+    <!-- 2FA Form -->
+  <form (ngSubmit)="verify2FA()" class="auth-form refresh">
+      <div class="form-group">
+        <ion-item lines="none">
+          <ion-input
+            [(ngModel)]="code"
+            name="code"
+            type="text"
+            placeholder="Código de 6 dígitos"
+            maxlength="6">
+          </ion-input>
+        </ion-item>
+        <div class="error-message" *ngIf="errorMessage">
+          <ion-icon name="alert-circle-outline"></ion-icon>
+          <span>{{ errorMessage }}</span>
+        </div>
+      </div>
+
+      <ion-button
+        type="submit"
+        expand="block"
+        class="auth-button primary"
+        [disabled]="!code || code.length !== 6 || isLoading">
+        <ion-spinner name="crescent" *ngIf="isLoading"></ion-spinner>
+        <span *ngIf="!isLoading">
+          Verificar Código
+        </span>
+        <span *ngIf="isLoading">Verificando...</span>
+      </ion-button>
+    </form>
+
+    <!-- Options -->
+    <div class="auth-footer">
+      <ion-button fill="clear" (click)="useBackupCode()" class="link-button">
+        Usar código de respaldo
+      </ion-button>
+      <ion-button fill="clear" size="small" class="link-button">
+        Reenviar código
+      </ion-button>
+    </div>
+
+  </div>
+</ion-content>

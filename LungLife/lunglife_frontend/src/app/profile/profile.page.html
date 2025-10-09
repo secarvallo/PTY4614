@@ -1,0 +1,104 @@
+<!-- 👤 Profile Page Template -->
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button fill="clear" (click)="goBack()">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Profile</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="profile-content" data-test="profile-page">
+  <div class="profile-container">
+
+  @if (currentUser) {
+      <!-- User Avatar Section -->
+      <div class="profile-avatar" data-test="profile-header">
+        <ion-icon name="person-circle-outline" class="avatar-icon"></ion-icon>
+        <h2 data-test="profile-name">{{ currentUser.firstName }} {{ currentUser.lastName }}</h2>
+        <p data-test="profile-email">{{ currentUser.email }}</p>
+      </div>
+
+      <!-- Profile Information Cards -->
+      <div class="profile-cards">
+
+        <!-- Account Status Card -->
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>Account Status</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <div class="status-item">
+              <ion-icon name="mail-outline" color="primary"></ion-icon>
+              <span>Email Verified: </span>
+              <ion-badge [color]="currentUser.isEmailVerified ? 'success' : 'warning'">
+                {{ currentUser.isEmailVerified ? 'Yes' : 'No' }}
+              </ion-badge>
+            </div>
+
+            <div class="status-item">
+              <ion-icon name="shield-outline" color="primary"></ion-icon>
+              <span>Two-Factor Auth: </span>
+              <ion-badge [color]="currentUser.twoFAEnabled ? 'success' : 'medium'">
+                {{ currentUser.twoFAEnabled ? 'Enabled' : 'Disabled' }}
+              </ion-badge>
+            </div>
+          </ion-card-content>
+        </ion-card>
+
+        <!-- Account Details Card -->
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>Account Details</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <div class="detail-item">
+              <strong>Member Since:</strong>
+              <span>{{ formatDate(currentUser.createdAt) }}</span>
+            </div>
+
+            @if (currentUser.lastLogin) {
+              <div class="detail-item">
+                <strong>Last Login:</strong>
+                <span>{{ formatDateTime(currentUser.lastLogin) }}</span>
+              </div>
+            }
+          </ion-card-content>
+        </ion-card>
+
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="profile-actions">
+        <ion-button expand="block" fill="outline" (click)="showUserInfo()">
+          <ion-icon name="information-circle-outline" slot="start"></ion-icon>
+          View Full Details
+        </ion-button>
+        <ion-button expand="block" color="primary" routerLink="/dashboard">
+          <ion-icon name="analytics-outline" slot="start"></ion-icon>
+          Go to Dashboard
+        </ion-button>
+        <ion-button expand="block" color="danger" fill="outline" (click)="logout()">
+          <ion-icon name="log-out-outline" slot="start"></ion-icon>
+          Cerrar Sesión
+        </ion-button>
+      </div>
+
+    } @else if (loadingUser) {
+      <!-- Loading State -->
+      <div class="loading-state" data-test="profile-loading">
+        <ion-spinner name="crescent"></ion-spinner>
+        <p>Cargando perfil...</p>
+      </div>
+    } @else {
+      <!-- Estado sin usuario tras fallback -->
+      <div class="loading-state" data-test="profile-missing">
+        <ion-icon name="alert-circle-outline" size="large"></ion-icon>
+        <p>No se pudo cargar el perfil.</p>
+      </div>
+    }
+
+  </div>
+</ion-content>
