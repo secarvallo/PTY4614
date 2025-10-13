@@ -37,9 +37,17 @@ export class LoginPage implements OnInit, OnDestroy {
   backupCode = signal('');
   error = signal<string | null>(null);
   
+  // Rate limiting signals
+  private loginAttempts = signal(0);
+  private lastLoginAttempt = signal(0);
+  isLoginRateLimited = signal(false);
+  private readonly MAX_LOGIN_ATTEMPTS = 5;
+  private readonly LOGIN_COOLDOWN_MS = 900000; // 15 minutos
+  private readonly LOGIN_ATTEMPT_WINDOW_MS = 1800000; // 30 minutos
+  
   // Computed signals for derived state
   isFormValid = computed(() => this.loginForm?.valid ?? false);
-  canSubmit = computed(() => this.loginForm?.valid && !this.loading());
+  canSubmit = computed(() => this.loginForm?.valid && !this.loading() && !this.isLoginRateLimited());
 
   // Formularios con NonNullableFormBuilder para mejor type safety
   loginForm: FormGroup;
@@ -64,6 +72,9 @@ export class LoginPage implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    // Cargar estado de rate limiting para login
+    this.loadLoginRateLimitState();
+    
     // Obtener URL de retorno de los parámetros de consulta
     this.returnUrl = resolvePostAuthRedirect(this.route.snapshot.queryParams['returnUrl']);
 
@@ -76,22 +87,40 @@ export class LoginPage implements OnInit, OnDestroy {
         this.router.navigateByUrl(this.returnUrl, { replaceUrl: true });
       }
     });
-
-
   }
 
   onLogin() {
     if (!this.loginForm.valid) return;
 
-    const loginData = this.loginForm.value;
+    // Verificar rate limiting
+    if (!this.checkLoginRateLimit()) {
+      return;
+    }
+
+    const rawEmail = this.loginForm.get('email')?.value || '';
+    const sanitizedEmail = this.sanitizeLoginEmail(rawEmail);
+    
+    const loginData = {
+      email: sanitizedEmail,
+      password: this.loginForm.get('password')?.value,
+      rememberMe: this.loginForm.get('rememberMe')?.value
+    };
 
     this.authFacade.login(loginData).subscribe({
       next: (response: any) => {
         if (response.success && !response.requiresTwoFactor) {
+          // Limpiar rate limiting en caso de éxito
+          this.loginAttempts.set(0);
+          this.isLoginRateLimited.set(false);
+          localStorage.removeItem('lunglife_login_attempts');
+          localStorage.removeItem('lunglife_login_last_attempt');
+          
           this.performDeferredRedirect();
         }
       },
       error: (error: any) => {
+        // Registrar intento fallido
+        this.recordLoginAttempt();
         // El error se maneja automáticamente por el servicio
       }
     });
@@ -268,5 +297,71 @@ export class LoginPage implements OnInit, OnDestroy {
       cssClass: 'info-alert'
     });
     await alert.present();
+  }
+
+  /**
+   * Rate limiting para login
+   */
+  private checkLoginRateLimit(): boolean {
+    const now = Date.now();
+    const lastAttempt = this.lastLoginAttempt();
+    const attempts = this.loginAttempts();
+    
+    // Resetear contador si ha pasado la ventana de tiempo
+    if (now - lastAttempt > this.LOGIN_ATTEMPT_WINDOW_MS) {
+      this.loginAttempts.set(0);
+      this.isLoginRateLimited.set(false);
+      return true;
+    }
+    
+    // Verificar si está en cooldown
+    if (attempts >= this.MAX_LOGIN_ATTEMPTS) {
+      const timeRemaining = this.LOGIN_COOLDOWN_MS - (now - lastAttempt);
+      if (timeRemaining > 0) {
+        const minutesRemaining = Math.ceil(timeRemaining / 60000);
+        this.error.set(`Demasiados intentos de inicio de sesión. Intenta nuevamente en ${minutesRemaining} minuto(s).`);
+        this.isLoginRateLimited.set(true);
+        return false;
+      } else {
+        // Cooldown terminado, resetear
+        this.loginAttempts.set(0);
+        this.isLoginRateLimited.set(false);
+      }
+    }
+    
+    return true;
+  }
+
+  private recordLoginAttempt(): void {
+    this.loginAttempts.update(count => count + 1);
+    this.lastLoginAttempt.set(Date.now());
+    
+    // Guardar en localStorage
+    localStorage.setItem('lunglife_login_attempts', this.loginAttempts().toString());
+    localStorage.setItem('lunglife_login_last_attempt', this.lastLoginAttempt().toString());
+  }
+
+  private loadLoginRateLimitState(): void {
+    const savedAttempts = localStorage.getItem('lunglife_login_attempts');
+    const savedLastAttempt = localStorage.getItem('lunglife_login_last_attempt');
+    
+    if (savedAttempts && savedLastAttempt) {
+      const attempts = parseInt(savedAttempts);
+      const lastAttempt = parseInt(savedLastAttempt);
+      const now = Date.now();
+      
+      // Solo cargar si está dentro de la ventana de tiempo
+      if (now - lastAttempt <= this.LOGIN_ATTEMPT_WINDOW_MS) {
+        this.loginAttempts.set(attempts);
+        this.lastLoginAttempt.set(lastAttempt);
+      }
+    }
+  }
+
+  /**
+   * Sanitizar email de login
+   */
+  private sanitizeLoginEmail(email: string): string {
+    return email.toLowerCase().trim().replace(/[<>'"&]/g, '');
   }
 }

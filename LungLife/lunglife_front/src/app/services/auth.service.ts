@@ -5,7 +5,7 @@ import {catchError, tap} from 'rxjs/operators';
 
 import {ApiService} from './api.service';
 import {StorageService} from './storage.service';
-import {AuthResponse, AuthState, LoginCredentials, RegisterData} from '../models/auth.model';
+import {AuthResponse, AuthState, LoginCredentials, RegisterCredentials} from '../models/auth.model';
 import {User} from '../models/user.model';
 import {ApiResponse} from '../models/api.model';
 import {AppConstants} from '../utils/constants';
@@ -37,7 +37,7 @@ export class AuthService {
   /**
    * Registra un nuevo usuario
    */
-  register(userData: RegisterData): Observable<ApiResponse<AuthResponse>> {
+  register(userData: RegisterCredentials): Observable<ApiResponse<AuthResponse>> {
     this.setLoading(true);
 
     return this.apiService.post<AuthResponse>(

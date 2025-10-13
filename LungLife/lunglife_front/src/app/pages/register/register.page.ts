@@ -78,11 +78,15 @@ export class RegisterPage implements OnInit, AfterViewInit {
   readonly acceptTerms = signal(false);
   readonly authLoading = this.loadingService.authLoading$;
 
-  // Enhanced form setup with better validation (renamed to avoid collision with template ref)
+  // Enhanced form setup with better validation and acceptance fields
   readonly registerFormGroup = this.formBuilder.group({
-    name: ['', [
+    firstName: ['', [
       Validators.required,
       Validators.minLength(AppConstants.VALIDATION.NAME.MIN_LENGTH),
+      Validators.maxLength(AppConstants.VALIDATION.NAME.MAX_LENGTH),
+      CustomValidators.noNumbers
+    ]],
+    lastName: ['', [
       Validators.maxLength(AppConstants.VALIDATION.NAME.MAX_LENGTH),
       CustomValidators.noNumbers
     ]],
@@ -98,7 +102,11 @@ export class RegisterPage implements OnInit, AfterViewInit {
     ]],
     confirmPassword: ['', [
       Validators.required
-    ]]
+    ]],
+    phone: [''],
+    acceptTerms: [false, [Validators.requiredTrue]], // OBLIGATORIO
+    acceptPrivacy: [false, [Validators.requiredTrue]], // OBLIGATORIO
+    acceptMarketing: [false] // OPCIONAL
   }, {
     validators: [CustomValidators.passwordMatch('password', 'confirmPassword')]
   });
@@ -156,9 +164,14 @@ export class RegisterPage implements OnInit, AfterViewInit {
       this.loadingService.startLoading('auth', 'Creando tu cuenta...');
 
       const credentials: RegisterCredentials = {
-        name: this.registerFormGroup.value.name!,
+        firstName: this.registerFormGroup.value.firstName!,
+        lastName: this.registerFormGroup.value.lastName || undefined,
         email: this.registerFormGroup.value.email!,
-        password: this.registerFormGroup.value.password!
+        password: this.registerFormGroup.value.password!,
+        phone: this.registerFormGroup.value.phone || undefined,
+        acceptTerms: this.registerFormGroup.value.acceptTerms!,
+        acceptPrivacy: this.registerFormGroup.value.acceptPrivacy!,
+        acceptMarketing: this.registerFormGroup.value.acceptMarketing || false
       };
 
       // Progressive loading feedback

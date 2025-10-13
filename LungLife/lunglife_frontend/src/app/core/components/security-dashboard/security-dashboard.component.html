@@ -1,0 +1,387 @@
+<ion-content class="security-dashboard">
+  <div class="dashboard-header">
+    <h2>🛡️ Dashboard de Seguridad</h2>
+    <p>Monitoreo en tiempo real de la seguridad del registro</p>
+  </div>
+
+  <div class="metrics-grid">
+    <!-- Threat Level -->
+    <div class="metric-card" [ngClass]="'threat-' + (threatLevel$ | async)">
+      <div class="metric-header">
+        <ion-icon name="shield-outline"></ion-icon>
+        <h3>Nivel de Amenaza</h3>
+      </div>
+      <div class="metric-value">{{ (threatLevel$ | async)?.toUpperCase() }}</div>
+      <div class="metric-indicator" [ngClass]="getThreatLevelClass(threatLevel$ | async)"></div>
+    </div>
+
+    <!-- Real-time Metrics -->
+    <div class="metric-card">
+      <div class="metric-header">
+        <ion-icon name="analytics-outline"></ion-icon>
+        <h3>Eventos Totales</h3>
+      </div>
+      <div class="metric-value">{{ (metrics$ | async)?.totalEvents || 0 }}</div>
+    </div>
+
+    <div class="metric-card alert">
+      <div class="metric-header">
+        <ion-icon name="warning-outline"></ion-icon>
+        <h3>Eventos Sospechosos</h3>
+      </div>
+      <div class="metric-value">{{ (metrics$ | async)?.suspiciousEvents || 0 }}</div>
+    </div>
+
+    <div class="metric-card blocked">
+      <div class="metric-header">
+        <ion-icon name="ban-outline"></ion-icon>
+        <h3>Intentos Bloqueados</h3>
+      </div>
+      <div class="metric-value">{{ (metrics$ | async)?.blockedAttempts || 0 }}</div>
+    </div>
+
+    <!-- Password Breach Stats -->
+    <div class="metric-card breach-stats">
+      <div class="metric-header">
+        <ion-icon name="key-outline"></ion-icon>
+        <h3>Validaciones de Contraseña</h3>
+      </div>
+      <div class="breach-details">
+        <div class="breach-item">
+          <span>Total:</span>
+          <span>{{ (passwordMetrics$ | async)?.totalValidations || 0 }}</span>
+        </div>
+        <div class="breach-item alert">
+          <span>Comprometidas:</span>
+          <span>{{ (passwordMetrics$ | async)?.breachedAttempts || 0 }}</span>
+        </div>
+        <div class="breach-item warning">
+          <span>Baja Entropía:</span>
+          <span>{{ (passwordMetrics$ | async)?.lowEntropyAttempts || 0 }}</span>
+        </div>
+        <div class="breach-item">
+          <span>Patrones Comunes:</span>
+          <span>{{ (passwordMetrics$ | async)?.commonPatternAttempts || 0 }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Risk Score -->
+    <div class="metric-card risk-score">
+      <div class="metric-header">
+        <ion-icon name="speedometer-outline"></ion-icon>
+        <h3>Score de Riesgo</h3>
+      </div>
+      <div class="risk-meter">
+        <div class="risk-bar">
+          <div 
+            class="risk-fill" 
+            [style.width.%]="(metrics$ | async)?.riskScore || 0"
+            [ngClass]="getRiskScoreClass((metrics$ | async)?.riskScore || 0)">
+          </div>
+        </div>
+        <div class="risk-value">{{ ((metrics$ | async)?.riskScore || 0).toFixed(1) }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Security Alerts -->
+  <div class="alerts-section" *ngIf="(alerts$ | async)?.length">
+    <h3>🚨 Alertas de Seguridad</h3>
+    <div class="alerts-list">
+      <div 
+        class="alert-item" 
+        *ngFor="let alert of (alerts$ | async)?.slice(0, 5)"
+        [ngClass]="'severity-' + alert.severity">
+        <div class="alert-header">
+          <ion-icon [name]="getAlertIcon(alert.severity)"></ion-icon>
+          <span class="alert-time">{{ alert.timestamp | date:'short' }}</span>
+        </div>
+        <div class="alert-message">{{ alert.message }}</div>
+        <div class="alert-details">
+          <span>IP: {{ alert.affectedIP }}</span>
+          <span>Eventos: {{ alert.eventCount }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Events -->
+  <div class="events-section">
+    <h3>📋 Eventos Recientes</h3>
+    <div class="events-list">
+      <div 
+        class="event-item" 
+        *ngFor="let event of (recentEvents$ | async)?.slice(0, 10)"
+        [ngClass]="'risk-' + event.riskLevel">
+        <div class="event-header">
+          <ion-icon [name]="getEventIcon(event.type)"></ion-icon>
+          <span class="event-time">{{ event.timestamp | date:'HH:mm:ss' }}</span>
+          <span class="event-type">{{ event.type | titlecase }}</span>
+        </div>
+        <div class="event-details">
+          <span>{{ event.action }}</span>
+          <span class="event-ip">{{ event.ipAddress }}</span>
+          <span *ngIf="event.blocked" class="blocked-badge">BLOQUEADO</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div class="actions-section">
+    <ion-button 
+      fill="outline" 
+      (click)="clearAuditLog()"
+      color="warning">
+      <ion-icon name="trash-outline" slot="start"></ion-icon>
+      Limpiar Log
+    </ion-button>
+    
+    <ion-button 
+      fill="outline" 
+      (click)="exportAuditLog()"
+      color="primary">
+      <ion-icon name="download-outline" slot="start"></ion-icon>
+      Exportar Datos
+    </ion-button>
+    
+    <ion-button 
+      fill="solid" 
+      (click)="refreshData()"
+      color="secondary">
+      <ion-icon name="refresh-outline" slot="start"></ion-icon>
+      Actualizar
+    </ion-button>
+  </div>
+</ion-content>
+
+<style>
+.security-dashboard {
+  padding: 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+}
+
+.dashboard-header {
+  text-align: center;
+  color: white;
+  margin-bottom: 30px;
+}
+
+.dashboard-header h2 {
+  font-size: 2.5rem;
+  margin: 0;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.metric-card {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: transform 0.3s ease;
+}
+
+.metric-card:hover {
+  transform: translateY(-5px);
+}
+
+.metric-card.threat-critical {
+  border-left: 5px solid #dc3545;
+}
+
+.metric-card.threat-high {
+  border-left: 5px solid #fd7e14;
+}
+
+.metric-card.threat-medium {
+  border-left: 5px solid #ffc107;
+}
+
+.metric-card.threat-low {
+  border-left: 5px solid #28a745;
+}
+
+.metric-card.alert {
+  border-left: 5px solid #dc3545;
+}
+
+.metric-card.blocked {
+  border-left: 5px solid #6f42c1;
+}
+
+.metric-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.metric-header ion-icon {
+  font-size: 24px;
+  color: #6c757d;
+}
+
+.metric-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #495057;
+}
+
+.metric-value {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #212529;
+  text-align: center;
+}
+
+.breach-details {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.breach-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px;
+  border-radius: 5px;
+  background: rgba(0,0,0,0.05);
+}
+
+.breach-item.alert {
+  background: rgba(220, 53, 69, 0.1);
+  color: #dc3545;
+}
+
+.breach-item.warning {
+  background: rgba(255, 193, 7, 0.1);
+  color: #856404;
+}
+
+.risk-meter {
+  position: relative;
+}
+
+.risk-bar {
+  height: 20px;
+  background: #e9ecef;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+
+.risk-fill {
+  height: 100%;
+  transition: width 0.5s ease;
+  border-radius: 10px;
+}
+
+.risk-fill.low { background: #28a745; }
+.risk-fill.medium { background: #ffc107; }
+.risk-fill.high { background: #fd7e14; }
+.risk-fill.critical { background: #dc3545; }
+
+.risk-value {
+  text-align: center;
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.alerts-section, .events-section {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 15px;
+  padding: 20px;
+  margin-bottom: 20px;
+  backdrop-filter: blur(10px);
+}
+
+.alerts-section h3, .events-section h3 {
+  margin-top: 0;
+  color: #495057;
+}
+
+.alerts-list, .events-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.alert-item, .event-item {
+  padding: 15px;
+  border-radius: 10px;
+  border-left: 4px solid #dee2e6;
+}
+
+.alert-item.severity-critical, .event-item.risk-critical {
+  border-left-color: #dc3545;
+  background: rgba(220, 53, 69, 0.05);
+}
+
+.alert-item.severity-high, .event-item.risk-high {
+  border-left-color: #fd7e14;
+  background: rgba(253, 126, 20, 0.05);
+}
+
+.alert-item.severity-medium, .event-item.risk-medium {
+  border-left-color: #ffc107;
+  background: rgba(255, 193, 7, 0.05);
+}
+
+.alert-header, .event-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+  font-weight: bold;
+}
+
+.alert-time, .event-time {
+  color: #6c757d;
+  font-size: 0.9rem;
+}
+
+.event-details {
+  display: flex;
+  gap: 15px;
+  font-size: 0.9rem;
+  color: #6c757d;
+}
+
+.blocked-badge {
+  background: #dc3545;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+.actions-section {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+  .metrics-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .actions-section {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+</style>

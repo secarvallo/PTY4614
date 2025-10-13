@@ -13,9 +13,14 @@ export interface RegisterData {
 }
 
 export interface RegisterCredentials {
-  name: string;
+  firstName: string;
+  lastName?: string;
   email: string;
   password: string;
+  phone?: string;
+  acceptTerms: boolean;      // Requerido: Términos y condiciones
+  acceptPrivacy: boolean;    // Requerido: Política de privacidad
+  acceptMarketing?: boolean; // Opcional: Marketing
 }
 
 export interface AuthResponse {

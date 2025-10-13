@@ -87,6 +87,7 @@ export interface IUser {
   nombre: string;
   apellido?: string;
   phone?: string;
+  fecha_nacimiento?: string; // Fecha de nacimiento
   email_verified: boolean;
   two_fa_enabled: boolean;
   two_fa_secret?: string;
@@ -97,6 +98,9 @@ export interface IUser {
   updated_at: Date;
   last_login_at?: Date;
   login_count: number;
+  accept_terms?: boolean;
+  accept_privacy?: boolean;
+  marketing_consent?: boolean;
 }
 
 /**

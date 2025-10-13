@@ -63,7 +63,7 @@
       <ion-button
         expand="block"
         type="submit"
-        [disabled]="loginForm.invalid || loading()"
+        [disabled]="!canSubmit() || loading()"
         class="auth-button primary"
         data-test="login-submit"
       >

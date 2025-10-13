@@ -147,6 +147,7 @@ export interface RegisterRequest {
   phone?: string;
   acceptTerms: boolean;
   acceptPrivacy: boolean;
+  acceptMarketing?: boolean; // Campo añadido para compliance de marketing
   deviceId?: string;
   deviceName?: string;
 }

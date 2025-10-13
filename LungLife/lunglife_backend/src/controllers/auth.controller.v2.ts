@@ -100,16 +100,25 @@ export class AuthController {
         firstName: req.body.firstName,
         lastName: req.body.lastName,
         phone: req.body.phone,
-        birthDate: req.body.birthDate ? new Date(req.body.birthDate) : undefined,
-        acceptTerms: req.body.acceptTerms
+        birthDate: req.body.birthDate,
+        acceptTerms: req.body.acceptTerms,
+        acceptPrivacy: req.body.acceptPrivacy,
+        acceptMarketing: req.body.acceptMarketing || false
       };
+
+      // Log para verificar los campos de aceptación
+      this.logger.info('Acceptance fields received:', {
+        acceptTerms: req.body.acceptTerms,
+        acceptPrivacy: req.body.acceptPrivacy,
+        acceptMarketing: req.body.acceptMarketing
+      });
 
       const authService = await this.getAuthService();
       const result = await authService.registerUser(registerRequest);
 
       if (result.success) {
         const duration = Date.now() - startTime;
-        this.logger.info(`Registration successful for ${registerRequest.email} in ${duration}ms`);
+        this.logger.info(`✅ Registration successful for ${registerRequest.email} in ${duration}ms`);
         
         res.status(201).json({
           success: true,
@@ -119,12 +128,34 @@ export class AuthController {
             email: result.user!.email,
             firstName: result.user!.nombre,
             lastName: result.user!.apellido,
+            emailVerified: result.user!.email_verified,
+            acceptanceStatus: {
+              terms: result.user!.accept_terms,
+              privacy: result.user!.accept_privacy,
+              marketing: result.user!.marketing_consent
+            }
           },
           token: result.token,
         });
       } else {
-        this.logger.warn(`Registration failed for ${registerRequest.email}: ${result.error}`);
-        this.sendErrorResponse(res, 400, result.error!, result.errorCode!);
+        this.logger.warn(`❌ Registration failed for ${registerRequest.email}: ${result.error}`, {
+          errorCode: result.errorCode,
+          validationErrors: result.validationErrors,
+          debugInfo: result.debugInfo
+        });
+        
+        // Respuesta específica para errores de validación
+        if (result.errorCode === 'VALIDATION_ERROR' && result.validationErrors) {
+          res.status(400).json({
+            success: false,
+            message: 'Validation errors found',
+            errorCode: result.errorCode,
+            validationErrors: result.validationErrors,
+            debugInfo: result.debugInfo
+          });
+        } else {
+          this.sendErrorResponse(res, 400, result.error!, result.errorCode!);
+        }
       }
 
     } catch (error) {

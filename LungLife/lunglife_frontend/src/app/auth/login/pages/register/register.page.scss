@@ -1,43 +1,308 @@
 /**
- * Register Page Styles
+ * Register Page Styles - PRODUCTION READY
  * 
- * Uses global auth styles for consistency.
- * This file only contains page-specific overrides like password requirements.
+ * Comprehensive styling for secure user registration with:
+ * - Advanced security validation indicators
+ * - Real-time password strength feedback
+ * - Accessibility support (dark theme, reduced motion, high contrast)
+ * - Responsive design for all screen sizes
+ * - Professional UX with meaningful animations
+ * 
+ * @author LungLife Development Team
+ * @version 2.0 - Enterprise Security Edition
  */
 
-.password-requirements {
-  margin-top: 12px;
-  padding: 12px;
-  background: var(--surface);
-  border: 1px solid var(--border);
+/* ========== SECURITY VALIDATION STYLES ========== */
+.security-validation {
+  margin-top: 15px;
+  padding: 15px;
+  background: rgba(var(--ion-color-light-rgb), 0.1);
+  border-radius: 12px;
+  border: 1px solid rgba(var(--ion-color-medium-rgb), 0.2);
+}
+
+.security-check {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  background: rgba(var(--ion-color-primary-rgb), 0.1);
   border-radius: 8px;
-  font-size: 14px;
+  color: var(--ion-color-primary);
+  font-size: 0.9rem;
+}
+
+.security-result {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.security-level {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.security-level.level-high {
+  background: rgba(var(--ion-color-success-rgb), 0.1);
+  color: var(--ion-color-success);
+  border-left: 4px solid var(--ion-color-success);
+}
+
+.security-level.level-medium {
+  background: rgba(var(--ion-color-warning-rgb), 0.1);
+  color: var(--ion-color-warning);
+  border-left: 4px solid var(--ion-color-warning);
+}
+
+.security-level.level-low,
+.security-level.level-critical {
+  background: rgba(var(--ion-color-danger-rgb), 0.1);
+  color: var(--ion-color-danger);
+  border-left: 4px solid var(--ion-color-danger);
+}
+
+.breach-warning {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  background: rgba(var(--ion-color-danger-rgb), 0.1);
+  border: 1px solid var(--ion-color-danger);
+  border-radius: 8px;
+  color: var(--ion-color-danger);
+  font-weight: 500;
+  animation: pulse-warning 2s infinite;
+}
+
+@keyframes pulse-warning {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+  100% { transform: scale(1); }
+}
+
+.security-warnings {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.warning-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px 12px;
+  background: rgba(var(--ion-color-warning-rgb), 0.1);
+  border-radius: 6px;
+  color: var(--ion-color-warning-shade);
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+.warning-item ion-icon {
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+/* ========== PASSWORD REQUIREMENTS ========== */
+.password-requirements {
+  margin-top: 15px;
+  padding: 15px;
+  background: rgba(var(--ion-color-light-rgb), 0.3);
+  border-radius: 12px;
+  border: 1px solid rgba(var(--ion-color-medium-rgb), 0.2);
 }
 
 .requirement {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 4px;
-  font-size: 12px;
-  color: #ff3b30;
-  transition: color 0.2s ease;
+  padding: 6px 0;
+  font-size: 0.85rem;
+  color: var(--ion-color-medium);
+  transition: all 0.3s ease;
 
   &.met {
-    color: #34c759;
+    color: var(--ion-color-success);
+    font-weight: 500;
   }
 
   ion-icon {
-    font-size: 14px;
+    font-size: 16px;
+    transition: color 0.3s ease;
   }
 }
 
-/* Links in checkboxes */
+.requirement.met ion-icon {
+  color: var(--ion-color-success);
+}
+
+.requirement:not(.met) ion-icon {
+  color: var(--ion-color-medium);
+}
+
+/* ========== ENHANCED SUBMIT BUTTON ========== */
+.auth-button.primary:disabled {
+  opacity: 0.6;
+  transform: scale(0.98);
+  cursor: not-allowed;
+}
+
+.auth-button.primary:not(:disabled) {
+  animation: ready-pulse 2s infinite;
+}
+
+@keyframes ready-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(var(--ion-color-primary-rgb), 0.4); }
+  70% { box-shadow: 0 0 0 10px rgba(var(--ion-color-primary-rgb), 0); }
+  100% { box-shadow: 0 0 0 0 rgba(var(--ion-color-primary-rgb), 0); }
+}
+
+/* ========== SECURITY STATUS INDICATORS ========== */
+.security-status {
+  position: relative;
+  padding-left: 25px;
+}
+
+.security-status::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--ion-color-danger);
+}
+
+.security-status.secure::before {
+  background: var(--ion-color-success);
+  animation: secure-glow 2s infinite;
+}
+
+@keyframes secure-glow {
+  0% { box-shadow: 0 0 5px var(--ion-color-success); }
+  50% { box-shadow: 0 0 15px var(--ion-color-success); }
+  100% { box-shadow: 0 0 5px var(--ion-color-success); }
+}
+
+/* ========== ENHANCED MESSAGES ========== */
+.message.warning {
+  background: linear-gradient(45deg, rgba(var(--ion-color-warning-rgb), 0.1), rgba(var(--ion-color-danger-rgb), 0.1));
+  border: 1px solid var(--ion-color-warning);
+  border-radius: 12px;
+  padding: 15px;
+  margin: 15px 0;
+  animation: shake 0.5s ease-in-out;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  ion-icon {
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+.message.error {
+  background: linear-gradient(45deg, rgba(var(--ion-color-danger-rgb), 0.1), rgba(var(--ion-color-danger-rgb), 0.2));
+  border: 1px solid var(--ion-color-danger);
+  border-radius: 12px;
+  padding: 15px;
+  margin: 15px 0;
+  color: var(--ion-color-danger-shade);
+  font-weight: 500;
+  animation: error-pulse 0.5s ease-in-out;
+}
+
+@keyframes error-pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+  100% { transform: scale(1); }
+}
+
+/* ========== FORM OPTIONS ========== */
 .form-options a {
   color: var(--primary);
   text-decoration: none;
   
   &:hover {
+    text-decoration: underline;
+  }
+}
+
+/* ========== RESPONSIVE DESIGN ========== */
+@media (max-width: 768px) {
+  .security-validation {
+    padding: 12px;
+    margin-top: 12px;
+  }
+  
+  .security-level,
+  .breach-warning {
+    padding: 10px;
+    font-size: 0.85rem;
+  }
+  
+  .warning-item {
+    padding: 6px 10px;
+    font-size: 0.8rem;
+  }
+  
+  .requirement {
+    font-size: 0.8rem;
+    padding: 4px 0;
+  }
+}
+
+/* ========== DARK THEME SUPPORT ========== */
+@media (prefers-color-scheme: dark) {
+  .security-validation {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+  
+  .security-check {
+    background: rgba(var(--ion-color-primary-rgb), 0.2);
+  }
+  
+  .password-requirements {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+}
+
+/* ========== ACCESSIBILITY ========== */
+@media (prefers-reduced-motion: reduce) {
+  .breach-warning,
+  .auth-button.primary:not(:disabled),
+  .security-status.secure::before {
+    animation: none;
+  }
+}
+
+@media (prefers-contrast: high) {
+  .security-level,
+  .breach-warning,
+  .warning-item {
+    border-width: 2px;
+    font-weight: bold;
+  }
+  
+  .requirement.met {
+    font-weight: bold;
     text-decoration: underline;
   }
 }
