@@ -26,6 +26,8 @@ export class ThemeService {
 
   private applyTheme(theme: AppTheme): void {
     document.documentElement.setAttribute('data-theme', theme);
+    document.body.classList.remove('dark', 'light');
+    document.body.classList.add(theme);
   }
 
   public toggleTheme(): void {
@@ -33,6 +35,10 @@ export class ThemeService {
     localStorage.setItem(STORAGE_KEY, newTheme);
     this.applyTheme(newTheme);
     this.themeSubject.next(newTheme);
+  }
+
+  public getCurrentTheme(): AppTheme {
+    return this.themeSubject.value;
   }
 
   private listenToSystemChanges(): void {

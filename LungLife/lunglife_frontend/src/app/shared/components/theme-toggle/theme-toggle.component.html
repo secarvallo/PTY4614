@@ -1,11 +1,15 @@
-<ion-button
-  fill="clear"
-  size="small"
-  (click)="toggleTheme()"
-  class="theme-toggle-btn"
->
-  <ion-icon
-    [name]="(theme$ | async) === 'dark' ? 'sunny-outline' : 'moon-outline'"
-    slot="icon-only"
-  ></ion-icon>
-</ion-button>
+<div class="theme-toggle-container">
+  <div class="theme-toggle-content">
+    <ion-icon 
+      [name]="(theme$ | async) === 'dark' ? 'sunny-outline' : 'moon-outline'"
+      class="theme-icon"
+    ></ion-icon>
+    <span class="theme-label">Modo Oscuro</span>
+    <ion-toggle
+      [checked]="(theme$ | async) === 'dark'"
+      (ionChange)="onToggleChange($event)"
+      class="theme-toggle"
+      color="primary"
+    ></ion-toggle>
+  </div>
+</div>

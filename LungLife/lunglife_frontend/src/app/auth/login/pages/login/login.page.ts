@@ -1,49 +1,182 @@
-import { Component, OnDestroy, OnInit, inject } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Component, OnInit, OnDestroy, inject, ChangeDetectionStrategy, signal, computed } from '@angular/core';
+import { CommonModule, NgOptimizedImage } from '@angular/common';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, NonNullableFormBuilder } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
+import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 import { IonicModule, AlertController, LoadingController } from '@ionic/angular';
-import {CommonModule, NgOptimizedImage} from '@angular/common';
-import { ThemeToggleComponent } from '../../../shared/components/theme-toggle/theme-toggle.component';
 import { Subject, takeUntil } from 'rxjs';
-
 import { AuthFacadeService } from '../../../core/services';
-import { LoggerService } from 'src/app/core/services/logger.service';
-import { AuthCredentials } from '../../../core/interfaces/auth.unified';
+import { AuthValidators } from '../../../core/validators/auth-validators';
+import { DEFAULT_AUTH_REDIRECT, resolvePostAuthRedirect } from '../../../core/utils/auth-navigation';
 
-/**
- * 🔐 Login Page - Clean Architecture Implementation
- * Uses Facade Pattern for simplified authentication
- * Implements Observer Pattern for reactive state management
- */
+import { LoggerService } from '../../../../core/services/logger.service';
+import { LoginRequest } from '../../../core/services/infrastructure/auth-api.service';
+
 @Component({
   selector: 'app-login',
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, IonicModule, RouterLink],
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss', '../../../auth.styles.scss'],
-  standalone: true,
-  imports: [IonicModule, ReactiveFormsModule, CommonModule, NgOptimizedImage, RouterLink, ThemeToggleComponent]
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LoginPage implements OnInit, OnDestroy {
-  // Dependency Injection
-  private fb = inject(FormBuilder);
-  private router = inject(Router);
+  private fb = inject(NonNullableFormBuilder);
   private authFacade = inject(AuthFacadeService);
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
   private alertController = inject(AlertController);
   private loadingController = inject(LoadingController);
-  private logger = inject(LoggerService).createChild('LoginPage');
+  private logger = inject(LoggerService);
 
-  // Reactive Form
-  loginForm!: FormGroup;
+  // Angular 20 Signals for reactive state management
+  loading = signal(false);
+  showPassword = signal(false);
+  requiresTwoFactor = signal(false);
+  showBackupCodeInput = signal(false);
+  backupCode = signal('');
+  error = signal<string | null>(null);
+  
+  // Computed signals for derived state
+  isFormValid = computed(() => this.loginForm?.valid ?? false);
+  canSubmit = computed(() => this.loginForm?.valid && !this.loading());
 
-  // Component State
-  showPassword = false;
+  // Formularios con NonNullableFormBuilder para mejor type safety
+  loginForm: FormGroup;
+  twoFactorForm: FormGroup;
+
+  returnUrl = DEFAULT_AUTH_REDIRECT;
   private destroy$ = new Subject<void>();
 
-  // Observable State from AuthObserver (Observer Pattern)
+  // Observable State from AuthFacade (Observer Pattern)
   authState$ = this.authFacade.getAuthState();
 
+  constructor() {
+    this.loginForm = this.fb.group({
+      email: ['', [Validators.required, AuthValidators.advancedEmail()]],
+      password: ['', [Validators.required]],
+      rememberMe: [false]
+    });
+
+    this.twoFactorForm = this.fb.group({
+      code: ['', [Validators.required, AuthValidators.twoFactorCode()]]
+    });
+  }
+
   ngOnInit() {
-    this.initializeForm();
-    this.subscribeToAuthState();
+    // Obtener URL de retorno de los parámetros de consulta
+    this.returnUrl = resolvePostAuthRedirect(this.route.snapshot.queryParams['returnUrl']);
+
+    // Suscribirse a cambios en el estado de 2FA usando signals
+    this.authFacade.requiresTwoFA$.pipe(takeUntil(this.destroy$)).subscribe(r => this.requiresTwoFactor.set(r));
+    this.authFacade.error$.pipe(takeUntil(this.destroy$)).subscribe(e => this.error.set(e));
+    this.authFacade.loading$.pipe(takeUntil(this.destroy$)).subscribe(l => this.loading.set(l));
+    this.authFacade.isAuthenticated$.pipe(takeUntil(this.destroy$)).subscribe(isAuth => {
+      if (isAuth && !this.requiresTwoFactor() && this.router.url !== this.returnUrl) {
+        this.router.navigateByUrl(this.returnUrl, { replaceUrl: true });
+      }
+    });
+
+
+  }
+
+  onLogin() {
+    if (!this.loginForm.valid) return;
+
+    const loginData = this.loginForm.value;
+
+    this.authFacade.login(loginData).subscribe({
+      next: (response: any) => {
+        if (response.success && !response.requiresTwoFactor) {
+          this.performDeferredRedirect();
+        }
+      },
+      error: (error: any) => {
+        // El error se maneja automáticamente por el servicio
+      }
+    });
+  }
+
+  onVerify2FA() {
+    if (!this.twoFactorForm.valid) return;
+
+    const code = this.twoFactorForm.get('code')?.value;
+
+    this.authFacade.verify2FA({ code }).subscribe({
+      next: (response: any) => {
+        if (response.success) {
+          this.performDeferredRedirect();
+        }
+      },
+      error: (error: any) => {
+        // El error se maneja automáticamente por el servicio
+      }
+    });
+  }
+
+  verifyBackupCode() {
+    if (!this.backupCode()) return;
+
+    this.authFacade.verify2FA({
+      code: this.backupCode(),
+      isBackupCode: true
+    }).subscribe({
+      next: (response: any) => {
+        if (response.success) {
+          this.performDeferredRedirect();
+        }
+      },
+      error: (error: any) => {
+        // El error se maneja automáticamente por el servicio
+      }
+    });
+  }
+
+  cancelTwoFactor() {
+    this.requiresTwoFactor.set(false);
+    this.twoFactorForm.reset();
+    this.showBackupCodeInput.set(false);
+    this.backupCode.set('');
+    this.error.set(null);
+  }
+
+  togglePassword() {
+    this.showPassword.update(current => !current);
+  }
+
+  toggleBackupCodeInput() {
+    this.showBackupCodeInput.update(current => !current);
+  }
+
+  loginWithGoogle() {
+    this.showInfoAlert('Google Login', 'Google authentication will be implemented soon.');
+  }
+
+  loginWithApple() {
+    this.showInfoAlert('Apple Login', 'Apple authentication will be implemented soon.');
+  }
+
+  /**
+   * Redirección diferida con reintentos para evitar condiciones de carrera al propagar estado auth.
+   */
+  private performDeferredRedirect(attempt = 0) {
+    if (this.requiresTwoFactor()) return;
+    if (this.router.url === this.returnUrl) return;
+    const maxAttempts = 6;
+    if (attempt === 0) {
+      setTimeout(() => this.performDeferredRedirect(attempt + 1), 0);
+      return;
+    }
+    if (attempt > maxAttempts) return;
+    try {
+      this.router.navigateByUrl(this.returnUrl, { replaceUrl: true }).then(success => {
+        if (!success) {
+          setTimeout(() => this.performDeferredRedirect(attempt + 1), 40 * attempt);
+        }
+      });
+    } catch {
+      setTimeout(() => this.performDeferredRedirect(attempt + 1), 40 * attempt);
+    }
   }
 
   ngOnDestroy() {
@@ -52,45 +185,9 @@ export class LoginPage implements OnInit, OnDestroy {
   }
 
   /**
-   * Initialize reactive form with validation
+   * Enhanced login with better loading and error handling
    */
-  private initializeForm(): void {
-    this.loginForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(8)]],
-      rememberMe: [false]
-    });
-  }
-
-  /**
-   * Subscribe to authentication state changes (Observer Pattern)
-   */
-  private subscribeToAuthState(): void {
-    // Navigate to 2FA verification if required
-    this.authState$.requiresTwoFA$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((requires2FA: boolean) => {
-        if (requires2FA) {
-          this.logger.info('2FA required, navigating to verification');
-          this.router.navigate(['/auth/verify-2fa']);
-        }
-      });
-
-    // Handle errors
-    this.authState$.error$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((error: string | null) => {
-        if (error) {
-          this.showErrorAlert(error);
-        }
-      });
-  }
-
-  /**
-   * 🔐 Handle login form submission
-   * Uses Facade Pattern for simplified authentication
-   */
-  async onLogin(): Promise<void> {
+  async onLoginEnhanced(): Promise<void> {
     if (!this.loginForm.valid) {
       this.markFormGroupTouched();
       return;
@@ -103,149 +200,42 @@ export class LoginPage implements OnInit, OnDestroy {
     await loading.present();
 
     try {
-      const credentials: AuthCredentials = this.loginForm.value;
-          this.logger.debug('Attempting login', { email: (credentials as any).email });
+      const credentials: LoginRequest = this.loginForm.value;
+      console.log('Attempting enhanced login', { email: credentials.email });
       
       this.authFacade.login(credentials).subscribe({
         next: async (result) => {
           await loading.dismiss();
-          this.logger.debug('Login result received', { success: result.success, hasUser: !!(result as any).user, requiresTwoFA: !!(result as any).requiresTwoFA });
+          console.log('Login result received', { 
+            success: result.success, 
+            hasUser: !!result.user, 
+            requiresTwoFA: !!result.requiresTwoFA 
+          });
           
           if (result.success) {
-            this.logger.info('Login successful');
-            
-            // Check if 2FA is required
-            if ((result as any).requiresTwoFA) {
-              this.logger.info('2FA required (will navigate via subscription)');
-              return;
+            console.log('Login successful');
+            if (!result.requiresTwoFA) {
+              this.performDeferredRedirect();
             }
-            // Si no vino usuario en la respuesta pero hay token, simplemente navegamos y el guard/otros flujos podrán hidratar posteriormente si es necesario.
-            if (!(result as any).user) {
-              this.logger.debug('No user in result; navigating optimistically to profile');
-              this.navigateToProfile();
-              return;
-            }
-            
-            // Navegar reemplazando la URL para evitar volver con back
-            this.logger.info('Navigating to profile (replaceUrl)');
-            this.navigateToProfile();
-            
           } else {
-            this.logger.error('Login failed', result.error);
             this.showErrorAlert(result.error || 'Login failed');
           }
         },
         error: async (error) => {
           await loading.dismiss();
-          this.logger.error('Login error', error);
+          console.error('Login error', error);
           this.showErrorAlert('An error occurred during login');
         }
       });
     } catch (error) {
       await loading.dismiss();
-  this.logger.error('Login catch error', error);
+      console.error('Login catch error', error);
       this.showErrorAlert('An unexpected error occurred');
     }
   }
 
   /**
-   * Toggle password visibility
-   */
-  togglePasswordVisibility(): void {
-    this.showPassword = !this.showPassword;
-  }
-
-  /**
-   * Navega a perfil con replaceUrl y logging unificado
-   */
-  private navigateToProfile(): void {
-    this.router.navigate(['/profile'], { replaceUrl: true }).then(
-      success => {
-        if (success) {
-          this.logger.info('Navigation to /profile successful');
-        } else {
-          this.logger.error('Navigation to /profile failed');
-        }
-      },
-      error => this.logger.error('Navigation promise rejected', error)
-    );
-  }
-
-  /**
-   * Navigate to Google authentication
-   */
-  loginWithGoogle(): void {
-    // This would be handled by a GoogleStrategy in the future
-    this.showInfoAlert('Google Login', 'Google authentication will be implemented soon.');
-  }
-
-  /**
-   * Navigate to Facebook authentication (placeholder)
-   */
-  loginWithFacebook(): void {
-    this.showInfoAlert('Facebook Login', 'Facebook authentication will be implemented soon.');
-  }
-
-  /**
-   * Navigate to Apple authentication (placeholder)
-   */
-  loginWithApple(): void {
-    this.showInfoAlert('Apple Login', 'Apple authentication will be implemented soon.');
-  }
-
-  /**
-   * Get form control for template access
-   */
-  getFormControl(controlName: string) {
-    return this.loginForm.get(controlName);
-  }
-
-  /**
-   * Check if form control has error
-   */
-  hasError(controlName: string, errorType: string = ''): boolean {
-    const control = this.getFormControl(controlName);
-    if (!control) return false;
-
-    if (errorType) {
-      return control.hasError(errorType) && (control.dirty || control.touched);
-    }
-    return control.invalid && (control.dirty || control.touched);
-  }
-
-  /**
-   * Get error message for form control
-   */
-  getErrorMessage(controlName: string): string {
-    const control = this.getFormControl(controlName);
-    if (!control || !control.errors) return '';
-
-    if (control.errors['required']) {
-      return `${this.getFieldLabel(controlName)} is required`;
-    }
-    if (control.errors['email']) {
-      return 'Please enter a valid email address';
-    }
-    if (control.errors['minlength']) {
-      return `${this.getFieldLabel(controlName)} must be at least ${control.errors['minlength'].requiredLength} characters`;
-    }
-
-    return 'Invalid input';
-  }
-
-  /**
-   * Get user-friendly field labels
-   */
-  private getFieldLabel(controlName: string): string {
-    const labels: { [key: string]: string } = {
-      email: 'Email',
-      password: 'Password'
-    };
-    return labels[controlName] || controlName;
-  }
-
-  /**
-   * Mark all form controls as touched for validation display
+   * Form validation helpers
    */
   private markFormGroupTouched(): void {
     Object.keys(this.loginForm.controls).forEach(key => {
@@ -279,5 +269,4 @@ export class LoginPage implements OnInit, OnDestroy {
     });
     await alert.present();
   }
-
 }

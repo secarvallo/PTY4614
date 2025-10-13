@@ -1,15 +1,153 @@
-.theme-toggle-btn {
-  --color: var(--ion-color-medium);
-  --padding-start: 8px;
-  --padding-end: 8px;
-  min-width: 40px;
-  height: 40px;
+/**
+ * Theme Toggle Component - Responsive Design
+ * 
+ * Desktop: Top-right corner with margin
+ * Mobile: Bottom-right corner (floating)
+ */
+
+.theme-toggle-container {
+  position: fixed;
+  z-index: 1000;
+  
+  // Desktop positioning (default)
+  top: 20px;
+  right: 20px;
+
+  .theme-toggle-content {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    background: var(--ion-color-light);
+    border-radius: 24px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--ion-color-light-shade);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+
+    &:hover {
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+      transform: translateY(-1px);
+    }
+  }
+
+  .theme-icon {
+    font-size: 20px;
+    color: var(--ion-color-primary);
+    transition: all 0.3s ease;
+  }
+
+  .theme-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--ion-color-dark);
+    white-space: nowrap;
+    transition: color 0.3s ease;
+  }
+
+  .theme-toggle {
+    --handle-background: #ffffff;
+    --handle-background-checked: #ffffff;
+    --background: var(--ion-color-medium-tint);
+    --background-checked: var(--ion-color-primary);
+    --border-radius: 16px;
+    --handle-border-radius: 14px;
+    --handle-width: 24px;
+    --handle-height: 24px;
+    --handle-spacing: 2px;
+    width: 48px;
+    height: 28px;
+
+    &::part(handle) {
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    }
+  }
 }
 
-.theme-toggle-btn:hover {
-  --color: var(--ion-color-primary);
+// Dark theme adaptations
+:host-context(.dark) .theme-toggle-container {
+  .theme-toggle-content {
+    background: var(--ion-color-dark-tint);
+    border-color: var(--ion-color-dark-shade);
+  }
+
+  .theme-label {
+    color: var(--ion-color-light);
+  }
+
+  .theme-icon {
+    color: var(--ion-color-secondary);
+  }
 }
 
-ion-icon {
-  font-size: 20px;
+// Mobile responsiveness
+@media (max-width: 768px) {
+  .theme-toggle-container {
+    // Mobile positioning - bottom right
+    top: auto;
+    bottom: 20px;
+    right: 20px;
+
+    .theme-toggle-content {
+      padding: 10px 14px;
+      border-radius: 20px;
+    }
+
+    .theme-label {
+      font-size: 13px;
+    }
+
+    .theme-icon {
+      font-size: 18px;
+    }
+
+    .theme-toggle {
+      width: 44px;
+      height: 26px;
+      
+      --handle-width: 22px;
+      --handle-height: 22px;
+    }
+  }
+}
+
+// Extra small devices
+@media (max-width: 480px) {
+  .theme-toggle-container {
+    bottom: 16px;
+    right: 16px;
+
+    .theme-toggle-content {
+      padding: 8px 12px;
+      gap: 6px;
+    }
+
+    .theme-label {
+      font-size: 12px;
+    }
+
+    .theme-icon {
+      font-size: 16px;
+    }
+
+    .theme-toggle {
+      width: 40px;
+      height: 24px;
+      
+      --handle-width: 20px;
+      --handle-height: 20px;
+    }
+  }
+}
+
+// Animation for theme change
+.theme-toggle-container .theme-icon {
+  &[name="sunny-outline"] {
+    color: var(--ion-color-warning);
+  }
+
+  &[name="moon-outline"] {
+    color: var(--ion-color-primary);
+  }
 }

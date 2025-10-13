@@ -18,4 +18,14 @@ export class ThemeToggleComponent {
   toggleTheme(): void {
     this.themeService.toggleTheme();
   }
+
+  onToggleChange(event: any): void {
+    // Solo cambia si el estado actual es diferente al toggle
+    const isDark = event.detail.checked;
+    const currentTheme = this.themeService.getCurrentTheme();
+    
+    if ((isDark && currentTheme === 'light') || (!isDark && currentTheme === 'dark')) {
+      this.themeService.toggleTheme();
+    }
+  }
 }

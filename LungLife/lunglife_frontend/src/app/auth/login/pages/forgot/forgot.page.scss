@@ -1,324 +1,50 @@
-/*
-:host
-Define las propiedades personalizadas (variables CSS) para los componentes de
-autenticación. Incluye gradientes de fondo, colores de tarjeta, gradiente
-principal para botones y colores de texto.
-*/
-:host {
-  --bg-start: #f6f7fb;
-  --bg-end: #eef2ff;
-  --card-bg: #ffffff;
-  --primary-grad: linear-gradient(135deg, #6c63ff 0%, #7b4dff 50%, #9a60ff 100%);
-  --text-color: #2d3748;
-  --muted-color: #718096;
-}
+/**
+ * Forgot Password Page Styles
+ * 
+ * Uses global auth styles for consistency across authentication pages.
+ * The main styling is handled by auth.styles.scss which is imported
+ * in the component. This file only contains page-specific overrides.
+ */
 
-/*
-==============================================
-ESTILOS DE CONTENEDOR Y LAYOUT PRINCIPAL
-==============================================
-*/
-
-/*
-ion-content.auth-content
-Aplica el gradiente de fondo principal al área de contenido.
-*/
-ion-content.auth-content {
-  --background: linear-gradient(180deg, var(--bg-start) 0%, var(--bg-end) 100%);
-}
-
-/*
-.auth-container
-Centra el contenedor, define su ancho máximo y utiliza un layout de grid
-para alinear verticalmente el contenido.
-*/
-.auth-container {
-  max-width: 420px;
-  margin: 0 auto;
-  padding: 32px 20px 24px;
-  display: grid;
-  align-content: center;
-  min-height: 100%;
-}
-
-/*
-==============================================
-ESTILOS DEL ENCABEZADO (HEADER)
-==============================================
-*/
-
-/*
-.auth-header
-Estiliza la sección del encabezado, incluyendo el logo y los textos,
-centrando su contenido.
-*/
-.auth-header {
-  text-align: center;
-  margin-bottom: 16px;
-}
-
-.auth-header .logo-placeholder {
-  width: 76px;
-  height: 76px;
-  margin: 0 auto 12px;
-  border-radius: 18px;
-  background: radial-gradient(62% 62% at 50% 50%, #ede7ff 0%, #e7f0ff 100%);
-  display: grid;
-  place-items: center;
-  box-shadow: 0 8px 20px rgba(108, 99, 255, 0.15);
-}
-
-.auth-header h1 {
-  color: var(--text-color);
-  font-weight: 700;
-  font-size: 22px;
-  margin: 0 0 4px;
-}
-
-.auth-header p {
-  color: var(--muted-color);
-  margin: 0;
-  font-size: 14px;
-}
-
-/*
-==============================================
-ESTILOS DEL FORMULARIO
-==============================================
-*/
-
-/*
-.auth-form
-Da al formulario una apariencia de tarjeta con fondo blanco, bordes
-redondeados, padding y una sombra sutil.
-*/
-.auth-form {
-  background: var(--card-bg);
-  border-radius: 20px;
-  padding: 18px 16px 16px;
-  box-shadow: 0 18px 40px rgba(29, 33, 84, 0.08);
-}
-
-/*
-.form-group
-Añade un espaciado vertical entre cada grupo de elementos del formulario
-(ej. input + mensaje de error).
-*/
-.form-group {
-  margin-bottom: 12px;
-}
-
-/*
-ion-item
-Personaliza los campos de entrada con un fondo claro, sin bordes y esquinas
-redondeadas para un look moderno.
-*/
-ion-item {
-  --background: #f7f8fc;
-  --border-color: transparent;
-  --highlight-background: transparent;
-  --min-height: 56px;
-  --border-radius: 14px;
-  margin: 0 0 6px;
-}
-
-/*
-ion-item.error
-Cambia el fondo del campo de entrada a un tono rojo claro cuando hay un
-error de validación.
-*/
-ion-item.error {
-  --background: #fff6f6;
-}
-
-/*
-.input-icon & .password-toggle
-Estiliza los íconos dentro de los campos de entrada, como el de "ver/ocultar
-contraseña".
-*/
-.input-icon {
-  color: #7f8bb3;
-  font-size: 20px;
-}
-
-.password-toggle {
-  --padding-start: 8px;
-  --padding-end: 8px;
-  color: #7f8bb3;
-}
-
-/*
-ion-input.invalid
-Cambia el color del cursor (caret) a rojo en campos inválidos.
-*/
-ion-input.invalid::part(native) {
-  caret-color: #d43c5a;
-}
-
-/*
-==============================================
-ESTILOS PARA MENSAJES Y VALIDACIÓN
-==============================================
-*/
-
-/*
-.error-message
-Estiliza los mensajes de error de validación que aparecen debajo de cada
-campo, con texto rojo y espaciado.
-*/
-.error-message {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  color: #d43c5a;
-  font-size: 12px;
-  padding: 0 4px 6px;
-}
-
-/*
-.message (success | error)
-Define el estilo para mensajes de estado generales del formulario, como
-"Enlace enviado con éxito".
-*/
+/* Message styles for success/error feedback */
 .message {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  padding: 6px 8px;
-  border-radius: 10px;
-  margin: 6px 2px 10px;
-}
-
-.message.success {
-  background: #ecfbf3;
-  color: #18794e;
-}
-
-.message.error {
-  background: #fff4f6;
-  color: #b8324b;
-}
-
-/*
-==============================================
-COMPONENTES ESPECÍFICOS (Contraseña, Términos)
-==============================================
-*/
-
-/*
-.password-strength
-Estiliza el indicador de fortaleza de la contraseña, incluyendo la barra
-de progreso y la etiqueta de texto (Débil, Media, Fuerte).
-*/
-.password-strength {
-  display: grid;
-  gap: 6px;
-  padding: 0 4px 8px;
-}
-
-.strength-bar {
-  width: 100%;
-  height: 8px;
-  background: #eef1ff;
-  border-radius: 10px;
-  overflow: hidden;
-}
-
-.strength-fill {
-  height: 100%;
-  border-radius: 10px;
-  transition: width .25s ease;
-}
-
-.strength-label {
-  font-size: 12px;
-  font-weight: 600;
-}
-
-/*
-.password-requirements
-Estiliza la lista de requisitos para la contraseña (ej. "Mínimo 8 caracteres").
-*/
-.password-requirements {
-  display: grid;
-  gap: 6px;
-  padding: 4px 4px 8px;
-}
-
-.requirement-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 12px;
-  color: #7b89b0;
-}
-
-/*
-.terms-item & .custom-checkbox
-Personaliza la apariencia del checkbox de "Términos y Condiciones".
-*/
-.terms-item {
-  --background: transparent;
-  padding-left: 0;
-}
-
-.custom-checkbox {
-  --size: 18px;
-  --checkmark-color: #fff;
-  --background-checked: #6c63ff;
-}
-
-/*
-==============================================
-ESTILOS DE BOTONES Y PIE DE PÁGINA
-==============================================
-*/
-
-/*
-.auth-button.primary
-Estilo principal para el botón de acción (Enviar, Registrar), con el
-gradiente primario, bordes redondeados y sombra.
-*/
-.auth-button.primary {
-  --background: var(--primary-grad);
-  --border-radius: 14px;
-  height: 50px;
-  font-weight: 700;
-  letter-spacing: 0.2px;
-  box-shadow: 0 10px 24px rgba(108, 99, 255, 0.35);
-}
-
-/*
-.auth-footer & .link-button
-Estiliza el pie de página con el texto y el enlace para navegar entre
-las páginas de login, registro, etc.
-*/
-.auth-footer {
-  text-align: center;
-  margin-top: 12px;
-  color: var(--muted-color);
+  padding: 12px 16px;
+  border-radius: 12px;
+  margin: 16px 0;
   font-size: 14px;
+  font-weight: 500;
+  text-align: center;
+  border: 1px solid transparent;
+  animation: slideIn 0.3s ease-out;
+  
+  &.success {
+    background: rgba(52, 199, 89, 0.1);
+    border-color: rgba(52, 199, 89, 0.3);
+    color: #1e7e34;
+  }
+  
+  &.error {
+    background: rgba(255, 59, 48, 0.1);
+    border-color: rgba(255, 59, 48, 0.3);
+    color: #d93025;
+  }
 }
 
-.link-button {
-  color: #6c63ff;
-  height: auto;
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-/*
-==============================================
-ESTILOS RESPONSIVOS
-==============================================
-*/
-
-/*
-Añade un padding superior e inferior adicional en pantallas más altas
-para mejorar la distribución del espacio.
-*/
-@media (min-height: 760px) {
-  .auth-container {
-    padding-top: 48px;
-    padding-bottom: 32px;
+/* Specific styling for forgot page button */
+.auth-button {
+  &.primary[disabled] {
+    opacity: 0.6;
+    cursor: not-allowed;
   }
 }
