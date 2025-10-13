@@ -1,32 +1,36 @@
-<ion-content class="auth-content">
+<ion-content class="auth-content" data-test="forgot-page">
   <div class="auth-container">
 
-    <!-- Header Section -->
     <div class="auth-header">
       <div class="logo-placeholder"></div>
       <h1>Recuperar Contraseña</h1>
       <p>Ingresa tu correo para restablecerla</p>
     </div>
 
-    <!-- Forgot Password Form -->
-    <form (ngSubmit)="onSubmit()" class="auth-form refresh">
+    <form [formGroup]="forgotPasswordForm" (ngSubmit)="onSubmit()" class="auth-form refresh" data-test="forgot-form">
 
-      <!-- Email Field -->
       <div class="form-group">
         <ion-item lines="none">
-          <ion-input type="email" placeholder="Correo electrónico" [(ngModel)]="email" name="email"
-                     required></ion-input>
+          <ion-input
+            type="email"
+            placeholder="Correo electrónico"
+            formControlName="email"
+            data-test="forgot-email"
+          ></ion-input>
         </ion-item>
+        @if (hasError('email')) {
+          <div class="error-message">{{ getErrorMessage('email') }}</div>
+        }
       </div>
 
-      <!-- Message Display -->
-      @if (message) {
-        <div class="message" [class.success]="isSuccess" [class.error]="!isSuccess">{{ message }}</div>
-      }
-
-      <!-- Submit Button -->
-      <ion-button type="submit" expand="block" class="auth-button primary" [disabled]="isLoading || !email">
-        @if (isLoading) {
+      <ion-button
+        type="submit"
+        expand="block"
+        class="auth-button primary"
+        [disabled]="forgotPasswordForm.invalid || (isLoading$ | async)"
+        data-test="forgot-submit"
+      >
+        @if (isLoading$ | async) {
           <ion-spinner name="crescent"></ion-spinner>
         } @else {
           <span>Enviar Enlace</span>
@@ -34,7 +38,6 @@
       </ion-button>
     </form>
 
-    <!-- Footer Actions -->
     <div class="auth-footer">
       <p>¿Recordaste tu contraseña?</p>
       <ion-button
@@ -44,7 +47,7 @@
         routerDirection="back"
         class="link-button"
       >
-        <strong>Volver al inicio</strong>
+        <strong>Inicia sesión aquí</strong>
       </ion-button>
     </div>
 

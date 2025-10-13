@@ -111,24 +111,16 @@ export class AuthController {
         const duration = Date.now() - startTime;
         this.logger.info(`Registration successful for ${registerRequest.email} in ${duration}ms`);
         
-        this.sendSuccessResponse(res, 201, {
+        res.status(201).json({
+          success: true,
+          message: 'User registered successfully',
           user: {
             id: result.user!.id,
             email: result.user!.email,
-            firstName: result.user!.first_name,
-            lastName: result.user!.last_name,
-            phone: result.user!.phone,
-            emailVerified: result.user!.is_email_verified,
-            isActive: result.user!.is_active
+            firstName: result.user!.nombre,
+            lastName: result.user!.apellido,
           },
-          tokens: {
-            accessToken: result.token!,
-            refreshToken: result.refreshToken!,
-            tokenType: 'Bearer'
-          },
-          metadata: {
-            emailVerificationRequired: !result.user!.is_email_verified
-          }
+          token: result.token,
         });
       } else {
         this.logger.warn(`Registration failed for ${registerRequest.email}: ${result.error}`);
@@ -175,21 +167,16 @@ export class AuthController {
         const duration = Date.now() - startTime;
         this.logger.info(`Login successful for ${loginRequest.email} in ${duration}ms`);
         
-        this.sendSuccessResponse(res, 200, {
+        res.status(200).json({
+          success: true,
+          message: 'Login successful',
           user: {
             id: result.user!.id,
             email: result.user!.email,
-            firstName: result.user!.first_name,
-            lastName: result.user!.last_name,
-            emailVerified: result.user!.is_email_verified,
-            isActive: result.user!.is_active,
-            lastLogin: result.user!.last_login_at
+            firstName: result.user!.nombre,
+            lastName: result.user!.apellido,
           },
-          tokens: {
-            accessToken: result.token!,
-            refreshToken: result.refreshToken!,
-            tokenType: 'Bearer'
-          }
+          token: result.token,
         });
       } else {
         this.logger.warn(`Login failed for ${loginRequest.email}: ${result.error}`);

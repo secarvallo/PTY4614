@@ -14,7 +14,7 @@ dotenv.config();
 const databaseSchema = z.object({
   host: z.string().default('localhost'),
   port: z.number().default(5432),
-  database: z.string().default('lunglife_db'),
+  database: z.string().default('LungLife'),
   user: z.string().default('postgres'),
   password: z.string().default('336911'),
   maxConnections: z.number().default(20),

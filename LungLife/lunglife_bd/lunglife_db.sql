@@ -2,10 +2,10 @@
 -- Ejecutar en orden para crear la estructura completa
 
 -- Crear base de datos
-CREATE DATABASE lunglife_enhanced;
+CREATE DATABASE lunglife_db;
 
 -- Conectar a la base de datos
-\c lunglife_enhanced;
+\c lunglife_db;
 
 -- Tabla principal de usuarios con campos mejorados
 CREATE TABLE users (
@@ -14,7 +14,7 @@ CREATE TABLE users (
     password_hash VARCHAR(255) NOT NULL,
     nombre VARCHAR(255) NOT NULL,
     apellido VARCHAR(255),
-    telefono VARCHAR(20),
+    phone VARCHAR(20),
     fecha_nacimiento DATE,
 
     -- Campos de seguridad

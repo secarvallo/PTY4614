@@ -62,7 +62,7 @@ export class PostgreSQLConnection implements IDatabaseConnection {
       if (testResult) {
         this.isInitialized = true;
         this.connectionMetrics.lastConnectionTime = new Date();
-        this.logger.info('✅ Conexión a PostgreSQL establecida exitosamente');
+        this.logger.info('Conexión a PostgreSQL establecida exitosamente');
         return true;
       } else {
         throw new Error('Falló la prueba de conexión');
@@ -70,7 +70,7 @@ export class PostgreSQLConnection implements IDatabaseConnection {
       
     } catch (error) {
       this.connectionMetrics.connectionErrors++;
-      this.logger.error('❌ Error al conectar con PostgreSQL:', error);
+      this.logger.error('Error al conectar con PostgreSQL:', error);
       
       // Intentar reconexión automática
       this.scheduleReconnection();
@@ -99,7 +99,7 @@ export class PostgreSQLConnection implements IDatabaseConnection {
 
     this.pool.on('error', (err: Error, client: PoolClient) => {
       this.connectionMetrics.connectionErrors++;
-      this.logger.error('💥 Error en el pool de conexiones:', err);
+      this.logger.error('Error en el pool de conexiones:', err);
       
       // Programar reconexión si hay errores críticos
       if (this.isCriticalError(err)) {
@@ -138,12 +138,12 @@ export class PostgreSQLConnection implements IDatabaseConnection {
       const result = await client.query('SELECT NOW() as current_time, version() as pg_version');
       client.release();
       
-      this.logger.info('⏰ Hora del servidor:', result.rows[0].current_time);
-      this.logger.info('🗃️ Versión PostgreSQL:', result.rows[0].pg_version.split(' ')[0]);
+      this.logger.info('Hora del servidor:', result.rows[0].current_time);
+      this.logger.info('Versión PostgreSQL:', result.rows[0].pg_version.split(' ')[0]);
       
       return true;
     } catch (error) {
-      this.logger.error('❌ Falló la prueba de conexión:', error);
+      this.logger.error('Falló la prueba de conexión:', error);
       return false;
     }
   }
@@ -223,7 +223,7 @@ class PostgreSQLTransaction implements IDatabaseTransaction {
       const result = await this.client.query(text, params);
       return result.rows;
     } catch (error) {
-      this.logger.error('❌ Error en transacción:', error);
+      this.logger.error('Error en transacción:', error);
       throw error;
     }
   }
@@ -232,9 +232,9 @@ class PostgreSQLTransaction implements IDatabaseTransaction {
     try {
       await this.client.query('COMMIT');
       this.client.release();
-      this.logger.debug('✅ Transacción confirmada');
+      this.logger.debug('Transacción confirmada');
     } catch (error) {
-      this.logger.error('❌ Error al confirmar transacción:', error);
+      this.logger.error('Error al confirmar transacción:', error);
       throw error;
     }
   }
@@ -243,9 +243,9 @@ class PostgreSQLTransaction implements IDatabaseTransaction {
     try {
       await this.client.query('ROLLBACK');
       this.client.release();
-      this.logger.debug('↩️ Transacción revertida');
+      this.logger.debug('Transacción revertida');
     } catch (error) {
-      this.logger.error('❌ Error al revertir transacción:', error);
+      this.logger.error('Error al revertir transacción:', error);
       throw error;
     }
   }

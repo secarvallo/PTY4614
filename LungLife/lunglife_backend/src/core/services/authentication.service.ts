@@ -86,10 +86,10 @@ export class AuthenticationService {
         const userData: Omit<IUser, 'id'> = {
           email: request.email.toLowerCase(),
           password_hash: passwordHash,
-          first_name: request.firstName,
-          last_name: request.lastName,
+          nombre: request.firstName,
+          apellido: request.lastName,
           phone: request.phone,
-          is_email_verified: false,
+          email_verified: false,
           two_fa_enabled: false,
           two_fa_secret: undefined,
           is_active: true,
@@ -211,7 +211,7 @@ export class AuthenticationService {
       userId: user.id,
       email: user.email,
       isActive: user.is_active,
-      emailVerified: user.is_email_verified
+      emailVerified: user.email_verified
     };
 
     const accessTokenOptions: SignOptions = {

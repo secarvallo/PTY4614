@@ -84,10 +84,10 @@ export interface IUser {
   id: number;
   email: string;
   password_hash: string;
-  first_name: string;
-  last_name?: string;
+  nombre: string;
+  apellido?: string;
   phone?: string;
-  is_email_verified: boolean;
+  email_verified: boolean;
   two_fa_enabled: boolean;
   two_fa_secret?: string;
   is_active: boolean;

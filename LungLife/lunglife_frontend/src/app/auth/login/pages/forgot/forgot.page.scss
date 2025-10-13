@@ -1,3 +1,9 @@
+/*
+:host
+Define las propiedades personalizadas (variables CSS) para los componentes de
+autenticación. Incluye gradientes de fondo, colores de tarjeta, gradiente
+principal para botones y colores de texto.
+*/
 :host {
   --bg-start: #f6f7fb;
   --bg-end: #eef2ff;
@@ -7,10 +13,25 @@
   --muted-color: #718096;
 }
 
+/*
+==============================================
+ESTILOS DE CONTENEDOR Y LAYOUT PRINCIPAL
+==============================================
+*/
+
+/*
+ion-content.auth-content
+Aplica el gradiente de fondo principal al área de contenido.
+*/
 ion-content.auth-content {
   --background: linear-gradient(180deg, var(--bg-start) 0%, var(--bg-end) 100%);
 }
 
+/*
+.auth-container
+Centra el contenedor, define su ancho máximo y utiliza un layout de grid
+para alinear verticalmente el contenido.
+*/
 .auth-container {
   max-width: 420px;
   margin: 0 auto;
@@ -20,6 +41,17 @@ ion-content.auth-content {
   min-height: 100%;
 }
 
+/*
+==============================================
+ESTILOS DEL ENCABEZADO (HEADER)
+==============================================
+*/
+
+/*
+.auth-header
+Estiliza la sección del encabezado, incluyendo el logo y los textos,
+centrando su contenido.
+*/
 .auth-header {
   text-align: center;
   margin-bottom: 16px;
@@ -36,12 +68,6 @@ ion-content.auth-content {
   box-shadow: 0 8px 20px rgba(108, 99, 255, 0.15);
 }
 
-.auth-header .logo-placeholder .logo {
-  width: 42px;
-  height: 42px;
-  object-fit: contain;
-}
-
 .auth-header h1 {
   color: var(--text-color);
   font-weight: 700;
@@ -55,6 +81,17 @@ ion-content.auth-content {
   font-size: 14px;
 }
 
+/*
+==============================================
+ESTILOS DEL FORMULARIO
+==============================================
+*/
+
+/*
+.auth-form
+Da al formulario una apariencia de tarjeta con fondo blanco, bordes
+redondeados, padding y una sombra sutil.
+*/
 .auth-form {
   background: var(--card-bg);
   border-radius: 20px;
@@ -62,10 +99,20 @@ ion-content.auth-content {
   box-shadow: 0 18px 40px rgba(29, 33, 84, 0.08);
 }
 
+/*
+.form-group
+Añade un espaciado vertical entre cada grupo de elementos del formulario
+(ej. input + mensaje de error).
+*/
 .form-group {
   margin-bottom: 12px;
 }
 
+/*
+ion-item
+Personaliza los campos de entrada con un fondo claro, sin bordes y esquinas
+redondeadas para un look moderno.
+*/
 ion-item {
   --background: #f7f8fc;
   --border-color: transparent;
@@ -75,11 +122,64 @@ ion-item {
   margin: 0 0 6px;
 }
 
+/*
+ion-item.error
+Cambia el fondo del campo de entrada a un tono rojo claro cuando hay un
+error de validación.
+*/
+ion-item.error {
+  --background: #fff6f6;
+}
+
+/*
+.input-icon & .password-toggle
+Estiliza los íconos dentro de los campos de entrada, como el de "ver/ocultar
+contraseña".
+*/
 .input-icon {
   color: #7f8bb3;
   font-size: 20px;
 }
 
+.password-toggle {
+  --padding-start: 8px;
+  --padding-end: 8px;
+  color: #7f8bb3;
+}
+
+/*
+ion-input.invalid
+Cambia el color del cursor (caret) a rojo en campos inválidos.
+*/
+ion-input.invalid::part(native) {
+  caret-color: #d43c5a;
+}
+
+/*
+==============================================
+ESTILOS PARA MENSAJES Y VALIDACIÓN
+==============================================
+*/
+
+/*
+.error-message
+Estiliza los mensajes de error de validación que aparecen debajo de cada
+campo, con texto rojo y espaciado.
+*/
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #d43c5a;
+  font-size: 12px;
+  padding: 0 4px 6px;
+}
+
+/*
+.message (success | error)
+Define el estilo para mensajes de estado generales del formulario, como
+"Enlace enviado con éxito".
+*/
 .message {
   display: flex;
   align-items: center;
@@ -100,6 +200,86 @@ ion-item {
   color: #b8324b;
 }
 
+/*
+==============================================
+COMPONENTES ESPECÍFICOS (Contraseña, Términos)
+==============================================
+*/
+
+/*
+.password-strength
+Estiliza el indicador de fortaleza de la contraseña, incluyendo la barra
+de progreso y la etiqueta de texto (Débil, Media, Fuerte).
+*/
+.password-strength {
+  display: grid;
+  gap: 6px;
+  padding: 0 4px 8px;
+}
+
+.strength-bar {
+  width: 100%;
+  height: 8px;
+  background: #eef1ff;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.strength-fill {
+  height: 100%;
+  border-radius: 10px;
+  transition: width .25s ease;
+}
+
+.strength-label {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/*
+.password-requirements
+Estiliza la lista de requisitos para la contraseña (ej. "Mínimo 8 caracteres").
+*/
+.password-requirements {
+  display: grid;
+  gap: 6px;
+  padding: 4px 4px 8px;
+}
+
+.requirement-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #7b89b0;
+}
+
+/*
+.terms-item & .custom-checkbox
+Personaliza la apariencia del checkbox de "Términos y Condiciones".
+*/
+.terms-item {
+  --background: transparent;
+  padding-left: 0;
+}
+
+.custom-checkbox {
+  --size: 18px;
+  --checkmark-color: #fff;
+  --background-checked: #6c63ff;
+}
+
+/*
+==============================================
+ESTILOS DE BOTONES Y PIE DE PÁGINA
+==============================================
+*/
+
+/*
+.auth-button.primary
+Estilo principal para el botón de acción (Enviar, Registrar), con el
+gradiente primario, bordes redondeados y sombra.
+*/
 .auth-button.primary {
   --background: var(--primary-grad);
   --border-radius: 14px;
@@ -109,6 +289,11 @@ ion-item {
   box-shadow: 0 10px 24px rgba(108, 99, 255, 0.35);
 }
 
+/*
+.auth-footer & .link-button
+Estiliza el pie de página con el texto y el enlace para navegar entre
+las páginas de login, registro, etc.
+*/
 .auth-footer {
   text-align: center;
   margin-top: 12px;
@@ -121,6 +306,16 @@ ion-item {
   height: auto;
 }
 
+/*
+==============================================
+ESTILOS RESPONSIVOS
+==============================================
+*/
+
+/*
+Añade un padding superior e inferior adicional en pantallas más altas
+para mejorar la distribución del espacio.
+*/
 @media (min-height: 760px) {
   .auth-container {
     padding-top: 48px;
