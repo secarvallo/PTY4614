@@ -1,189 +1,79 @@
-/*
-  :host
-  Defines CSS variables for theming, including background gradients, text colors, and accent colors.
-  */
-:host {
-  --bg-start: #ffffff; /* Start color for background gradient */
-  --bg-end: #e6eef9; /* End color for background gradient */
-  --card-bg: #ffffff; /* Background color for cards */
-  --primary-grad: linear-gradient(135deg, #6b48ff 0%, #8a5aff 50%, #a66eff 100%); /* Primary gradient */
-  --text-color: #1a202c; /* Default text color */
-  --muted-color: #4a5568; /* Muted text color */
-  --accent-color: #6b48ff; /* Accent color */
-  --accent-dark: #5a3de5; /* Darker shade of accent color */
-}
+/**
+ * Login Page Styles
+ * 
+ * Uses global auth styles for consistency.
+ * This file only contains page-specific overrides and 2FA styles.
+ */
 
-/*
-ion-content.auth-content
-Applies a gradient background and padding to the authentication content area.
-*/
-ion-content.auth-content {
-  --background: linear-gradient(180deg, var(--bg-start) 0%, var(--bg-end) 100%);
-  --padding-top: 20px;
-  --padding-bottom: 20px;
-}
-
-/*
-.auth-container
-Centers the authentication container and defines its layout and spacing.
-*/
-.auth-container {
-  max-width: 480px;
-  margin: 0 auto;
-  padding: 40px 24px 32px;
-  display: grid;
-  align-content: center;
-  min-height: 100dvh;
-  gap: 20px;
-}
-
-/*
-.auth-header
-Styles the header section, including the logo and title.
-*/
-.auth-header {
+.two-factor-header {
   text-align: center;
-  margin-bottom: 24px;
-
-  .logo-placeholder {
-    width: 88px;
-    height: 88px;
-    margin: 0 auto 16px;
-    border-radius: 20px;
-    background: radial-gradient(65% 65% at 50% 50%, #8c8c8c 0%, #e0eaff 100%);
-    display: grid;
-    place-items: center;
-    box-shadow: 0 10px 25px rgba(107, 72, 255, 0.2);
-    transition: transform 0.3s ease;
-
-    .logo {
-      width: 48px;
-      height: 48px;
-      object-fit: contain;
-      transition: transform 0.3s ease;
-    }
-
-    &:hover {
-      transform: scale(1.05);
-
-      .logo {
-        transform: scale(1.1);
-      }
-    }
-  }
-
-  h1 {
-    color: var(--text-color);
-    font-weight: 800;
-    font-size: 26px;
-    margin: 0 0 8px;
-    line-height: 1.2;
-  }
-
-  p {
-    color: var(--muted-color);
-    margin: 0;
-    font-size: 15px;
-    line-height: 1.5;
-  }
+  margin-bottom: 2rem;
 }
 
-/*
-.auth-form
-Styles the authentication form, including background, padding, and hover effects.
-*/
-.auth-form {
-  background: var(--card-bg);
-  border-radius: 24px;
-  padding: 24px 20px 20px;
-  box-shadow: 0 20px 50px rgba(26, 32, 44, 0.1);
-  transition: transform 0.3s ease;
-
-  &:hover {
-    transform: translateY(-5px);
-  }
+.two-factor-header ion-icon {
+  margin-bottom: 1rem;
 }
 
-/*
-.form-group
-Defines spacing and positioning for form groups.
-*/
-.form-group {
-  margin-bottom: 16px;
+.backup-options {
+  text-align: center;
+  margin: 1rem 0;
+}
+
+.backup-code-section {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: var(--ion-color-light);
+  border-radius: 8px;
+}
+
+.social-login {
+  margin: 2rem 0;
+}
+
+.divider {
+  text-align: center;
+  margin: 2rem 0 1rem 0;
   position: relative;
 }
 
-/*
-ion-item
-Styles form input containers, including focus and error states.
-*/
-ion-item {
-  --background: #f9fafb;
-  --border-color: transparent;
-  --highlight-background: transparent;
-  --min-height: 60px;
-  --border-radius: 16px;
-  margin: 0 0 8px;
-  transition: background 0.2s ease;
-
-  &.error {
-    --background: #fef2f2;
-    border: 1px solid #f56565;
-  }
-
-  &:focus-within {
-    --background: #edf2f7;
-  }
+.divider::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--ion-color-light-shade);
 }
 
-/*
-.input-icon
-Styles icons inside input fields.
-*/
-.input-icon {
-  color: #718096;
-  font-size: 22px;
+.divider span {
+  background: var(--ion-background-color);
+  padding: 0 1rem;
+  color: var(--ion-color-medium);
+  font-size: 0.9rem;
 }
 
-/*
-ion-input.invalid
-Styles the caret color for invalid input fields.
-*/
-ion-input.invalid::part(native) {
-  caret-color: #e53e3e;
-}
-
-/*
-.error-message
-Styles error messages with animation.
-*/
-.error-message {
+.social-buttons {
   display: flex;
-  align-items: center;
-  gap: 8px;
-  color: #e53e3e;
-  font-size: 13px;
-  padding: 4px 8px 8px;
-  animation: fadeIn 0.3s ease;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
-/*
-@keyframes fadeIn
-Defines a fade-in animation for error messages.
-*/
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+.error-item {
+  margin: 1rem 0;
+  --background: var(--ion-color-danger-tint);
 }
 
-/*
-.form-options
-Styles the options section in the form, such as "Remember Me" and "Forgot Password".
-*/
+.register-link {
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.register-link p {
+  color: var(--ion-color-medium);
+}
+
+/* Enhanced styles from original login */
 .form-options {
   display: flex;
   justify-content: space-between;
@@ -197,6 +87,7 @@ Styles the options section in the form, such as "Remember Me" and "Forgot Passwo
     padding-left: 0;
     font-size: 14px;
     color: var(--text-color);
+    flex: 1;
   }
 
   .forgot-password-link {
@@ -207,6 +98,7 @@ Styles the options section in the form, such as "Remember Me" and "Forgot Passwo
     font-size: 14px;
     text-decoration: underline;
     transition: color 0.2s ease;
+    white-space: nowrap;
 
     &:hover {
       color: var(--accent-dark);
@@ -214,140 +106,54 @@ Styles the options section in the form, such as "Remember Me" and "Forgot Passwo
   }
 }
 
-/*
-.auth-button.primary
-Styles the primary authentication button with gradient and hover effects.
-*/
-.auth-button.primary {
-  --background: var(--primary-grad);
-  --border-radius: 16px;
-  height: 56px;
-  font-weight: 700;
-  letter-spacing: 0.3px;
-  box-shadow: 0 12px 28px rgba(107, 72, 255, 0.4);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 15px 35px rgba(107, 72, 255, 0.5);
-  }
+.social-section {
+  margin-top: 20px;
 }
 
-/*
-.auth-button.google
-Styles the Google authentication button.
-*/
-.auth-button.google {
-  --border-color: #e2e8f0;
-  --border-radius: 16px;
-  --background: #fff;
-  color: #2d3748;
+.social-auth {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.social-btn {
+  width: 56px;
   height: 56px;
+  border-radius: 16px;
   border: 1px solid #e2e8f0;
+  background: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  transition: background 0.2s ease;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
 
   &:hover {
-    --background: #f7fafc;
+    background: #f7fafc;
+    transform: translateY(-2px);
+  }
+
+  img {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
   }
 }
 
-/*
-.divider
-Styles the divider between sections in the form.
-*/
-.divider {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  align-items: center;
-  gap: 12px;
-  margin: 16px 0 14px;
-  color: #a0aec0;
-  font-size: 13px;
-}
-
-.divider::before, .divider::after {
-  content: "";
-  height: 1px;
-  background: #e2e8f0;
-}
-
-/*
-.loading-overlay
-Styles the loading overlay with a blurred background.
-*/
-.loading-overlay {
-  position: fixed;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  background: rgba(26, 32, 44, 0.3);
-  -webkit-backdrop-filter: blur(3px);
-  backdrop-filter: blur(3px);
-  color: #fff;
-  gap: 12px;
-  z-index: 1000;
-}
-
-/*
-.large-spinner
-Increases the size of the spinner in the loading overlay.
-*/
-.large-spinner {
-  transform: scale(1.2);
-}
-
-/*
-.auth-footer
-Styles the footer section of the authentication page.
-*/
-.auth-footer {
-  text-align: center;
-  margin-top: 16px;
-  color: var(--muted-color);
-  font-size: 15px;
-}
-
-/*
-.link-button
-Styles link buttons with hover effects.
-*/
-.link-button {
-  color: var(--accent-color);
-  height: auto;
-  font-weight: 600;
-  transition: color 0.2s ease;
-
-  &:hover {
-    color: var(--accent-dark);
+@media (max-width: 480px) {
+  .login-container {
+    padding: 1rem;
   }
-}
 
-/*
-@media (min-height: 760px)
-Adds extra padding for taller screens.
-*/
-@media (min-height: 760px) {
-  .auth-container {
-    padding-top: 60px;
-    padding-bottom: 40px;
-  }
-}
-
-/*
-@media (max-width: 400px)
-Adjusts padding and button sizes for smaller screens.
-*/
-@media (max-width: 400px) {
   .auth-container {
     padding: 20px 16px;
   }
+
   .auth-form {
     padding: 16px;
   }
+
   .auth-button {
     height: 48px;
   }

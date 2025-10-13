@@ -67,17 +67,17 @@ export class UserRepository implements IUserRepository {
     try {
       const result = await this.db.query<IUser>(
         `INSERT INTO users (
-          email, password_hash, first_name, last_name, phone,
-          is_email_verified, two_fa_enabled, is_active, created_at, updated_at
+          email, password_hash, nombre, apellido, phone,
+          email_verified, two_fa_enabled, is_active, created_at, updated_at
         ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
         RETURNING *`,
         [
           user.email,
           user.password_hash,
-          user.first_name,
-          user.last_name,
+          user.nombre,
+          user.apellido,
           user.phone,
-          user.is_email_verified,
+          user.email_verified,
           user.two_fa_enabled,
           user.is_active,
           user.created_at,

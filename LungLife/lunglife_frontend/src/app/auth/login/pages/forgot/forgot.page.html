@@ -1,4 +1,4 @@
-<ion-content class="auth-content">
+<ion-content class="auth-content" data-test="forgot-page">
   <div class="auth-container">
 
     <!-- Header Section -->
@@ -9,13 +9,13 @@
     </div>
 
     <!-- Forgot Password Form -->
-    <form (ngSubmit)="onSubmit()" class="auth-form refresh">
+    <form (ngSubmit)="onSubmit()" class="auth-form refresh" data-test="forgot-form">
 
       <!-- Email Field -->
       <div class="form-group">
         <ion-item lines="none">
           <ion-input type="email" placeholder="Correo electrónico" [(ngModel)]="email" name="email"
-                     required></ion-input>
+                     required data-test="forgot-email"></ion-input>
         </ion-item>
       </div>
 
@@ -25,7 +25,7 @@
       }
 
       <!-- Submit Button -->
-      <ion-button type="submit" expand="block" class="auth-button primary" [disabled]="isLoading || !email">
+      <ion-button type="submit" expand="block" class="auth-button primary" [disabled]="isLoading || !email" data-test="forgot-submit">
         @if (isLoading) {
           <ion-spinner name="crescent"></ion-spinner>
         } @else {

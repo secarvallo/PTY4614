@@ -1,0 +1,11 @@
+ion-content {
+  --background: var(--ion-color-app-background);
+}
+
+.custom-card {
+  margin: 1rem 0;
+}
+
+ion-card-content p {
+  margin-bottom: 0.5rem;
+}/*# sourceMappingURL=login.page.css.map */

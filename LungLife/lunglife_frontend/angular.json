@@ -9,6 +9,11 @@
         "@ionic/angular-toolkit:page": {
           "styleext": "scss",
           "standalone": true
+        },
+        "@schematics/angular:component": {
+          "style": "scss",
+          "skipTests": false,
+          "standalone": true
         }
       },
       "root": "",

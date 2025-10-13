@@ -1,5 +1,5 @@
 {
-  "name": "test",
+  "name": "lunglife-frontend",
   "integrations": {
     "capacitor": {}
   },

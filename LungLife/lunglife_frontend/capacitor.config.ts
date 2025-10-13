@@ -1,8 +1,8 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'io.ionic.starter',
-  appName: 'test',
+  appId: 'com.lunglife.app',
+  appName: 'LungLife',
   webDir: 'www'
 };
 

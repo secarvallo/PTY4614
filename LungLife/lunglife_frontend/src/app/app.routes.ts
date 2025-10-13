@@ -27,27 +27,27 @@ export const routes: Routes = [
       { path: 'forgot-password', redirectTo: 'forgot', pathMatch: 'full' },
       {
         path: 'login',
-        loadComponent: () => import('./auth/login/pages/advanced-login/advanced-login.page').then(m => m.AdvancedLoginPage),
+        loadComponent: () => import('./auth/login/pages/login/login.page').then(m => m.LoginPage),
         title: 'Iniciar Sesión - LungLife',
-  canActivate: [unifiedGuestGuard]
+        canActivate: [unifiedGuestGuard]
       },
       {
         path: 'register',
-        loadComponent: () => import('./auth/login/pages/advanced-register/advanced-register.page').then(m => m.AdvancedRegisterPage),
+        loadComponent: () => import('./auth/login/pages/register/register.page').then(m => m.RegisterPage),
         title: 'Crear Cuenta - LungLife',
-  canActivate: [unifiedGuestGuard]
+        canActivate: [unifiedGuestGuard]
       },
       {
         path: 'verify-2fa',
         loadComponent: () => import('./auth/login/pages/verify-2fa/verify-2fa.page').then(m => m.Verify2faPage),
         title: 'Verificar 2FA - LungLife',
-  canActivate: [unifiedTwoFAGuard]
+        canActivate: [unifiedTwoFAGuard]
       },
       {
         path: 'forgot',
         loadComponent: () => import('./auth/login/pages/forgot/forgot.page').then(m => m.ForgotPage),
         title: 'Recuperar Contraseña - LungLife',
-  canActivate: [unifiedGuestGuard]
+        canActivate: [unifiedGuestGuard]
       },
       {
         path: 'google-callback',
@@ -64,18 +64,18 @@ export const routes: Routes = [
   {
     path: 'dashboard',
     loadComponent: () => import('./dashboard/dashboard.page').then(m => m.DashboardPage),
-  canActivate: [unifiedAuthGuard],
+    canActivate: [unifiedAuthGuard],
     title: 'Dashboard - LungLife'
   },
   {
     path: 'profile',
     loadComponent: () => import('./profile/profile.page').then(m => m.ProfilePage),
-  canActivate: [unifiedAuthGuard],
+    canActivate: [unifiedAuthGuard],
     title: 'Profile - LungLife'
   },
   {
     path: 'security',
-  canActivate: [unifiedAuthGuard],
+    canActivate: [unifiedAuthGuard],
     children: [
       { path: '', redirectTo: '2fa-settings', pathMatch: 'full' },
       {

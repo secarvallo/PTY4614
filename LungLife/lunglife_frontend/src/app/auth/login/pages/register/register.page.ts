@@ -1,79 +1,182 @@
-import { Component, OnDestroy, OnInit, inject } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Component, OnInit, OnDestroy, inject, ChangeDetectionStrategy, signal, computed } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, NonNullableFormBuilder } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { IonicModule, AlertController, LoadingController, ToastController } from '@ionic/angular';
-import { CommonModule } from '@angular/common';
 import { Subject, takeUntil } from 'rxjs';
+import { AdvancedAuthService } from '../../../core/services/advanced-auth.service';
+import { AuthValidators } from '../../../core/validators/auth-validators';
+import { AuthFacadeService } from '../../../core/services';
 
-import { AuthFacadeService, ValidationService } from '../../../core/services';
-import { RegisterData } from '../../../core/interfaces/auth.unified';
-
-interface PasswordValidationResult {
-  isValid: boolean;
-  strength: 'weak' | 'medium' | 'strong';
-  errors: string[];
-}
-
-/**
- * 📝 Register Page - Clean Architecture Implementation
- * Uses Facade Pattern and advanced validation with password strength
- * Implements Observer Pattern for reactive state management
- */
 @Component({
   selector: 'app-register',
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, IonicModule, RouterLink],
   templateUrl: './register.page.html',
   styleUrls: ['./register.page.scss', '../../../auth.styles.scss'],
-  standalone: true,
-  imports: [IonicModule, ReactiveFormsModule, CommonModule, RouterLink]
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class RegisterPage implements OnInit, OnDestroy {
-  // Dependency Injection
-  private fb = inject(FormBuilder);
-  private router = inject(Router);
+  private fb = inject(NonNullableFormBuilder);
+  private authService = inject(AdvancedAuthService);
   private authFacade = inject(AuthFacadeService);
-  private validationService = inject(ValidationService);
+  private router = inject(Router);
   private alertController = inject(AlertController);
   private loadingController = inject(LoadingController);
   private toastController = inject(ToastController);
 
-  // Reactive Form
-  registerForm!: FormGroup;
+  // Angular 20 Signals for reactive state management
+  showPassword = signal(false);
+  showConfirmPassword = signal(false);
+  loading = signal(false);
+  error = signal<string | null>(null);
+  private registrationInProgress = signal(false);
+  
+  // Computed signals for derived state
+  isFormValid = computed(() => this.registerForm?.valid ?? false);
+  canSubmit = computed(() => this.isFormValid() && !this.loading());
 
-  // Component State
-  showPassword = false;
-  showConfirmPassword = false;
-  passwordValidation: PasswordValidationResult | null = null;
+  registerForm: FormGroup;
   private destroy$ = new Subject<void>();
-  private registrationInProgress = false;
 
-  // Observable State from AuthObserver (Observer Pattern)
+  // Password validation checks
+  passwordChecks = {
+    minLength: false,
+    uppercase: false,
+    lowercase: false,
+    number: false,
+    special: false
+  };
+
+  // Password validation result interface
+  passwordValidation: {
+    isValid: boolean;
+    strength: 'weak' | 'medium' | 'strong';
+    errors: string[];
+  } | null = null;
+
+  // Observable State from AuthFacade
   authState$ = this.authFacade.getAuthState();
 
+  constructor() {
+    // Actualizado para usar los campos de la nueva BD
+    this.registerForm = this.fb.group({
+      nombre: ['', [Validators.required, Validators.minLength(2)]],
+      apellido: [''],
+      email: ['', [Validators.required, AuthValidators.advancedEmail()]],
+      telefono: ['', [AuthValidators.phoneNumber()]],
+      password: ['', [Validators.required, AuthValidators.strongPassword()]],
+      confirmPassword: ['', [Validators.required, AuthValidators.confirmPassword('password')]],
+      acceptTerms: [false, [Validators.requiredTrue]],
+      acceptPrivacy: [false, [Validators.requiredTrue]],
+      acceptMarketing: [false]
+    });
+  }
+
   ngOnInit() {
-    this.initializeForm();
-    this.subscribeToAuthState();
     this.setupPasswordValidation();
+    this.subscribeToAuthState();
+
+    // Monitor password changes for real-time validation
+    this.registerForm.get('password')?.valueChanges.subscribe(password => {
+      this.updatePasswordChecks(password);
+    });
+
+    // Suscribirse a errores del servicio usando signals
+    this.authService.error$.pipe(takeUntil(this.destroy$)).subscribe((error: string | null) => {
+      this.error.set(error);
+    });
+
+    // Suscribirse a estado de carga
+    this.authService.loading$.pipe(takeUntil(this.destroy$)).subscribe((loading: boolean) => {
+      this.loading.set(loading);
+    });
+  }
+
+  // Add utility getters/methods referenced in template
+  isFieldInvalid(field: string): boolean {
+    const ctrl = this.registerForm.get(field);
+    return !!ctrl && ctrl.invalid && (ctrl.dirty || ctrl.touched);
+  }
+
+  togglePassword() { this.showPassword.update(current => !current); }
+  toggleConfirmPassword() { this.showConfirmPassword.update(current => !current); }
+
+  private updatePasswordChecks(password: string) {
+    const p = password || '';
+    this.passwordChecks.minLength = p.length >= 8;
+    this.passwordChecks.uppercase = /[A-Z]/.test(p);
+    this.passwordChecks.lowercase = /[a-z]/.test(p);
+    this.passwordChecks.number = /[0-9]/.test(p);
+    this.passwordChecks.special = /[^A-Za-z0-9]/.test(p);
+  }
+
+  private markAllFieldsAsTouched() {
+    Object.keys(this.registerForm.controls).forEach(key => {
+      const ctrl = this.registerForm.get(key);
+      ctrl?.markAsTouched();
+      ctrl?.updateValueAndValidity();
+    });
+  }
+
+  async onRegister() {
+    if (!this.registerForm.valid) {
+      this.markAllFieldsAsTouched();
+      return;
+    }
+
+    const registerData = {
+      email: this.registerForm.get('email')?.value,
+      password: this.registerForm.get('password')?.value,
+      firstName: this.registerForm.get('nombre')?.value,
+      lastName: this.registerForm.get('apellido')?.value || '',
+      phone: this.registerForm.get('telefono')?.value || undefined,
+      acceptTerms: this.registerForm.get('acceptTerms')?.value,
+      acceptPrivacy: this.registerForm.get('acceptPrivacy')?.value
+    };
+
+    const loading = await this.loadingController.create({
+      message: 'Creating your account...',
+      spinner: 'crescent'
+    });
+    await loading.present();
+
+    this.registrationInProgress.set(true);
+
+    try {
+      this.authFacade.register(registerData).subscribe({
+        next: async (result) => {
+          await loading.dismiss();
+          this.registrationInProgress.set(false);
+
+          if (result.success) {
+            await this.showSuccessToast('Account created successfully!');
+            // Navigate to login instead of auto-login to avoid confusion
+            this.router.navigate(['/auth/login'], { 
+              queryParams: { email: registerData.email }
+            });
+          } else {
+            this.showErrorAlert(result.error || 'Registration failed');
+          }
+        },
+        error: async (error) => {
+          await loading.dismiss();
+          this.registrationInProgress.set(false);
+          console.error('Registration error', error);
+          this.showErrorAlert('An error occurred during registration');
+        }
+      });
+    } catch (error) {
+      await loading.dismiss();
+      this.registrationInProgress.set(false);
+      console.error('Registration catch error', error);
+      this.showErrorAlert('An unexpected error occurred');
+    }
   }
 
   ngOnDestroy() {
     this.destroy$.next();
     this.destroy$.complete();
-  }
-
-  /**
-   * Initialize reactive form with comprehensive validation
-   */
-  private initializeForm(): void {
-    this.registerForm = this.fb.group({
-      firstName: ['', [Validators.required, Validators.minLength(2)]],
-      lastName: ['', [Validators.required, Validators.minLength(2)]],
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(8)]],
-      confirmPassword: ['', [Validators.required]],
-      acceptTerms: [false, [Validators.requiredTrue]]
-    }, {
-      validators: this.passwordMatchValidator
-    });
   }
 
   /**
@@ -84,16 +187,36 @@ export class RegisterPage implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe(password => {
         if (password) {
-          const validation = this.validationService.validatePassword(password);
-          this.passwordValidation = {
-            isValid: validation.isValid,
-            strength: validation.strength === 1 ? 'weak' : validation.strength === 2 ? 'medium' : 'strong',
-            errors: validation.errors
-          };
-        } else {
-          this.passwordValidation = null;
+          this.validatePasswordStrength(password);
         }
       });
+  }
+
+  /**
+   * Validate password strength
+   */
+  private validatePasswordStrength(password: string): void {
+    const checks = {
+      minLength: password.length >= 8,
+      uppercase: /[A-Z]/.test(password),
+      lowercase: /[a-z]/.test(password),
+      number: /\d/.test(password),
+      special: /[!@#$%^&*(),.?":{}|<>]/.test(password)
+    };
+
+    this.passwordChecks = checks;
+
+    const validChecks = Object.values(checks).filter(Boolean).length;
+    let strength: 'weak' | 'medium' | 'strong' = 'weak';
+    
+    if (validChecks >= 5) strength = 'strong';
+    else if (validChecks >= 3) strength = 'medium';
+
+    this.passwordValidation = {
+      isValid: validChecks >= 4,
+      strength,
+      errors: []
+    };
   }
 
   /**
@@ -105,258 +228,41 @@ export class RegisterPage implements OnInit, OnDestroy {
 
     if (password && confirmPassword && password !== confirmPassword) {
       group.get('confirmPassword')?.setErrors({ passwordMismatch: true });
-      return { passwordMismatch: true };
     } else {
-      const confirmControl = group.get('confirmPassword');
-      if (confirmControl?.errors?.['passwordMismatch']) {
-        delete confirmControl.errors['passwordMismatch'];
-        if (Object.keys(confirmControl.errors).length === 0) {
-          confirmControl.setErrors(null);
-        }
+      const errors = group.get('confirmPassword')?.errors;
+      if (errors) {
+        delete errors['passwordMismatch'];
+        group.get('confirmPassword')?.setErrors(Object.keys(errors).length ? errors : null);
       }
     }
     return null;
   };
 
   /**
-   * Subscribe to authentication state changes (Observer Pattern)
+   * Subscribe to authentication state changes
    */
   private subscribeToAuthState(): void {
-    // Eliminamos navegación automática por isAuthenticated en registro para evitar autologin
-    this.authState$.isAuthenticated$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((isAuthenticated: boolean) => {
-        // Si en otro flujo (login) y autenticado -> redirigir
-        if (isAuthenticated && !this.registrationInProgress) {
-          this.router.navigate(['/dashboard']);
-        }
-      });
-
-    // Mantener manejo de errores
     this.authState$.error$
       .pipe(takeUntil(this.destroy$))
       .subscribe((error: string | null) => {
-        if (error && this.registrationInProgress) {
-          this.registrationInProgress = false;
+        if (error && this.registrationInProgress()) {
           this.showErrorAlert(error);
         }
       });
   }
 
   /**
-   * 📝 Handle registration form submission
-   * Uses Facade Pattern with enhanced validation
-   */
-  async onRegister(): Promise<void> {
-    if (!this.registerForm.valid) {
-      this.markFormGroupTouched();
-      return;
-    }
-
-    if (this.passwordValidation && !this.passwordValidation.isValid) {
-      await this.showErrorAlert('Please fix password requirements before continuing.');
-      return;
-    }
-
-    const loading = await this.loadingController.create({
-      message: 'Creating your account...',
-      spinner: 'crescent'
-    });
-    await loading.present();
-
-    this.registrationInProgress = true;
-
-    try {
-      const formValue = this.registerForm.value;
-      const registerData: RegisterData = {
-        email: formValue.email,
-        password: formValue.password,
-        firstName: formValue.firstName,
-        lastName: formValue.lastName,
-        acceptTerms: formValue.acceptTerms,
-        username: formValue.email // si backend requiere username, reutilizamos email
-      } as RegisterData;
-
-      // Activamos autologin para llenar inmediatamente el estado y luego normalizamos con datos del form
-      this.authFacade.register(registerData, { autoLogin: true }).subscribe({
-        next: async (result) => {
-          loading.dismiss();
-          if (result.success) {
-            this.registrationInProgress = false;
-            // Si el backend no envió user.profile, enriquecemos mínimamente
-            if (result.user) {
-              const u: any = result.user;
-              if (!u.firstName) u.firstName = registerData.firstName;
-              if (!u.lastName) u.lastName = registerData.lastName;
-              if (!u.email) u.email = registerData.email;
-              if (!u.profile) {
-                u.profile = {
-                  user_id: u.id || 0,
-                  nombre: registerData.firstName,
-                  apellido: registerData.lastName,
-                  telefono: undefined,
-                  fecha_nacimiento: undefined,
-                  avatar_url: undefined,
-                  created_at: new Date()
-                };
-              }
-            }
-
-            const emailVerificationRequired = (result.metadata as any)?.emailVerificationRequired;
-            if (emailVerificationRequired) {
-              await this.showSuccessToast('Account created! Please verify your email.');
-              // Tras verificación manual, usuario hará login nuevamente, no navegamos a profile
-              return;
-            }
-
-            // Navegación directa a profile porque ya estamos autenticados
-            await this.showSuccessToast('Account created! Redirecting to profile...');
-            this.router.navigate(['/profile'], { replaceUrl: true });
-          } else {
-            this.registrationInProgress = false;
-            this.showErrorAlert(result.error || 'Registration failed');
-          }
-        },
-        error: (error) => {
-          loading.dismiss();
-            this.registrationInProgress = false;
-          console.error('Registration error:', error);
-          this.showErrorAlert('Unexpected error during registration');
-        }
-      });
-    } catch (error) {
-      loading.dismiss();
-      this.registrationInProgress = false;
-      console.error('Registration error:', error);
-      this.showErrorAlert('Unexpected error during registration');
-    }
-  }
-
-  /** Social authentication placeholders */
-  loginWithGoogle(): void {
-    this.showInfoAlert('Google Login', 'Google authentication will be implemented soon.');
-  }
-  loginWithFacebook(): void {
-    this.showInfoAlert('Facebook Login', 'Facebook authentication will be implemented soon.');
-  }
-  loginWithApple(): void {
-    this.showInfoAlert('Apple Login', 'Apple authentication will be implemented soon.');
-  }
-
-  /**
-   * Toggle password visibility
-   */
-  togglePasswordVisibility(): void {
-    this.showPassword = !this.showPassword;
-  }
-
-  /**
-   * Toggle confirm password visibility
-   */
-  toggleConfirmPasswordVisibility(): void {
-    this.showConfirmPassword = !this.showConfirmPassword;
-  }
-
-  /**
-   * Navigate to login page
-   */
-  goToLogin(): void {
-    this.router.navigate(['/auth/login']);
-  }
-
-  /**
    * Navigate to terms and conditions
    */
   openTerms(): void {
-    // This would open terms modal or navigate to terms page
     this.showInfoAlert('Terms & Conditions', 'Terms and conditions will be displayed here.');
   }
 
   /**
-   * Get form control for template access
+   * Social registration methods
    */
-  getFormControl(controlName: string) {
-    return this.registerForm.get(controlName);
-  }
-
-  /**
-   * Check if form control has error
-   */
-  hasError(controlName: string, errorType: string = ''): boolean {
-    const control = this.getFormControl(controlName);
-    if (!control) return false;
-
-    if (errorType) {
-      return control.hasError(errorType) && (control.dirty || control.touched);
-    }
-    return control.invalid && (control.dirty || control.touched);
-  }
-
-  /**
-   * Get error message for form control
-   */
-  getErrorMessage(controlName: string): string {
-    const control = this.getFormControl(controlName);
-    if (!control || !control.errors) return '';
-
-    if (control.errors['required']) {
-      return `${this.getFieldLabel(controlName)} is required`;
-    }
-    if (control.errors['email']) {
-      return 'Please enter a valid email address';
-    }
-    if (control.errors['minlength']) {
-      return `${this.getFieldLabel(controlName)} must be at least ${control.errors['minlength'].requiredLength} characters`;
-    }
-    if (control.errors['passwordMismatch']) {
-      return 'Passwords do not match';
-    }
-    if (control.errors['requiredTrue']) {
-      return 'You must accept the terms and conditions';
-    }
-
-    return 'Invalid input';
-  }
-
-  /**
-   * Get password strength description for UI
-   */
-  getPasswordStrength() {
-    if (!this.passwordValidation) return null;
-
-    const descriptions = {
-      weak: {
-        label: 'Weak - Add more characters and complexity',
-        color: '#ff4444',
-        percentage: 33
-      },
-      medium: {
-        label: 'Good - Consider adding more complexity',
-        color: '#ffaa00',
-        percentage: 66
-      },
-      strong: {
-        label: 'Strong - Excellent password!',
-        color: '#00aa00',
-        percentage: 100
-      }
-    };
-
-    return descriptions[this.passwordValidation.strength];
-  }
-
-  /**
-   * Get user-friendly field labels
-   */
-  private getFieldLabel(controlName: string): string {
-    const labels: { [key: string]: string } = {
-      firstName: 'First name',
-      lastName: 'Last name',
-      email: 'Email',
-      password: 'Password',
-      confirmPassword: 'Confirm password'
-    };
-    return labels[controlName] || controlName;
+  registerWithGoogle(): void {
+    this.showInfoAlert('Google Registration', 'Google registration will be implemented soon.');
   }
 
   /**
@@ -370,17 +276,15 @@ export class RegisterPage implements OnInit, OnDestroy {
   }
 
   /**
-   * Show success message and navigate
+   * Show success toast
    */
-  private async showSuccessMessage(): Promise<void> { /* deprecated replaced by toast */ }
-
   private async showSuccessToast(message: string = 'Account created!'): Promise<void> {
     const toast = await this.toastController.create({
       message,
-      duration: 2500,
-      position: 'bottom',
+      duration: 3000,
+      position: 'top',
       color: 'success',
-      icon: 'checkmark-circle-outline'
+      cssClass: 'success-toast'
     });
     await toast.present();
   }
@@ -409,5 +313,20 @@ export class RegisterPage implements OnInit, OnDestroy {
       cssClass: 'info-alert'
     });
     await alert.present();
+  }
+
+  /**
+   * Get password strength description for UI
+   */
+  getPasswordStrength() {
+    if (!this.passwordValidation) return null;
+    
+    return {
+      strength: this.passwordValidation.strength,
+      text: this.passwordValidation.strength === 'strong' ? 'Strong' :
+            this.passwordValidation.strength === 'medium' ? 'Medium' : 'Weak',
+      color: this.passwordValidation.strength === 'strong' ? 'success' :
+             this.passwordValidation.strength === 'medium' ? 'warning' : 'danger'
+    };
   }
 }
