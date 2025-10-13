@@ -7,6 +7,7 @@
 import { IUser, IUserRepository } from '../interfaces/repository.interface';
 import { IUnitOfWork } from '../interfaces/repository.interface';
 import { Logger } from '../services/logger.service';
+import { UserRepository } from '../infrastructure/repositories/user.repository';
 import bcrypt from 'bcrypt';
 import jwt, { SignOptions } from 'jsonwebtoken';
 import { config } from '../config/config';
@@ -68,8 +69,11 @@ export class AuthenticationService {
       await this.unitOfWork.start();
 
       try {
+        // Obtener repositorio transaccional del UnitOfWork
+        const transactionalRepo = this.unitOfWork.getRepository(UserRepository);
+        
         // Verificar si el email ya existe
-        const existingUser = await this.userRepository.findByEmail(request.email);
+        const existingUser = await transactionalRepo.findByEmail(request.email);
         if (existingUser) {
           await this.unitOfWork.rollback();
           return {
@@ -101,7 +105,7 @@ export class AuthenticationService {
           login_count: 0
         };
 
-        const newUser = await this.userRepository.create(userData);
+        const newUser = await transactionalRepo.create(userData);
 
         // Generar tokens
         const tokens = await this.generateTokens(newUser);
