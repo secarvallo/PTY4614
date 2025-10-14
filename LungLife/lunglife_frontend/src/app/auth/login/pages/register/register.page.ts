@@ -6,6 +6,9 @@ import { IonicModule, LoadingController, ToastController, AlertController } from
 import { Subject, takeUntil, debounceTime, distinctUntilChanged } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 
+// Environment configuration
+import { environment } from '../../../../../environments/environment';
+
 // Servicios de seguridad avanzados - LISTOS PARA PRODUCCIÓN
 // TODO: Descomentar estas líneas cuando los servicios estén disponibles:
 // import { PasswordBreachValidatorService, PasswordSecurityResult } from '../../../../core/services/password-breach-validator.service';
@@ -321,7 +324,7 @@ export class RegisterPage implements OnInit, OnDestroy {
       }
 
       // STEP 4: Make API call
-      const result = await this.http.post<any>('/api/auth/register', sanitizedData).toPromise();
+      const result = await this.http.post<any>(`${environment.apiUrl}/auth/register`, sanitizedData).toPromise();
       
       await loading.dismiss();
       this.loading.set(false);

@@ -17,7 +17,6 @@ export interface RegisterUserRequest {
   firstName: string;
   lastName?: string;
   phone?: string;
-  birthDate?: string;        // Opcional: Fecha de nacimiento
   acceptTerms: boolean;      // Requerido: Términos y condiciones
   acceptPrivacy: boolean;    // Requerido: Política de privacidad
   acceptMarketing?: boolean; // Opcional: Marketing/comunicaciones
@@ -44,6 +43,30 @@ export interface AuthResult {
   user?: IUser;
   token?: string;
   refreshToken?: string;
+  error?: string;
+  errorCode?: string;
+}
+
+export interface ForgotPasswordRequest {
+  email: string;
+}
+
+export interface ForgotPasswordResponse {
+  success: boolean;
+  message?: string;
+  error?: string;
+  errorCode?: string;
+  resetToken?: string; // Solo para testing, no enviar en producción
+}
+
+export interface ResetPasswordRequest {
+  token: string;
+  newPassword: string;
+}
+
+export interface ResetPasswordResponse {
+  success: boolean;
+  message?: string;
   error?: string;
   errorCode?: string;
 }
@@ -135,14 +158,17 @@ export class AuthenticationService {
       await this.unitOfWork.start();
 
       try {
-        // Verificar si el email ya existe
-        const existingUser = await this.userRepository.findByEmail(request.email);
+        // Verificar si el email ya existe (con normalización)
+        const normalizedEmail = request.email.toLowerCase().trim();
+        const existingUser = await this.userRepository.findByEmail(normalizedEmail);
         if (existingUser) {
           await this.unitOfWork.rollback();
+          this.logger.warn(`Registration attempt with existing email: ${normalizedEmail}`);
           return {
             success: false,
             error: 'Email already registered',
-            errorCode: 'EMAIL_EXISTS'
+            errorCode: 'EMAIL_EXISTS',
+            debugInfo: { ...debugInfo, step: 'email_already_exists' }
           };
         }
 
@@ -160,7 +186,6 @@ export class AuthenticationService {
           nombre: request.firstName.trim(),
           apellido: request.lastName?.trim(),
           phone: request.phone?.trim(),
-          fecha_nacimiento: request.birthDate?.trim(), // Mapear birthDate a fecha_nacimiento
           email_verified: false,
           two_fa_enabled: false,
           two_fa_secret: undefined,
@@ -218,18 +243,45 @@ export class AuthenticationService {
         };
 
       } catch (error: any) {
-        await this.unitOfWork.rollback();
+        // Ensure rollback happens even if there's an error during rollback
+        try {
+          if (this.unitOfWork.isActive()) {
+            await this.unitOfWork.rollback();
+          }
+        } catch (rollbackError) {
+          this.logger.error('Error during rollback:', rollbackError);
+        }
         
-        // Manejar error específico de email duplicado
-        if (error.code === '23505' && error.constraint === 'users_email_key') {
-          this.logger.warn(`Duplicate email registration attempt: ${request.email}`);
+        // Manejar errores específicos de base de datos
+        if (error.code === '23505') {
+          // Unique constraint violation
+          if (error.constraint === 'users_email_key' || error.detail?.includes('email')) {
+            this.logger.warn(`Duplicate email registration attempt: ${request.email}`, {
+              errorCode: error.code,
+              constraint: error.constraint,
+              detail: error.detail
+            });
+            return {
+              success: false,
+              error: 'Email already registered',
+              errorCode: 'EMAIL_EXISTS',
+              debugInfo: { ...debugInfo, step: 'database_constraint_violation' }
+            };
+          }
+        }
+        
+        // Manejar error de transacción (_bt_check_unique)
+        if (error.message && error.message.includes('_bt_check_unique')) {
+          this.logger.warn(`Unique constraint violation during registration: ${request.email}`, error);
           return {
             success: false,
             error: 'Email already registered',
-            errorCode: 'EMAIL_EXISTS'
+            errorCode: 'EMAIL_EXISTS',
+            debugInfo: { ...debugInfo, step: 'unique_constraint_error' }
           };
         }
         
+        this.logger.error('Unexpected database error during registration:', error);
         throw error;
       }
 
@@ -407,5 +459,199 @@ export class AuthenticationService {
     // Al menos 8 caracteres, una mayúscula, una minúscula, un número
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$/;
     return passwordRegex.test(password);
+  }
+
+  /**
+   * 📧 Forgot Password - Generate reset token
+   */
+  async forgotPassword(request: ForgotPasswordRequest): Promise<ForgotPasswordResponse> {
+    const startTime = Date.now();
+    
+    try {
+      this.logger.info(`🔐 Password reset requested for: ${request.email}`);
+
+      // Validate email format
+      if (!this.isValidEmail(request.email)) {
+        return {
+          success: false,
+          error: 'Invalid email format',
+          errorCode: 'INVALID_EMAIL'
+        };
+      }
+
+      // Normalize email
+      const normalizedEmail = request.email.toLowerCase().trim();
+
+      // Find user (don't reveal if user exists or not for security)
+      const user = await this.userRepository.findByEmail(normalizedEmail);
+      
+      if (!user) {
+        // Return success even if user doesn't exist (security best practice)
+        this.logger.warn(`Password reset attempted for non-existent email: ${normalizedEmail}`);
+        return {
+          success: true,
+          message: 'If the email exists, a reset link has been sent'
+        };
+      }
+
+      // Check if user is active
+      if (!user.is_active) {
+        this.logger.warn(`Password reset attempted for inactive user: ${normalizedEmail}`);
+        return {
+          success: true,
+          message: 'If the email exists, a reset link has been sent'
+        };
+      }
+
+      // Generate secure reset token
+      const resetToken = this.generateResetToken();
+      const resetExpires = new Date(Date.now() + 60 * 60 * 1000); // 1 hora
+
+      // Start transaction
+      await this.unitOfWork.start();
+
+      try {
+        // Update user with reset token
+        await this.userRepository.update(user.id, {
+          password_reset_token: resetToken,
+          password_reset_expires: resetExpires,
+          updated_at: new Date()
+        });
+
+        // Commit transaction
+        await this.unitOfWork.commit();
+
+        const duration = Date.now() - startTime;
+        this.logger.info(`Password reset token generated for user ${user.id} in ${duration}ms`);
+
+        // TODO: Send email with reset link
+        // await this.emailService.sendPasswordResetEmail(user.email, resetToken);
+
+        return {
+          success: true,
+          message: 'Password reset email sent successfully',
+          resetToken: resetToken // TODO: Remove in production, only for testing
+        };
+
+      } catch (error) {
+        await this.unitOfWork.rollback();
+        throw error;
+      }
+
+    } catch (error: any) {
+      const duration = Date.now() - startTime;
+      this.logger.error(`Password reset failed after ${duration}ms:`, error);
+      
+      return {
+        success: false,
+        error: 'Failed to process password reset request',
+        errorCode: 'RESET_FAILED'
+      };
+    }
+  }
+
+  /**
+   * 🔄 Reset Password - Validate token and update password
+   */
+  async resetPassword(request: ResetPasswordRequest): Promise<ResetPasswordResponse> {
+    const startTime = Date.now();
+    
+    try {
+      this.logger.info(`🔄 Password reset attempt with token: ${request.token.substring(0, 8)}...`);
+
+      // Validate inputs
+      if (!request.token || !request.newPassword) {
+        return {
+          success: false,
+          error: 'Token and new password are required',
+          errorCode: 'INVALID_INPUT'
+        };
+      }
+
+      // Validate new password strength
+      if (!this.isValidPassword(request.newPassword)) {
+        return {
+          success: false,
+          error: 'Password must be at least 8 characters with uppercase, lowercase, and number',
+          errorCode: 'WEAK_PASSWORD'
+        };
+      }
+
+      // Find user by reset token
+      const users = await this.userRepository.findBy({
+        password_reset_token: request.token
+      });
+
+      if (users.length === 0) {
+        this.logger.warn(`Password reset attempted with invalid token: ${request.token.substring(0, 8)}...`);
+        return {
+          success: false,
+          error: 'Invalid or expired reset token',
+          errorCode: 'INVALID_TOKEN'
+        };
+      }
+
+      const user = users[0];
+
+      // Check if token is expired
+      if (!user.password_reset_expires || new Date() > user.password_reset_expires) {
+        this.logger.warn(`Password reset attempted with expired token for user ${user.id}`);
+        return {
+          success: false,
+          error: 'Reset token has expired',
+          errorCode: 'TOKEN_EXPIRED'
+        };
+      }
+
+      // Hash new password
+      const newPasswordHash = await this.hashPassword(request.newPassword);
+
+      // Start transaction
+      await this.unitOfWork.start();
+
+      try {
+        // Update user password and clear reset token
+        await this.userRepository.update(user.id, {
+          password_hash: newPasswordHash,
+          password_reset_token: undefined,
+          password_reset_expires: undefined,
+          password_changed_at: new Date(),
+          updated_at: new Date()
+        });
+
+        // Commit transaction
+        await this.unitOfWork.commit();
+
+        const duration = Date.now() - startTime;
+        this.logger.info(`Password reset successful for user ${user.id} in ${duration}ms`);
+
+        return {
+          success: true,
+          message: 'Password has been reset successfully'
+        };
+
+      } catch (error) {
+        await this.unitOfWork.rollback();
+        throw error;
+      }
+
+    } catch (error: any) {
+      const duration = Date.now() - startTime;
+      this.logger.error(`Password reset failed after ${duration}ms:`, error);
+      
+      return {
+        success: false,
+        error: 'Failed to reset password',
+        errorCode: 'RESET_FAILED'
+      };
+    }
+  }
+
+  /**
+   * 🎲 Generate secure reset token
+   */
+  private generateResetToken(): string {
+    const crypto = require('crypto');
+    return crypto.randomBytes(32).toString('hex');
   }
 }

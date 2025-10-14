@@ -9,7 +9,8 @@
     "typecheck": "tsc --noEmit",
     "start:prod": "ts-node src/index.ts",
     "test:auth": "ts-node src/scripts/complete_auth_test.ts",
-    "test:registration": "ts-node src/scripts/test_registration_http.ts"
+    "test:registration": "ts-node src/scripts/test_registration_http.ts",
+    "test:forgot-password": "ts-node src/scripts/test_forgot_password.ts"
   },
   "keywords": [
     "lunglife",

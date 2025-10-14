@@ -1,101 +1,56 @@
-<!-- 🏠 Dashboard Template - Protected Route with Auth Integration -->
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>LungLife Dashboard</ion-title>
-    <ion-buttons slot="end">
-      <ion-button fill="clear" (click)="onLogout()">
-        <ion-icon name="log-out-outline"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
-
-<ion-content [fullscreen]="true" class="dashboard-content">
+<ion-content [fullscreen]="true" class="dashboard-content" data-test="dashboard-page">
   <div class="dashboard-container">
 
-    <!-- Welcome Section -->
-    <div class="welcome-section">
-      <div class="user-avatar">
-        <ion-icon name="person-circle-outline" class="avatar-icon"></ion-icon>
+    @if (user) {
+      <div class="welcome-header">
+        <h1>Bienvenido de nuevo, {{ user.firstName }}</h1>
+        <p>Aquí tienes un resumen de tu progreso. ¡Sigue así!</p>
       </div>
 
-      <div class="welcome-text">
-        <h2>{{ getGreeting() }}, {{ getUserDisplayName() }}!</h2>
-        <p>Welcome back to your LungLife dashboard</p>
+      <div class="dashboard-card">
+
+        <div class="metrics-grid">
+          <div class="metric-item smoke-free">
+            <ion-icon name="leaf-outline"></ion-icon>
+            <span class="value">{{ smokeFreeDays }}</span>
+            <span class="label">Días sin fumar</span>
+          </div>
+
+          <div class="metric-item money-saved">
+            <ion-icon name="cash-outline"></ion-icon>
+            <span class="value">{{ moneySaved | currency:'USD':'symbol':'1.0-0' }}</span>
+            <span class="label">Dinero Ahorrado</span>
+          </div>
+
+          <div class="metric-item cigarettes-avoided">
+            <ion-icon name="medical-outline"></ion-icon>
+            <span class="value">{{ cigarettesAvoided }}</span>
+            <span class="label">Cigarrillos Evitados</span>
+          </div>
+
+          <div class="metric-item lung-health">
+            <ion-icon name="fitness-outline"></ion-icon>
+            <span class="value">{{ lungHealthPercentage }}%</span>
+            <span class="label">Salud Pulmonar</span>
+          </div>
+        </div>
       </div>
-    </div>
 
-    <!-- User Status Cards -->
-    <div class="status-grid">
-
-      <!-- Account Status Card -->
-      <ion-card class="status-card">
-        <ion-card-content>
-          <div class="status-header">
-            <ion-icon name="shield-checkmark-outline" [color]="currentUser?.isEmailVerified ? 'success' : 'warning'"></ion-icon>
-            <h3>Account Status</h3>
-          </div>
-          <div class="status-info">
-            <p>Email: {{ currentUser?.isEmailVerified ? 'Verified' : 'Not Verified' }}</p>
-            <p>2FA: {{ currentUser?.twoFAEnabled ? 'Enabled' : 'Disabled' }}</p>
-          </div>
-          <ion-button fill="clear" size="small" (click)="showUserInfo()">
-            View Details
-          </ion-button>
-        </ion-card-content>
-      </ion-card>
-
-      <!-- Security Card -->
-      <ion-card class="status-card" (click)="goTo2FASettings()">
-        <ion-card-content>
-          <div class="status-header">
-            <ion-icon name="lock-closed-outline" color="primary"></ion-icon>
-            <h3>Security</h3>
-          </div>
-          <div class="status-info">
-            <p>Two-Factor Authentication</p>
-            <p class="status-badge" [class.enabled]="currentUser?.twoFAEnabled">
-              {{ currentUser?.twoFAEnabled ? 'Protected' : 'Setup Required' }}
-            </p>
-          </div>
-        </ion-card-content>
-      </ion-card>
-
-    </div>
-
-    <!-- Quick Actions -->
-    <div class="actions-section">
-      <h3>Quick Actions</h3>
-
-      <div class="actions-grid">
-        <ion-button expand="block" fill="outline" (click)="goToProfile()">
-          <ion-icon name="person-outline" slot="start"></ion-icon>
-          Edit Profile
+      <div class="dashboard-actions">
+        <ion-button expand="block" class="action-button primary" (click)="logHabit()">
+          <ion-icon name="add-circle-outline" slot="start"></ion-icon>
+          Registrar Hábito de Hoy
         </ion-button>
-
-        <ion-button expand="block" fill="outline" (click)="goTo2FASettings()">
-          <ion-icon name="shield-outline" slot="start"></ion-icon>
-          Security Settings
+        <ion-button expand="block" class="action-button" fill="outline" (click)="viewProgress()">
+          <ion-icon name="bar-chart-outline" slot="start"></ion-icon>
+          Ver Progreso Detallado
         </ion-button>
       </div>
-    </div>
-
-    <!-- Authentication State Debug Info (Development Only) -->
-    @if (true) { <!-- Remove this condition in production -->
-      <div class="debug-section">
-        <h4>Auth State (Debug)</h4>
-        <ion-card>
-          <ion-card-content>
-            <div class="debug-info">
-              <p><strong>Authenticated:</strong> {{ (isAuthenticated$ | async) ? 'Yes' : 'No' }}</p>
-              <p><strong>Loading:</strong> {{ (loading$ | async) ? 'Yes' : 'No' }}</p>
-              <p><strong>Error:</strong> {{ (error$ | async) || 'None' }}</p>
-              <p><strong>Requires 2FA:</strong> {{ (requiresTwoFA$ | async) ? 'Yes' : 'No' }}</p>
-            </div>
-          </ion-card-content>
-        </ion-card>
+    } @else {
+      <div class="loading-state">
+        <ion-spinner name="crescent"></ion-spinner>
+        <p>Cargando tu dashboard...</p>
       </div>
     }
-
   </div>
 </ion-content>

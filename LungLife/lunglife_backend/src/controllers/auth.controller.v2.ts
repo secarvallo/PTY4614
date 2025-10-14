@@ -5,7 +5,7 @@
  */
 
 import { Request, Response } from 'express';
-import { AuthenticationService, RegisterUserRequest, LoginRequest } from '../core/services/authentication.service';
+import { AuthenticationService, RegisterUserRequest, LoginRequest, ForgotPasswordRequest, ResetPasswordRequest } from '../core/services/authentication.service';
 import { DatabaseServiceFactory } from '../core/factories/database.factory';
 import { UserRepository } from '../core/infrastructure/repositories/user.repository';
 import { UnitOfWork } from '../core/infrastructure/unit-of-work/unit-of-work';
@@ -97,10 +97,9 @@ export class AuthController {
       const registerRequest: RegisterUserRequest = {
         email: req.body.email,
         password: req.body.password,
-        firstName: req.body.firstName,
-        lastName: req.body.lastName,
-        phone: req.body.phone,
-        birthDate: req.body.birthDate,
+        firstName: req.body.nombre || req.body.firstName,
+        lastName: req.body.apellido || req.body.lastName,
+        phone: req.body.telefono || req.body.phone,
         acceptTerms: req.body.acceptTerms,
         acceptPrivacy: req.body.acceptPrivacy,
         acceptMarketing: req.body.acceptMarketing || false
@@ -250,7 +249,8 @@ export class AuthController {
 
     if (!body.email) errors.push('Email is required');
     if (!body.password) errors.push('Password is required');
-    if (!body.firstName) errors.push('First name is required');
+    // Soporte para ambos formatos: español (nombre) e inglés (firstName)
+    if (!body.firstName && !body.nombre) errors.push('Name is required');
     if (body.acceptTerms !== true) errors.push('Must accept terms and conditions');
 
     // Validar formato de email
@@ -288,6 +288,111 @@ export class AuthController {
       timestamp: new Date().toISOString()
     };
     res.status(statusCode).json(response);
+  }
+
+  /**
+   * 📧 Forgot Password - POST /api/auth/forgot-password
+   */
+  async forgotPassword(req: Request, res: Response): Promise<void> {
+    const startTime = Date.now();
+    
+    try {
+      this.logger.info('Password reset requested', { 
+        email: req.body.email,
+        ip: req.ip,
+        userAgent: req.get('User-Agent')
+      });
+
+      // Validar email
+      if (!req.body.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(req.body.email)) {
+        this.sendErrorResponse(res, 400, 'Valid email is required', 'VALIDATION_ERROR');
+        return;
+      }
+
+      const authService = await this.getAuthService();
+      const result = await authService.forgotPassword({ email: req.body.email });
+
+      const duration = Date.now() - startTime;
+      
+      if (result.success) {
+        this.logger.info(`Password reset processed in ${duration}ms`);
+        this.sendSuccessResponse(res, 200, {
+          message: result.message,
+          // TODO: Remove resetToken in production
+          resetToken: result.resetToken
+        });
+      } else {
+        this.logger.warn(`Password reset failed in ${duration}ms: ${result.error}`);
+        this.sendErrorResponse(res, 400, result.error!, result.errorCode!);
+      }
+
+    } catch (error) {
+      const duration = Date.now() - startTime;
+      this.logger.error(`Password reset error after ${duration}ms:`, error);
+      this.sendErrorResponse(res, 500, 'Internal server error', 'INTERNAL_ERROR');
+    }
+  }
+
+  /**
+   * 🔄 Reset Password - POST /api/auth/reset-password
+   */
+  async resetPassword(req: Request, res: Response): Promise<void> {
+    const startTime = Date.now();
+    
+    try {
+      this.logger.info('Password reset attempt', { 
+        tokenPrefix: req.body.token?.substring(0, 8),
+        ip: req.ip,
+        userAgent: req.get('User-Agent')
+      });
+
+      // Validar inputs
+      const validation = this.validateResetPasswordRequest(req.body);
+      if (!validation.isValid) {
+        this.sendErrorResponse(res, 400, validation.errors.join(', '), 'VALIDATION_ERROR');
+        return;
+      }
+
+      const authService = await this.getAuthService();
+      const result = await authService.resetPassword({
+        token: req.body.token,
+        newPassword: req.body.newPassword
+      });
+
+      const duration = Date.now() - startTime;
+      
+      if (result.success) {
+        this.logger.info(`Password reset successful in ${duration}ms`);
+        this.sendSuccessResponse(res, 200, {
+          message: result.message
+        });
+      } else {
+        this.logger.warn(`Password reset failed in ${duration}ms: ${result.error}`);
+        this.sendErrorResponse(res, 400, result.error!, result.errorCode!);
+      }
+
+    } catch (error) {
+      const duration = Date.now() - startTime;
+      this.logger.error(`Password reset error after ${duration}ms:`, error);
+      this.sendErrorResponse(res, 500, 'Internal server error', 'INTERNAL_ERROR');
+    }
+  }
+
+  private validateResetPasswordRequest(body: any): { isValid: boolean; errors: string[] } {
+    const errors: string[] = [];
+
+    if (!body.token) errors.push('Reset token is required');
+    if (!body.newPassword) errors.push('New password is required');
+    
+    // Validar contraseña
+    if (body.newPassword && body.newPassword.length < 8) {
+      errors.push('Password must be at least 8 characters long');
+    }
+
+    return {
+      isValid: errors.length === 0,
+      errors
+    };
   }
 
   private sendErrorResponse(res: Response, statusCode: number, error: string, errorCode: string): void {

@@ -1,24 +1,39 @@
--- 🔧 Script de corrección para agregar campos de aceptación faltantes
--- Ejecutar en la base de datos lunglife_db
+-- 🔄 Script de Migración para Agregar Campos de Aceptación
+-- Agregar columnas faltantes a la tabla users
 
--- Agregar los campos de aceptación que faltan en la tabla users
-ALTER TABLE users ADD COLUMN IF NOT EXISTS accept_terms BOOLEAN NOT NULL DEFAULT FALSE;
-ALTER TABLE users ADD COLUMN IF NOT EXISTS accept_privacy BOOLEAN NOT NULL DEFAULT FALSE;
-ALTER TABLE users ADD COLUMN IF NOT EXISTS marketing_consent BOOLEAN DEFAULT FALSE;
+-- Conectar a la base de datos
+\c lunglife_db;
 
--- Agregar índices para mejorar el rendimiento en consultas de compliance
-CREATE INDEX IF NOT EXISTS idx_users_accept_terms ON users(accept_terms);
-CREATE INDEX IF NOT EXISTS idx_users_accept_privacy ON users(accept_privacy);
-CREATE INDEX IF NOT EXISTS idx_users_marketing_consent ON users(marketing_consent);
+-- Agregar columnas de campos de aceptación si no existen
+DO $$
+BEGIN
+    -- Agregar accept_terms si no existe
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                   WHERE table_name = 'users' AND column_name = 'accept_terms') THEN
+        ALTER TABLE users ADD COLUMN accept_terms BOOLEAN DEFAULT FALSE NOT NULL;
+        RAISE NOTICE 'Added column accept_terms to users table';
+    END IF;
+    
+    -- Agregar accept_privacy si no existe  
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                   WHERE table_name = 'users' AND column_name = 'accept_privacy') THEN
+        ALTER TABLE users ADD COLUMN accept_privacy BOOLEAN DEFAULT FALSE NOT NULL;
+        RAISE NOTICE 'Added column accept_privacy to users table';
+    END IF;
+    
+    -- Agregar marketing_consent si no existe
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                   WHERE table_name = 'users' AND column_name = 'marketing_consent') THEN
+        ALTER TABLE users ADD COLUMN marketing_consent BOOLEAN DEFAULT FALSE;
+        RAISE NOTICE 'Added column marketing_consent to users table';
+    END IF;
+    
+    RAISE NOTICE 'Migration completed successfully!';
+END $$;
 
--- Verificar la estructura actualizada
-SELECT column_name, data_type, is_nullable, column_default 
+-- Verificar la estructura de la tabla
+SELECT column_name, data_type, is_nullable, column_default
 FROM information_schema.columns 
 WHERE table_name = 'users' 
-AND column_name IN ('accept_terms', 'accept_privacy', 'marketing_consent')
-ORDER BY column_name;
-
--- Comentarios para documentar los nuevos campos
-COMMENT ON COLUMN users.accept_terms IS 'Campo obligatorio: El usuario ha aceptado los términos y condiciones';
-COMMENT ON COLUMN users.accept_privacy IS 'Campo obligatorio: El usuario ha aceptado las políticas de privacidad';  
-COMMENT ON COLUMN users.marketing_consent IS 'Campo opcional: Consentimiento para recibir comunicaciones de marketing';
+  AND column_name IN ('accept_terms', 'accept_privacy', 'marketing_consent')
+ORDER BY ordinal_position;

@@ -40,16 +40,16 @@ router.post('/refresh', authController.refresh.bind(authController));
 // ========== PASSWORD RECOVERY ROUTES ==========
 
 /**
- *  Forgot Password - Compatible with ForgotStrategy
+ * 📧 Forgot Password - Compatible with ForgotStrategy
  * POST /api/auth/forgot-password
  */
-// Note: Password recovery endpoints are not part of minimal clean architecture
+router.post('/forgot-password', authController.forgotPassword.bind(authController));
 
 /**
- *  Reset Password - Compatible with ForgotStrategy
+ * 🔄 Reset Password - Compatible with ForgotStrategy
  * POST /api/auth/reset-password
  */
-// Note: Password reset endpoint omitted
+router.post('/reset-password', authController.resetPassword.bind(authController));
 
 // ========== 2FA ROUTES ==========
 

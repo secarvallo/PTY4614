@@ -24,18 +24,19 @@ validateConfig();
 
 const app = express();
 
-// Middleware
+// CORS Middleware - Simplificado para desarrollo
 app.use(cors({
-    origin: [
-        'http://localhost:4200',  // Angular dev server
-        'http://localhost:8100',  // Ionic dev server
-        'http://localhost:3000',  // Common React port
-        'http://127.0.0.1:4200',  // Alternative localhost
-        'http://127.0.0.1:8100'   // Alternative localhost
-    ],
+    origin: function (origin, callback) {
+        // Permitir requests sin origin (como Postman) o desde localhost
+        if (!origin || origin.startsWith('http://localhost:') || origin.startsWith('http://127.0.0.1:')) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'x-requested-with'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With'],
     optionsSuccessStatus: 200
 }));
 app.use(express.json());
@@ -139,8 +140,8 @@ app.use((error: any, req: express.Request, res: express.Response, _next: express
 
 // Replace direct app.listen with a resilient start that handles EADDRINUSE
 const startServer = async () => {
-    // Force port 3003 to match frontend configuration
-    const preferredPort = 3003;
+    // Use port from environment or default to 3002
+    const preferredPort = parseInt(process.env.PORT || '3002');
     let port = preferredPort;
     const maxAttempts = 5;
     let attempts = 0;
