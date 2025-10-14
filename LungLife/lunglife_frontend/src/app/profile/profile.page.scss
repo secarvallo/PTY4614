@@ -3,6 +3,8 @@
  *
  * This design unifies the profile page with the clean, card-based
  * layout of the registration and login flows for a consistent UX.
+ * 
+ * Note: Centering and responsive layout is now handled by shared-layout.scss
  */
 
 :host {
@@ -15,14 +17,9 @@
   --primary-grad: linear-gradient(135deg, #6c63ff 0%, #7b4dff 50%, #9a60ff 100%);
 }
 
-ion-content.profile-content {
+/* Background gradient for profile page */
+ion-content {
   --background: linear-gradient(180deg, var(--page-bg-start) 0%, var(--page-bg-end) 100%);
-}
-
-.profile-container {
-  max-width: 520px;
-  margin: 0 auto;
-  padding: 32px 20px 24px;
 }
 
 .profile-card {
@@ -128,5 +125,22 @@ ion-content.profile-content {
   ion-icon {
     font-size: 48px;
     margin-bottom: 16px;
+  }
+}
+
+/* Mobile Responsive - Profile Specific */
+@media (max-width: 480px) {
+  .profile-card {
+    padding: 20px 16px;
+    border-radius: 16px;
+  }
+
+  .profile-avatar .avatar-icon {
+    font-size: 64px;
+  }
+
+  .action-button {
+    font-size: 14px;
+    height: 48px;
   }
 }

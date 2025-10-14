@@ -11,7 +11,10 @@ import { User } from '../auth/core/interfaces/auth.unified';
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.page.html',
-  styleUrls: ['./dashboard.page.scss'],
+  styleUrls: [
+    './dashboard.page.scss',
+    '../theme/shared-layout.scss'
+  ],
   standalone: true,
   imports: [IonicModule, CommonModule],
 })

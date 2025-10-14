@@ -15,7 +15,10 @@ import { User } from 'src/app/auth/core/interfaces/auth.unified';
   selector: 'app-profile',
   templateUrl: './profile.page.html',
   // Updated to use the new unified style file
-  styleUrls: ['./profile.page.scss'],
+  styleUrls: [
+    './profile.page.scss',
+    '../theme/shared-layout.scss'
+  ],
   standalone: true,
   imports: [IonicModule, CommonModule]
 })

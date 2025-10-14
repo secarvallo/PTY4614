@@ -1,7 +1,8 @@
 <!-- 👤 Profile Page Template - Redesigned -->
 
-<ion-content [fullscreen]="true" class="profile-content" data-test="profile-page">
-  <div class="profile-container">
+<ion-content [fullscreen]="true" data-test="profile-page">
+  <div class="content-wrapper">
+    <div class="centered-container">
 
     @if (currentUser) {
       <!-- User Info Card -->
@@ -79,5 +80,6 @@
       </div>
     }
 
+    </div>
   </div>
 </ion-content>

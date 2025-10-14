@@ -1,5 +1,5 @@
 /**
- * Theme Toggle Component - Responsive Design
+ * Theme Toggle Component - Simplified Design
  * 
  * Desktop: Top-right corner with margin
  * Mobile: Bottom-right corner (floating)
@@ -13,11 +13,19 @@
   top: 20px;
   right: 20px;
 
-  .theme-toggle-content {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 12px 16px;
+  .theme-toggle {
+    --handle-background: #ffffff;
+    --handle-background-checked: #ffffff;
+    --background: var(--ion-color-medium-tint);
+    --background-checked: var(--ion-color-medium);
+    --border-radius: 20px;
+    --handle-border-radius: 16px;
+    --handle-width: 28px;
+    --handle-height: 28px;
+    --handle-spacing: 2px;
+    width: 56px;
+    height: 32px;
+    padding: 8px 12px;
     background: var(--ion-color-light);
     border-radius: 24px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -30,54 +38,29 @@
       box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
       transform: translateY(-1px);
     }
-  }
-
-  .theme-icon {
-    font-size: 20px;
-    color: var(--ion-color-primary);
-    transition: all 0.3s ease;
-  }
-
-  .theme-label {
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--ion-color-dark);
-    white-space: nowrap;
-    transition: color 0.3s ease;
-  }
-
-  .theme-toggle {
-    --handle-background: #ffffff;
-    --handle-background-checked: #ffffff;
-    --background: var(--ion-color-medium-tint);
-    --background-checked: var(--ion-color-primary);
-    --border-radius: 16px;
-    --handle-border-radius: 14px;
-    --handle-width: 24px;
-    --handle-height: 24px;
-    --handle-spacing: 2px;
-    width: 48px;
-    height: 28px;
 
     &::part(handle) {
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
     }
   }
+
+  .theme-icon {
+    font-size: 18px;
+    color: var(--ion-color-medium);
+    transition: all 0.3s ease;
+  }
 }
 
 // Dark theme adaptations
+:host-context([data-theme="dark"]) .theme-toggle-container,
 :host-context(.dark) .theme-toggle-container {
-  .theme-toggle-content {
+  .theme-toggle {
     background: var(--ion-color-dark-tint);
     border-color: var(--ion-color-dark-shade);
   }
 
-  .theme-label {
-    color: var(--ion-color-light);
-  }
-
   .theme-icon {
-    color: var(--ion-color-secondary);
+    color: var(--ion-color-light);
   }
 }
 
@@ -89,25 +72,17 @@
     bottom: 20px;
     right: 20px;
 
-    .theme-toggle-content {
-      padding: 10px 14px;
-      border-radius: 20px;
-    }
-
-    .theme-label {
-      font-size: 13px;
+    .theme-toggle {
+      width: 52px;
+      height: 30px;
+      padding: 6px 10px;
+      
+      --handle-width: 26px;
+      --handle-height: 26px;
     }
 
     .theme-icon {
-      font-size: 18px;
-    }
-
-    .theme-toggle {
-      width: 44px;
-      height: 26px;
-      
-      --handle-width: 22px;
-      --handle-height: 22px;
+      font-size: 16px;
     }
   }
 }
@@ -118,25 +93,17 @@
     bottom: 16px;
     right: 16px;
 
-    .theme-toggle-content {
-      padding: 8px 12px;
-      gap: 6px;
-    }
-
-    .theme-label {
-      font-size: 12px;
+    .theme-toggle {
+      width: 48px;
+      height: 28px;
+      padding: 6px 10px;
+      
+      --handle-width: 24px;
+      --handle-height: 24px;
     }
 
     .theme-icon {
-      font-size: 16px;
-    }
-
-    .theme-toggle {
-      width: 40px;
-      height: 24px;
-      
-      --handle-width: 20px;
-      --handle-height: 20px;
+      font-size: 14px;
     }
   }
 }
@@ -148,6 +115,6 @@
   }
 
   &[name="moon-outline"] {
-    color: var(--ion-color-primary);
+    color: var(--ion-color-medium);
   }
 }

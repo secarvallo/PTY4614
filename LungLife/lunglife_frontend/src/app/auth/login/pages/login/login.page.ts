@@ -17,7 +17,11 @@ import { LoginRequest } from '../../../core/services/infrastructure/auth-api.ser
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, FormsModule, IonicModule, RouterLink],
   templateUrl: './login.page.html',
-  styleUrls: ['./login.page.scss', '../../../auth.styles.scss'],
+  styleUrls: [
+    '../../../auth.styles.scss',
+    '../../../../theme/shared-layout.scss',
+    './login.page.scss'
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LoginPage implements OnInit, OnDestroy {

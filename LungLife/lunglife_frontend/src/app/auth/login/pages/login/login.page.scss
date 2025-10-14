@@ -3,6 +3,8 @@
  * 
  * Uses global auth styles for consistency.
  * This file only contains page-specific overrides and 2FA styles.
+ * 
+ * Note: Centering and responsive layout is now handled by shared-layout.scss
  */
 
 .two-factor-header {
@@ -94,14 +96,14 @@
     --padding-start: 0;
     --padding-end: 0;
     height: auto;
-    color: var(--accent-color);
+    color: var(--ion-color-primary);
     font-size: 14px;
     text-decoration: underline;
     transition: color 0.2s ease;
     white-space: nowrap;
 
     &:hover {
-      color: var(--accent-dark);
+      color: var(--ion-color-primary-shade);
     }
   }
 }

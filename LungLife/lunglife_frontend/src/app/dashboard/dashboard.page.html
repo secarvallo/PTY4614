@@ -1,5 +1,6 @@
-<ion-content [fullscreen]="true" class="dashboard-content" data-test="dashboard-page">
-  <div class="dashboard-container">
+<ion-content [fullscreen]="true" data-test="dashboard-page">
+  <div class="content-wrapper">
+    <div class="centered-container-wide">
 
     @if (user) {
       <div class="welcome-header">
@@ -52,5 +53,6 @@
         <p>Cargando tu dashboard...</p>
       </div>
     }
+    </div>
   </div>
 </ion-content>

@@ -3,6 +3,8 @@
  *
  * This design unifies the dashboard page with the clean, card-based
  * layout for a consistent and motivating user experience.
+ * 
+ * Note: Centering and responsive layout is now handled by shared-layout.scss
  */
 
 :host {
@@ -15,14 +17,9 @@
   --primary-grad: linear-gradient(135deg, #6c63ff 0%, #7b4dff 50%, #9a60ff 100%);
 }
 
-ion-content.dashboard-content {
+/* Background gradient for dashboard page */
+ion-content {
   --background: linear-gradient(180deg, var(--page-bg-start) 0%, var(--page-bg-end) 100%);
-}
-
-.dashboard-container {
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 32px 20px 24px;
 }
 
 .welcome-header {
@@ -120,5 +117,25 @@ ion-content.dashboard-content {
 
   ion-spinner {
     margin-bottom: 16px;
+  }
+}
+
+/* Mobile Responsive - Dashboard Specific */
+@media (max-width: 480px) {
+  .dashboard-card {
+    padding: 20px 16px;
+    border-radius: 16px;
+  }
+
+  .welcome-header h1 {
+    font-size: 20px;
+  }
+
+  .metric-item {
+    padding: 16px;
+  }
+
+  .metric-value {
+    font-size: 20px;
   }
 }

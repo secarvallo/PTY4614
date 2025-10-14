@@ -1,5 +1,6 @@
-<ion-content class="auth-content" data-test="register-page">
-  <div class="auth-container">
+<ion-content data-test="register-page">
+  <div class="content-wrapper">
+    <div class="centered-container">
     <div class="auth-header">
       <div class="logo-placeholder"></div>
       <h1>Crear Cuenta</h1>
@@ -72,7 +73,7 @@
       </div>
 
       <!-- Password Field -->
-      <div class="form-group">
+      <div class="form-group password-field-container">
         <ion-item lines="none">
           <ion-input
             formControlName="password"
@@ -84,6 +85,17 @@
             <ion-icon [name]="showPassword() ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
           </ion-button>
         </ion-item>
+        
+        <!-- Security Indicator Shield -->
+        <ion-icon
+          *ngIf="passwordSecurityStatus().show"
+          name="shield-checkmark-outline"
+          class="security-shield-indicator"
+          [color]="passwordSecurityStatus().color"
+          [class.pulse-warning]="passwordSecurityStatus().level === 'weak'"
+          [class.pulse-tertiary]="passwordSecurityStatus().level === 'medium'"
+          [class.pulse-success]="passwordSecurityStatus().level === 'strong'"
+        ></ion-icon>
         <div class="password-requirements" *ngIf="registerForm.get('password')?.touched">
           <div class="requirement" [class.met]="passwordChecks.minLength">
             <ion-icon [name]="passwordChecks.minLength ? 'checkmark-circle' : 'close-circle'"></ion-icon>
@@ -158,35 +170,41 @@
         </div>
       </div>
 
-      <!-- Terms and Conditions -->
-      <div class="form-options">
-        <ion-item>
-          <ion-checkbox formControlName="acceptTerms"></ion-checkbox>
-          <ion-label>
+      <!-- Terms and Conditions - Simple Layout -->
+      <div class="checkbox-group">
+        <div class="checkbox-item">
+          <ion-checkbox 
+            formControlName="acceptTerms"
+            shape="round"
+            color="primary"
+          ></ion-checkbox>
+          <span class="checkbox-label">
             Acepto los <a href="/terms" target="_blank">Términos y Condiciones</a>
-          </ion-label>
-        </ion-item>
-      </div>
+          </span>
+        </div>
 
-      <div class="form-options">
-        <ion-item>
-          <ion-checkbox formControlName="acceptPrivacy"></ion-checkbox>
-          <ion-label>
+        <div class="checkbox-item">
+          <ion-checkbox 
+            formControlName="acceptPrivacy"
+            shape="round"
+            color="primary"
+          ></ion-checkbox>
+          <span class="checkbox-label">
             Acepto la <a href="/privacy" target="_blank">Política de Privacidad</a>
-          </ion-label>
-        </ion-item>
-      </div>
+          </span>
+        </div>
 
-      <div class="form-options">
-        <ion-item>
-          <ion-checkbox formControlName="acceptMarketing"></ion-checkbox>
-          <ion-label>
+        <div class="checkbox-item">
+          <ion-checkbox 
+            formControlName="acceptMarketing"
+            shape="round"
+            color="primary"
+          ></ion-checkbox>
+          <span class="checkbox-label">
             Deseo recibir comunicaciones de marketing (opcional)
-          </ion-label>
-        </ion-item>
+          </span>
+        </div>
       </div>
-
-
 
       <!-- Submit Button -->
       <!-- TEMPORAL: Botón habilitado para testing - REVERTIR EN PRODUCCIÓN -->
@@ -194,7 +212,10 @@
         expand="block"
         type="submit"
         [disabled]="false"
-        class="auth-button primary"
+        class="main-action-button"
+        color="primary"
+        shape="round"
+        size="large"
         data-test="register-submit"
       >
         <ion-spinner *ngIf="loading()" name="crescent"></ion-spinner>
@@ -222,6 +243,7 @@
       >
         <strong>Inicia sesión aquí</strong>
       </ion-button>
+    </div>
     </div>
   </div>
 </ion-content>

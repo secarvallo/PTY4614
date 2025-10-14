@@ -10,6 +10,8 @@
  * 
  * @author LungLife Development Team
  * @version 2.0 - Enterprise Security Edition
+ * 
+ * Note: Centering and responsive layout is now handled by shared-layout.scss
  */
 
 /* ========== SECURITY VALIDATION STYLES ========== */
@@ -233,13 +235,60 @@
   100% { transform: scale(1); }
 }
 
-/* ========== FORM OPTIONS ========== */
-.form-options a {
-  color: var(--primary);
-  text-decoration: none;
+/* ========== CHECKBOX GROUP - CLEAN MINIMAL STYLING ========== */
+.checkbox-group {
+  margin: 20px 0;
+}
+
+.checkbox-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 8px 0;
   
-  &:hover {
-    text-decoration: underline;
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  ion-checkbox {
+    flex-shrink: 0;
+    margin-top: 2px; /* Align with first line of text */
+    --size: 20px;
+    --border-width: 2px;
+    --border-color: var(--ion-color-medium);
+    --border-color-checked: var(--ion-color-primary);
+    --background-checked: var(--ion-color-primary);
+    --checkmark-color: white;
+    
+    &:hover {
+      --border-color: var(--ion-color-primary-tint);
+    }
+  }
+
+  .checkbox-label {
+    flex: 1;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text-light);
+    white-space: normal;
+    word-wrap: break-word;
+
+    a {
+      color: var(--ion-color-primary);
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      
+      &:hover {
+        text-decoration: underline;
+        color: var(--ion-color-primary-shade);
+      }
+      
+      &:active {
+        color: var(--ion-color-primary-tint);
+      }
+    }
   }
 }
 
@@ -250,6 +299,26 @@
     margin-top: 12px;
   }
   
+  /* Checkbox group responsive */
+  .checkbox-group {
+    margin: 16px 0;
+  }
+
+  .checkbox-item {
+    gap: 10px;
+    margin-bottom: 14px;
+    padding: 6px 0;
+
+    .checkbox-label {
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    ion-checkbox {
+      --size: 18px;
+    }
+  }
+
   .security-level,
   .breach-warning {
     padding: 10px;
@@ -282,14 +351,136 @@
     background: rgba(255, 255, 255, 0.05);
     border-color: rgba(255, 255, 255, 0.1);
   }
+
+  /* Checkbox group dark theme */
+  .checkbox-item .checkbox-label {
+    color: var(--text-light);
+
+    a {
+      color: var(--ion-color-primary-tint);
+      
+      &:hover {
+        color: var(--ion-color-primary);
+      }
+    }
+  }
+
+  /* Security shield dark theme adjustments */
+  .security-shield-indicator {
+    filter: drop-shadow(0 1px 3px rgba(255, 255, 255, 0.1));
+  }
+}
+
+/* ========== PASSWORD SECURITY SHIELD INDICATOR ========== */
+.password-field-container {
+  position: relative;
+}
+
+.security-shield-indicator {
+  position: absolute;
+  top: 8px;
+  right: 50px; /* Positioned to the left of the eye icon */
+  font-size: 20px;
+  z-index: 10;
+  pointer-events: none; /* No interfere with field interaction */
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  /* Subtle drop shadow for better visibility */
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+}
+
+/* Security Level Animations */
+.pulse-warning {
+  animation: pulse-warning 2s ease-in-out infinite;
+}
+
+.pulse-tertiary {
+  animation: pulse-tertiary 2s ease-in-out infinite;
+}
+
+.pulse-success {
+  animation: pulse-success 2s ease-in-out infinite;
+}
+
+/* Keyframe Animations */
+@keyframes pulse-warning {
+  0% { 
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% { 
+    transform: scale(1.1);
+    opacity: 0.8;
+    filter: drop-shadow(0 2px 8px rgba(255, 193, 7, 0.4));
+  }
+  100% { 
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse-tertiary {
+  0% { 
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% { 
+    transform: scale(1.1);
+    opacity: 0.8;
+    filter: drop-shadow(0 2px 8px rgba(126, 87, 194, 0.4));
+  }
+  100% { 
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse-success {
+  0% { 
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% { 
+    transform: scale(1.1);
+    opacity: 0.8;
+    filter: drop-shadow(0 2px 8px rgba(40, 167, 69, 0.4));
+  }
+  100% { 
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Responsive adjustments for shield indicator */
+@media (max-width: 768px) {
+  .security-shield-indicator {
+    top: 6px;
+    right: 45px;
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .security-shield-indicator {
+    top: 4px;
+    right: 40px;
+    font-size: 16px;
+  }
 }
 
 /* ========== ACCESSIBILITY ========== */
 @media (prefers-reduced-motion: reduce) {
   .breach-warning,
   .auth-button.primary:not(:disabled),
-  .security-status.secure::before {
+  .security-status.secure::before,
+  .pulse-warning,
+  .pulse-tertiary,
+  .pulse-success {
     animation: none;
+  }
+  
+  .security-shield-indicator {
+    transition: none;
   }
 }
 

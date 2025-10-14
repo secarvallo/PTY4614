@@ -5,6 +5,8 @@ import { Router, RouterLink } from '@angular/router';
 import { IonicModule, LoadingController, ToastController, AlertController } from '@ionic/angular';
 import { Subject, takeUntil, debounceTime, distinctUntilChanged } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
+import { addIcons } from 'ionicons';
+import { shieldCheckmarkOutline } from 'ionicons/icons';
 
 // Environment configuration
 import { environment } from '../../../../../environments/environment';
@@ -39,7 +41,11 @@ interface SecurityValidationResult {
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, IonicModule, RouterLink],
   templateUrl: './register.page.html',
-  styleUrls: ['./register.page.scss', '../../../auth.styles.scss'],
+  styleUrls: [
+    '../../../auth.styles.scss',
+    '../../../../theme/shared-layout.scss',
+    './register.page.scss'
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class RegisterPage implements OnInit, OnDestroy {
@@ -76,6 +82,11 @@ export class RegisterPage implements OnInit, OnDestroy {
       riskFactors: []
     })
   };
+
+  constructor() {
+    // Initialize icons for security shield indicator
+    addIcons({ shieldCheckmarkOutline });
+  }
 
   // UI State Signals
   showPassword = signal(false);
@@ -119,6 +130,41 @@ export class RegisterPage implements OnInit, OnDestroy {
   passwordStrength = computed(() => {
     const password = this.registerForm?.get('password')?.value || '';
     return this.calculatePasswordStrength(password);
+  });
+
+  // Password security status for visual indicator
+  passwordSecurityStatus = computed(() => {
+    const strength = this.passwordStrength();
+    const password = this.registerForm?.get('password')?.value || '';
+    
+    // No mostrar indicador si no hay contraseña
+    if (!password || password.length < 3) {
+      return { show: false, color: '', level: '', cssClass: '' };
+    }
+
+    // Mapear strength a los colores y animaciones de Ionic
+    const statusMap = {
+      weak: { 
+        color: 'warning', 
+        level: 'weak', 
+        cssClass: 'pulse-warning',
+        show: true 
+      },
+      medium: { 
+        color: 'tertiary', 
+        level: 'medium', 
+        cssClass: 'pulse-tertiary',
+        show: true 
+      },
+      strong: { 
+        color: 'success', 
+        level: 'strong', 
+        cssClass: 'pulse-success',
+        show: true 
+      }
+    };
+
+    return statusMap[strength.strength] || { show: false, color: '', level: '', cssClass: '' };
   });
 
   // Getter para template compatibility
@@ -534,4 +580,9 @@ export class RegisterPage implements OnInit, OnDestroy {
     const result = this.passwordSecurityResult();
     return result ? result.breachStatus.isBreached : false;
   }
+
+  /**
+   * Theme Toggle Methods
+   */
+  
 }

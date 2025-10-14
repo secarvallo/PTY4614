@@ -17,7 +17,7 @@ interface Feature {
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
-  styleUrls: ['home.page.scss'],
+  styleUrls: ['../auth/auth.styles.scss', 'home.page.scss'],
   standalone: true,
   imports: [IonicModule, CommonModule],
 })

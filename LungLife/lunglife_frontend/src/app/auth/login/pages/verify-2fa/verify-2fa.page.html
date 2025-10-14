@@ -40,7 +40,10 @@
       <ion-button
         type="submit"
         expand="block"
-        class="auth-button primary"
+        class="main-action-button"
+        color="primary"
+        shape="round"
+        size="large"
         [disabled]="!code || code.length !== 6 || isLoading">
         <ion-spinner name="crescent" *ngIf="isLoading"></ion-spinner>
         <span *ngIf="!isLoading">
