@@ -1,5 +1,5 @@
 /**
- * 🔐 Authentication Service
+ * Authentication Service
  * Servicio de aplicación para autenticación
  * Implementa casos de uso de autenticación con Clean Architecture
  */
@@ -96,7 +96,7 @@ export class AuthenticationService {
     };
 
     try {
-      this.logger.info(`🔄 Starting user registration process for: ${request.email}`, {
+      this.logger.info(`Starting user registration process for: ${request.email}`, {
         timestamp: debugInfo.timestamp,
         fieldsCount: debugInfo.fieldsReceived.length,
         hasAcceptance: {
@@ -202,7 +202,7 @@ export class AuthenticationService {
           marketing_consent: request.acceptMarketing || false // OPCIONAL
         };
 
-        this.logger.info(`📝 Creating user record for: ${request.email}`, {
+        this.logger.info(`Creating user record for: ${request.email}`, {
           hasAcceptance: {
             terms: userData.accept_terms,
             privacy: userData.accept_privacy,
@@ -551,7 +551,7 @@ export class AuthenticationService {
   }
 
   /**
-   * 🔄 Reset Password - Validate token and update password
+   * Reset Password - Validate token and update password
    */
   async resetPassword(request: ResetPasswordRequest): Promise<ResetPasswordResponse> {
     const startTime = Date.now();
@@ -648,7 +648,7 @@ export class AuthenticationService {
   }
 
   /**
-   * 🎲 Generate secure reset token
+   * Generate secure reset token
    */
   private generateResetToken(): string {
     const crypto = require('crypto');

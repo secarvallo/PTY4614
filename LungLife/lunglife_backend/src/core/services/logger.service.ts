@@ -1,5 +1,5 @@
 /**
- * 📝 Logger Service Interface
+ * Logger Service Interface
  * Servicio de logging para la aplicación
  */
 

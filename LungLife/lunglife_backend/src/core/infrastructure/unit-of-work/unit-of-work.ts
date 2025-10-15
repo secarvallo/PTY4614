@@ -1,5 +1,5 @@
 /**
- * 🔄 Unit of Work Implementation
+ * Unit of Work Implementation
  * Coordina transacciones y repositorios
  * Implementa patrón Unit of Work con Clean Architecture
  */

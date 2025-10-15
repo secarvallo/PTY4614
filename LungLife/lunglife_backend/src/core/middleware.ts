@@ -1,12 +1,12 @@
 /**
- * 🛡️ Middleware Layer
+ * Middleware Layer
  * Centralized middleware for authentication, validation, logging, and error handling
  */
 
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import { config } from '../config/config';
-import { RateLimitResult } from '../interfaces/index';
+import { config } from './config/config';
+import { RateLimitResult } from './interfaces/index';
 
 // Extend Express Request interface to include user info
 declare global {

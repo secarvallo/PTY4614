@@ -14,20 +14,184 @@ const authController = new AuthController();
 // ========== AUTHENTICATION ROUTES ==========
 
 /**
- *  Login - Compatible with LoginStrategy
- * POST /api/auth/login
+ * @swagger
+ * /auth/login:
+ *   post:
+ *     tags:
+ *       - Auth
+ *     summary: Iniciar sesión de usuario
+ *     description: Autentica un usuario y devuelve tokens de acceso y actualización
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: "usuario@ejemplo.com"
+ *               password:
+ *                 type: string
+ *                 format: password
+ *                 example: "MiContraseña123!"
+ *     responses:
+ *       200:
+ *         description: Login exitoso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     accessToken:
+ *                       type: string
+ *                     refreshToken:
+ *                       type: string
+ *                     user:
+ *                       type: object
+ *                       properties:
+ *                         id:
+ *                           type: number
+ *                         email:
+ *                           type: string
+ *                         firstName:
+ *                           type: string
+ *       401:
+ *         description: Credenciales inválidas
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *     security: []
  */
 router.post('/login', authController.login.bind(authController));
 
 /**
- *  Register - Compatible with RegisterStrategy
- * POST /api/auth/register
+ * @swagger
+ * /auth/register:
+ *   post:
+ *     tags:
+ *       - Auth
+ *     summary: Registrar nuevo usuario
+ *     description: Crea una nueva cuenta de usuario en el sistema
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *               - firstName
+ *               - acceptTerms
+ *               - acceptPrivacy
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: "nuevo@ejemplo.com"
+ *               password:
+ *                 type: string
+ *                 format: password
+ *                 minLength: 8
+ *                 example: "MiContraseña123!"
+ *               firstName:
+ *                 type: string
+ *                 example: "Juan"
+ *               lastName:
+ *                 type: string
+ *                 example: "Pérez"
+ *               phone:
+ *                 type: string
+ *                 example: "+1234567890"
+ *               acceptTerms:
+ *                 type: boolean
+ *                 example: true
+ *               acceptPrivacy:
+ *                 type: boolean
+ *                 example: true
+ *               acceptMarketing:
+ *                 type: boolean
+ *                 example: false
+ *     responses:
+ *       201:
+ *         description: Usuario registrado exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SuccessResponse'
+ *       400:
+ *         description: Datos de registro inválidos
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       409:
+ *         description: El email ya está registrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *     security: []
  */
 router.post('/register', authController.register.bind(authController));
 
 /**
- *  Refresh Token - Compatible with TokenStrategy
- * POST /api/auth/refresh
+ * @swagger
+ * /auth/refresh:
+ *   post:
+ *     tags:
+ *       - Auth
+ *     summary: Renovar token de acceso
+ *     description: Genera un nuevo token de acceso usando el refresh token
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - refreshToken
+ *             properties:
+ *               refreshToken:
+ *                 type: string
+ *                 example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+ *     responses:
+ *       200:
+ *         description: Token renovado exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     accessToken:
+ *                       type: string
+ *                     refreshToken:
+ *                       type: string
+ *       401:
+ *         description: Refresh token inválido o expirado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *     security: []
  */
 router.post('/refresh', authController.refresh.bind(authController));
 
@@ -40,13 +204,13 @@ router.post('/refresh', authController.refresh.bind(authController));
 // ========== PASSWORD RECOVERY ROUTES ==========
 
 /**
- * 📧 Forgot Password - Compatible with ForgotStrategy
+ *Forgot Password - Compatible with ForgotStrategy
  * POST /api/auth/forgot-password
  */
 router.post('/forgot-password', authController.forgotPassword.bind(authController));
 
 /**
- * 🔄 Reset Password - Compatible with ForgotStrategy
+ * Reset Password - Compatible with ForgotStrategy
  * POST /api/auth/reset-password
  */
 router.post('/reset-password', authController.resetPassword.bind(authController));

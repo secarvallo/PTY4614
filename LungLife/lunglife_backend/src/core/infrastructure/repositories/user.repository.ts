@@ -1,5 +1,5 @@
 /**
- * 👤 User Repository Implementation
+ * User Repository Implementation
  * Implementación concreta del repositorio de usuarios
  * Sigue patrón Repository con Clean Architecture
  */

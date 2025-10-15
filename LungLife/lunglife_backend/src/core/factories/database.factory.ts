@@ -4,7 +4,7 @@
  * Implementa patrón Factory con Dependency Injection
  */
 
-import { DatabaseConfig } from '../interfaces/database.interface';
+import { DatabaseConfig } from '../interfaces/config.interface';
 import { PostgreSQLConnection } from '../infrastructure/database/postgresql.connection';
 import { UserRepository } from '../infrastructure/repositories/user.repository';
 import { UnitOfWork } from '../infrastructure/unit-of-work/unit-of-work';
