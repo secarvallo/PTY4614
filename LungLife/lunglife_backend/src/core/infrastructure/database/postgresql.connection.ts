@@ -125,14 +125,14 @@ export class PostgreSQLConnection implements IDatabaseConnection {
     }
 
     this.reconnectTimer = setTimeout(async () => {
-      this.logger.info('🔄 Intentando reconexión automática...');
+      this.logger.info('Intentando reconexión automática...');
       await this.connect();
     }, this.config.retryDelay);
   }
 
   private async testConnection(): Promise<boolean> {
     if (!this.pool) {
-      this.logger.error('❌ Pool no está inicializado');
+      this.logger.error('Pool no está inicializado');
       return false;
     }
 

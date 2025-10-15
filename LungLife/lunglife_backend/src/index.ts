@@ -2,7 +2,9 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import authRoutes from './routes/auth.routes';
+import { healthRoutes } from './routes/health.routes';
 import { DatabaseServiceFactory } from './core/factories/database.factory';
+import { setupSwagger } from './core/config/swagger.config';
 
 dotenv.config();
 
@@ -14,7 +16,7 @@ const validateConfig = () => {
     console.log(`   DB_NAME: ${process.env.DB_NAME || 'lunglife_db'}`);
     console.log(`   DB_USER: ${process.env.DB_USER || 'postgres'}`);
     console.log(`   JWT_SECRET: ${process.env.JWT_SECRET ? '***CONFIGURED***' : 'using default'}`);
-    console.log('✅ Configuration loaded successfully (using defaults for missing values)');
+    console.log('   Configuration loaded successfully (using defaults for missing values)');
     return true;
 };
 
@@ -65,31 +67,12 @@ app.use(express.json());
 // Authentication routes - Compatible with frontend strategies
 app.use('/api/auth', authRoutes);
 
-// Health check endpoint
-app.get('/api/health', async (req, res) => {
-    try {
-        const factory = DatabaseServiceFactory.getInstance();
-        const connection = await factory.getConnection();
-        const metrics = connection.getConnectionMetrics();
-        res.json({
-            status: 'OK',
-            message: 'LungLife Backend - Clean Architecture',
-            database: {
-                connected: connection.isConnected(),
-                metrics
-            },
-            timestamp: new Date().toISOString(),
-            architecture: 'Clean Architecture - Full Stack',
-            endpoints: {
-                auth: '/api/auth/*',
-                health: '/api/health',
-                test: '/api/test'
-            }
-        });
-    } catch (err) {
-        res.status(503).json({ status: 'DOWN', error: 'Database not available' });
-    }
-});
+// Health check routes - Comprehensive monitoring endpoints
+app.use('/api/health', healthRoutes);
+
+// ========== API DOCUMENTATION ==========
+// Setup Swagger API documentation
+setupSwagger(app);
 
 // Test endpoint
 app.get('/api/test', (req, res) => {
@@ -148,38 +131,35 @@ const startServer = async () => {
 
     const attemptListen = () => {
         attempts++;
-        console.log(`🚀 Attempting to start server on port ${port} (attempt ${attempts}/${maxAttempts})`);
+        console.log(`Attempting to start server on port ${port} (attempt ${attempts}/${maxAttempts})`);
         
         const server = app.listen(port, '0.0.0.0', () => {
-            console.log(`✅ Servidor ejecutándose en http://localhost:${port}`);
-            console.log(`🏥 Health check: http://localhost:${port}/api/health`);
-            console.log(`🧪 Test endpoint: http://localhost:${port}/api/test`);
-            console.log(`🔐 Auth endpoint: http://localhost:${port}/api/auth/register`);
-            console.log('🏗️ Arquitectura: Clean Architecture Full Stack');
-            console.log('✨ Endpoints de autenticación listos para frontend');
-            console.log(`🌐 CORS configurado para frontend en puerto 4200`);
+            console.log(`Servidor ejecutándose en http://localhost:${port}`);
+            console.log(`Health check: http://localhost:${port}/api/health`);
+            console.log(`Test endpoint: http://localhost:${port}/api/test`);
+            console.log(`Auth endpoint: http://localhost:${port}/api/auth/register`);
         });
 
         server.on('error', (err: any) => {
             if (err && err.code === 'EADDRINUSE') {
-                console.warn(`⚠️ Port ${port} in use.`);
+                console.warn(`Port ${port} in use.`);
                 if (attempts < maxAttempts) {
                     port++;
-                    console.log(`🔄 Trying next port: ${port}`);
+                    console.log(`Trying next port: ${port}`);
                     attemptListen();
                 } else {
-                    console.error(`❌ Failed to bind a port after ${maxAttempts} attempts. Exiting.`);
+                    console.error(`Failed to bind a port after ${maxAttempts} attempts. Exiting.`);
                     process.exit(1);
                 }
             } else {
-                console.error('❌ Server error:', err);
+                console.error('Server error:', err);
                 process.exit(1);
             }
         });
 
         server.on('listening', () => {
             const address = server.address();
-            console.log(`🎧 Server is now listening on ${JSON.stringify(address)}`);
+            console.log(`Server is now listening on ${JSON.stringify(address)}`);
         });
     };
 

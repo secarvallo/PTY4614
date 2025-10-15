@@ -1,8 +1,11 @@
 /**
- * 🗃️ Database Connection Interface
+ * Database Connection Interface
  * Abstracción para el manejo de conexiones a la base de datos
  * Siguiendo principios de Clean Architecture
  */
+
+// Re-export DatabaseConfig from centralized location
+export { DatabaseConfig } from './config.interface';
 
 export interface IDatabaseConnection {
   /**
@@ -63,15 +66,5 @@ export interface ConnectionMetrics {
   uptime: number;
 }
 
-export interface DatabaseConfig {
-  host: string;
-  port: number;
-  database: string;
-  user: string;
-  password: string;
-  maxConnections: number;
-  idleTimeoutMillis: number;
-  connectionTimeoutMillis: number;
-  retryAttempts: number;
-  retryDelay: number;
-}
+// DatabaseConfig has been moved to config.interface.ts for centralization
+// Import it from there: import { DatabaseConfig } from './config.interface';
