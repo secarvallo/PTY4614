@@ -1,7 +1,0 @@
-{
-  "name": "lunglife_front",
-  "integrations": {
-    "capacitor": {}
-  },
-  "type": "angular-standalone"
-}

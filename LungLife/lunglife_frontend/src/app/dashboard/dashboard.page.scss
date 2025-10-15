@@ -1,207 +1,141 @@
-/* 🏠 Dashboard Page Styles */
+/**
+ * Dashboard Page Styles - Aligned with Profile & Auth UI
+ *
+ * This design unifies the dashboard page with the clean, card-based
+ * layout for a consistent and motivating user experience.
+ * 
+ * Note: Centering and responsive layout is now handled by shared-layout.scss
+ */
 
-ion-content.dashboard-content {
-  --background: linear-gradient(180deg, rgba(108, 99, 255, 0.14) 0%, rgba(255, 255, 255, 1) 85%);
+:host {
+  --page-bg-start: #f6f7fb;
+  --page-bg-end: #eef2ff;
+  --card-bg: #ffffff;
+  --text-color: #2d3748;
+  --muted-color: #718096;
+  --border-color: #e5e7eb;
+  --primary-grad: linear-gradient(135deg, #6c63ff 0%, #7b4dff 50%, #9a60ff 100%);
 }
 
-[data-theme="dark"] ion-content.dashboard-content {
-  --background: linear-gradient(180deg, rgba(26, 27, 38, 1) 0%, rgba(32, 35, 50, 1) 100%);
+/* Background gradient for dashboard page */
+ion-content {
+  --background: linear-gradient(180deg, var(--page-bg-start) 0%, var(--page-bg-end) 100%);
 }
 
-.dashboard-container {
-  padding: 24px;
-  max-width: 1200px;
-  margin: 0 auto;
-  background: rgba(255, 255, 255, 0.85);
-  border-radius: 24px;
-  -webkit-backdrop-filter: blur(18px);
-  backdrop-filter: blur(18px);
-  box-shadow: 0 18px 45px rgba(26, 32, 44, 0.12);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-}
+.welcome-header {
+  text-align: center;
+  margin-bottom: 24px;
 
-[data-theme="dark"] .dashboard-container {
-  background: rgba(36, 40, 55, 0.85);
-  border: 1px solid rgba(122, 162, 247, 0.12);
-  -webkit-backdrop-filter: blur(18px);
-  backdrop-filter: blur(18px);
-  box-shadow: 0 18px 45px rgba(10, 12, 25, 0.45);
-}
-
-.welcome-section {
-  display: flex;
-  align-items: center;
-  padding: 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 15px;
-  color: white;
-  margin-bottom: 20px;
-}
-
-.user-avatar {
-  margin-right: 20px;
-
-  .avatar-icon {
-    font-size: 64px;
-    color: rgba(255, 255, 255, 0.9);
-  }
-}
-
-.welcome-text {
-  h2 {
-    margin: 0;
-    font-size: 1.5rem;
-    font-weight: 600;
+  h1 {
+    color: var(--text-color);
+    font-weight: 700;
+    font-size: 24px;
+    margin: 0 0 8px;
   }
 
   p {
-    margin: 5px 0 0 0;
-    opacity: 0.9;
-    font-size: 1rem;
+    color: var(--muted-color);
+    margin: 0;
+    font-size: 16px;
   }
 }
 
-.status-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 15px;
-  margin-bottom: 30px;
-}
-
-.status-card {
-  margin: 0;
+.dashboard-card {
+  background: var(--card-bg);
   border-radius: 20px;
-  box-shadow: 0 12px 32px rgba(26, 32, 44, 0.08);
-
-  .status-header {
-    display: flex;
-    align-items: center;
-    margin-bottom: 10px;
-
-    ion-icon {
-      font-size: 24px;
-      margin-right: 10px;
-    }
-
-    h3 {
-      margin: 0;
-      font-size: 1.2rem;
-      font-weight: 600;
-    }
-  }
-
-  .status-info {
-    p {
-      margin: 5px 0;
-      color: var(--ion-color-medium);
-    }
-  }
-
-  .status-badge {
-    display: inline-block;
-    padding: 4px 8px;
-    border-radius: 12px;
-    font-size: 0.8rem;
-    font-weight: 500;
-
-    &.enabled {
-      background-color: var(--ion-color-success);
-      color: var(--ion-color-success-contrast);
-    }
-
-    &:not(.enabled) {
-      background-color: var(--ion-color-warning);
-      color: var(--ion-color-warning-contrast);
-    }
-  }
+  padding: 24px;
+  box-shadow: 0 18px 40px rgba(29, 33, 84, 0.08);
+  margin-bottom: 24px;
 }
 
-.actions-section {
-  margin-bottom: 30px;
-
-  h3 {
-    margin-bottom: 15px;
-    color: var(--ion-color-primary);
-    font-weight: 600;
-  }
-}
-
-.actions-grid {
+.metrics-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 10px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
 }
 
-.debug-section {
-  margin-top: 30px;
-  padding-top: 20px;
-  border-top: 1px solid var(--ion-color-light);
-
-  h4 {
-    color: var(--ion-color-medium);
-    font-size: 1rem;
-    margin-bottom: 10px;
-  }
-
-  .debug-info {
-    font-family: 'Courier New', monospace;
-    font-size: 0.9rem;
-
-    p {
-      margin: 5px 0;
-
-      strong {
-        color: var(--ion-color-primary);
-      }
-    }
-  }
-}
-
-.loading-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(255, 255, 255, 0.9);
+.metric-item {
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
-  z-index: 1000;
+  text-align: center;
+  padding: 16px;
+  border-radius: 16px;
+  background-color: rgba(var(--ion-color-primary-rgb), 0.05);
 
-  .large-spinner {
-    --size: 48px;
-    margin-bottom: 20px;
+  ion-icon {
+    font-size: 32px;
+    margin-bottom: 12px;
+    color: var(--ion-color-primary);
   }
 
-  p {
-    color: var(--ion-color-medium);
-    font-size: 1rem;
+  .value {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text-color);
+    line-height: 1.2;
+  }
+
+  .label {
+    font-size: 14px;
+    color: var(--muted-color);
+    margin-top: 4px;
+  }
+
+  // Custom colors for emphasis
+  &.smoke-free ion-icon { color: #10B981; } // Success Green
+  &.money-saved ion-icon { color: #F59E0B; } // Warning Yellow
+}
+
+.dashboard-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 0 8px;
+
+  .action-button {
+    --border-radius: 14px;
+    height: 50px;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+    text-transform: none;
+
+    &.primary {
+      --background: var(--primary-grad);
+      box-shadow: 0 10px 24px rgba(108, 99, 255, 0.35);
+    }
   }
 }
 
-/* Mobile responsive */
-@media (max-width: 768px) {
-  .dashboard-container {
-    padding: 15px;
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  color: var(--muted-color);
+
+  ion-spinner {
+    margin-bottom: 16px;
+  }
+}
+
+/* Mobile Responsive - Dashboard Specific */
+@media (max-width: 480px) {
+  .dashboard-card {
+    padding: 20px 16px;
+    border-radius: 16px;
   }
 
-  .welcome-section {
-    flex-direction: column;
-    text-align: center;
-
-    .user-avatar {
-      margin-right: 0;
-      margin-bottom: 15px;
-    }
+  .welcome-header h1 {
+    font-size: 20px;
   }
 
-  .status-grid {
-    grid-template-columns: 1fr;
+  .metric-item {
+    padding: 16px;
   }
 
-  .actions-grid {
-    grid-template-columns: 1fr;
+  .metric-value {
+    font-size: 20px;
   }
 }

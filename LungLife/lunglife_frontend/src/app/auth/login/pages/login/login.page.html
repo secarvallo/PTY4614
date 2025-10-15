@@ -1,5 +1,6 @@
-<ion-content class="auth-content" data-test="login-page">
-  <div class="auth-container">
+<ion-content data-test="login-page">
+  <div class="content-wrapper">
+    <div class="centered-container">
     <div class="auth-header">
       <div class="logo-placeholder"></div>
       <h1>Bienvenido a LungLife</h1>
@@ -64,7 +65,10 @@
         expand="block"
         type="submit"
         [disabled]="loginForm.invalid || loading()"
-        class="auth-button primary"
+        class="main-action-button"
+        color="primary"
+        shape="round"
+        size="large"
         data-test="login-submit"
       >
         <ion-spinner *ngIf="loading()" name="crescent"></ion-spinner>
@@ -101,7 +105,10 @@
         expand="block"
         type="submit"
         [disabled]="!twoFactorForm.valid || loading()"
-        class="verify-button"
+        class="main-action-button"
+        color="primary"
+        shape="round"
+        size="large"
       >
         <ion-spinner *ngIf="loading()" name="crescent"></ion-spinner>
         {{ loading() ? 'Verificando...' : 'Verificar' }}
@@ -166,5 +173,6 @@
 
     <!-- Error Display -->
     <div class="message error" *ngIf="error()">{{ error() }}</div>
+    </div>
   </div>
 </ion-content>

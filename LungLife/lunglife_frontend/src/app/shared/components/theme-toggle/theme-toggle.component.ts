@@ -15,17 +15,44 @@ export class ThemeToggleComponent {
   
   theme$ = this.themeService.theme$;
   
+  constructor() {
+    // Debug: verificar qué servicio se está inyectando
+    console.log('ThemeToggleComponent initialized with service:', {
+      hasGetCurrentTheme: typeof (this.themeService as any).getCurrentTheme === 'function',
+      hasCurrent: 'current' in this.themeService,
+      service: this.themeService.constructor.name
+    });
+  }
+  
   toggleTheme(): void {
+    console.log('Toggle theme called');
     this.themeService.toggleTheme();
   }
 
   onToggleChange(event: any): void {
-    // Solo cambia si el estado actual es diferente al toggle
-    const isDark = event.detail.checked;
-    const currentTheme = this.themeService.getCurrentTheme();
+    const isChecked = event.detail.checked;
     
-    if ((isDark && currentTheme === 'light') || (!isDark && currentTheme === 'dark')) {
-      this.themeService.toggleTheme();
+    // Debug: log para verificar el evento
+    console.log('Toggle change event:', isChecked, 'Current theme:', this.getCurrentTheme());
+    
+    // Siempre llamar al toggle, el servicio se encarga de la lógica
+    this.themeService.toggleTheme();
+  }
+  
+  // Método helper para obtener el tema actual de forma consistente
+  getCurrentTheme(): string {
+    // Verificar si tiene el método getCurrentTheme (versión del core)
+    if (typeof (this.themeService as any).getCurrentTheme === 'function') {
+      return (this.themeService as any).getCurrentTheme();
     }
+    // Si no, usar la propiedad current (versión de auth)
+    return (this.themeService as any).current || 'light';
+  }
+  
+  // Método helper para debugging
+  get isDarkMode(): boolean {
+    const theme = this.getCurrentTheme();
+    console.log('isDarkMode check:', theme, 'result:', theme === 'dark');
+    return theme === 'dark';
   }
 }

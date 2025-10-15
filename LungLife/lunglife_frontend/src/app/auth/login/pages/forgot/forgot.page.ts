@@ -12,7 +12,11 @@ import {AuthFacadeService} from '../../../core/services';
 @Component({
   selector: 'app-forgot',
   templateUrl: './forgot.page.html',
-  styleUrls: ['./forgot.page.scss', '../../../auth.styles.scss'],
+  styleUrls: [
+    '../../../auth.styles.scss',
+    '../../../../theme/shared-layout.scss',
+    './forgot.page.scss'
+  ],
   standalone: true,
   imports: [IonicModule, FormsModule, CommonModule, RouterLink]
 })

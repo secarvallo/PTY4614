@@ -27,7 +27,9 @@
 
 /* ===== CLEAN MINIMALIST DESIGN SYSTEM ===== */
 
-:root {
+:root,
+body.light,
+.light {
   /* Light Theme - Pure & Clean */
   --bg: #ffffff;
   --surface: #ffffff;
@@ -36,9 +38,42 @@
   --border: #e5e5e5;
   --primary: #007aff;
   --shadow: 0 1px 3px rgba(0,0,0,0.1);
+  
+  /* Ionic Light Theme Variables */
+  --ion-background-color: #ffffff;
+  --ion-background-color-rgb: 255, 255, 255;
+  --ion-text-color: #000000;
+  --ion-text-color-rgb: 0, 0, 0;
+  --ion-color-step-50: #f2f2f2;
+  --ion-color-step-100: #e6e6e6;
+  --ion-color-step-150: #d9d9d9;
+  --ion-color-step-200: #cccccc;
+  --ion-color-step-250: #bfbfbf;
+  --ion-color-step-300: #b3b3b3;
+  --ion-color-step-350: #a6a6a6;
+  --ion-color-step-400: #999999;
+  --ion-color-step-450: #8c8c8c;
+  --ion-color-step-500: #808080;
+  --ion-color-step-550: #737373;
+  --ion-color-step-600: #666666;
+  --ion-color-step-650: #595959;
+  --ion-color-step-700: #4d4d4d;
+  --ion-color-step-750: #404040;
+  --ion-color-step-800: #333333;
+  --ion-color-step-850: #262626;
+  --ion-color-step-900: #1a1a1a;
+  --ion-color-step-950: #0d0d0d;
+  
+  --ion-item-background: #ffffff;
+  --ion-card-background: #ffffff;
+  --ion-toolbar-background: #f8f9fa;
+  --ion-tab-bar-background: #f8f9fa;
+  --ion-searchbar-background: #ffffff;
 }
 
-[data-theme="dark"] {
+[data-theme="dark"],
+body.dark,
+.dark {
   /* Tokyo Night Theme Colors */
   --bg: #1a1b26;
   --surface: #24283b;
@@ -47,6 +82,37 @@
   --border: #414868;
   --primary: #7aa2f7;
   --shadow: 0 1px 3px rgba(0,0,0,0.3);
+  
+  /* Ionic Dark Theme Variables */
+  --ion-background-color: #1a1b26;
+  --ion-background-color-rgb: 26, 27, 38;
+  --ion-text-color: #c0caf5;
+  --ion-text-color-rgb: 192, 202, 245;
+  --ion-color-step-50: #24283b;
+  --ion-color-step-100: #2f3549;
+  --ion-color-step-150: #394357;
+  --ion-color-step-200: #414868;
+  --ion-color-step-250: #4a5176;
+  --ion-color-step-300: #545c7e;
+  --ion-color-step-350: #5d668c;
+  --ion-color-step-400: #67719a;
+  --ion-color-step-450: #717ba8;
+  --ion-color-step-500: #7a86b6;
+  --ion-color-step-550: #8490c4;
+  --ion-color-step-600: #8d9bd2;
+  --ion-color-step-650: #97a5e0;
+  --ion-color-step-700: #a0b0ee;
+  --ion-color-step-750: #aaaafc;
+  --ion-color-step-800: #b4c5ff;
+  --ion-color-step-850: #bdd0ff;
+  --ion-color-step-900: #c7daff;
+  --ion-color-step-950: #d1e5ff;
+  
+  --ion-item-background: #24283b;
+  --ion-card-background: #24283b;
+  --ion-toolbar-background: #1a1b26;
+  --ion-tab-bar-background: #1a1b26;
+  --ion-searchbar-background: #24283b;
 }
 
 * {
@@ -54,12 +120,19 @@
 }
 
 html, body, ion-app {
-  background: var(--bg) !important;
-  color: var(--text) !important;
+  background: var(--bg);
+  color: var(--text);
 }
 
 ion-content {
-  --background: var(--bg) !important;
+  --background: var(--bg);
+  
+  /* Permitir que las clases de layout sobrescriban el background */
+  &.content-centered,
+  &.content-centered-absolute,
+  &.content-centered-minimal {
+    --background: var(--ion-background-color, var(--bg));
+  }
 }
 
 /* Remove autofill yellow */

@@ -1,5 +1,6 @@
-<ion-content class="auth-content" data-test="forgot-page">
-  <div class="auth-container">
+<ion-content data-test="forgot-page">
+  <div class="content-wrapper">
+    <div class="centered-container">
 
     <!-- Header Section -->
     <div class="auth-header">
@@ -25,7 +26,16 @@
       }
 
       <!-- Submit Button -->
-      <ion-button type="submit" expand="block" class="auth-button primary" [disabled]="isLoading || !email" data-test="forgot-submit">
+      <ion-button 
+        type="submit" 
+        expand="block" 
+        class="main-action-button" 
+        color="primary"
+        shape="round"
+        size="large"
+        [disabled]="isLoading || !email" 
+        data-test="forgot-submit"
+      >
         @if (isLoading) {
           <ion-spinner name="crescent"></ion-spinner>
         } @else {
@@ -48,5 +58,6 @@
       </ion-button>
     </div>
 
+    </div>
   </div>
 </ion-content>

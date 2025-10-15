@@ -1,0 +1,331 @@
+/**
+ * Shared Layout Styles - LungLife Project
+ * 
+ * Sistema de centrado unificado basado en Flexbox para garantizar
+ * consistencia visual en todas las páginas de la aplicación.
+ * 
+ * @author LungLife Development Team
+ * @version 1.0 - Unified Layout System
+ */
+
+/* ========== CENTRADO PRINCIPAL ========== */
+
+/**
+ * NOTAS IMPORTANTES SOBRE CONFLICTOS DE ESTILOS:
+ * 
+ * 1. DIAGNÓSTICO DE PROBLEMAS COMUNES:
+ *    - Si no se ven cambios después de aplicar estos estilos, revisar:
+ *      • global.scss: Buscar reglas que apliquen height: 100% o padding: 0
+ *      • Estilos de Ionic: ion-content puede tener padding/margin por defecto
+ *      • Estilos de componente: Verificar que no anulen estos estilos
+ * 
+ * 2. TÉCNICA DE ESPACIADO VERTICAL:
+ *    - padding: 10vh 20px 6vh; crea espaciado dinámico basado en viewport height
+ *    - 10vh = 10% de la altura de pantalla (arriba)
+ *    - 6vh = 6% de la altura de pantalla (abajo)
+ *    - Esto evita el centrado absoluto y crea balance visual
+ * 
+ * 3. RESPONSIVE FALLBACKS:
+ *    - En pantallas cortas (< 700px altura), se reduce el padding
+ *    - En pantallas muy cortas (< 500px), se vuelve a centrado absoluto
+ *    - Esto previene problemas de scroll innecesario
+ * 
+ * 4. CONTENIDO NO SE ESTIRA:
+ *    - justify-content: flex-start evita estirar el contenido
+ *    - .centered-container mantiene su altura natural
+ *    - flex-shrink: 0 previene compresión
+ * 
+ * 5. CORRECCIONES IMPLEMENTADAS:
+ *    - Uso de !important para sobrescribir conflictos
+ *    - Especificidad ion-content.clase para mayor peso
+ *    - Reset de CSS variables de Ionic (--padding-*)
+ *    - Orden de importación corregido en componentes
+ *    - Variables CSS de global.scss sin !important
+ */
+
+/**
+ * TÉCNICA DE CONTENEDOR INTERMEDIO - Basada en home.page.scss
+ * 
+ * SOLUCIÓN CORRECTA: En lugar de manipular ion-content directamente,
+ * utilizamos un div contenedor intermedio que maneja el layout.
+ * Esto evita conflictos con justify-content y permite que el padding funcione correctamente.
+ */
+
+/**
+ * Contenedor principal con espaciado vertical equilibrado
+ * Replica la técnica exitosa de home.page para un layout professional
+ */
+.content-wrapper {
+  min-height: 100vh;
+  padding: 10vh 20px 6vh; /* 10% arriba, 6% abajo - Espaciado dinámico */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start; /* No interfiere con el padding */
+  background: var(--ion-background-color, #ffffff);
+  
+  /* Fallback para pantallas pequeñas donde el contenido es alto */
+  @media (max-height: 700px) {
+    padding: 5vh 20px 3vh; /* Reducir padding en pantallas cortas */
+    justify-content: flex-start; /* Mantener consistencia */
+  }
+  
+  /* Para pantallas muy pequeñas, usar padding fijo */
+  @media (max-height: 500px) {
+    padding: 20px;
+    justify-content: flex-start;
+  }
+}
+
+/**
+ * Variante para centrado absoluto (casos específicos)
+ */
+.content-wrapper-absolute {
+  min-height: 100vh;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center; /* Centrado absoluto cuando se necesite */
+  background: var(--ion-background-color, #ffffff);
+}
+
+/**
+ * Estilo para el contenedor del contenido principal
+ * Ideal para formularios y contenido estándar
+ * Mantiene su altura intrínseca sin estirarse
+ */
+.centered-container {
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto;
+  /* No aplicar height: 100% para evitar estiramiento */
+  flex-shrink: 0; /* Evitar compresión del contenido */
+}
+
+/**
+ * Variante para contenedores más anchos (dashboards, tablas)
+ */
+.centered-container-wide {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/**
+ * Variante para contenedores compactos (modals, alerts)
+ */
+.centered-container-narrow {
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+/**
+ * Variante para contenido largo (espaciado mínimo)
+ */
+.content-wrapper-minimal {
+  min-height: 100vh;
+  padding: 4vh 20px 2vh; /* Espaciado reducido para contenido extenso */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  background: var(--ion-background-color, #ffffff);
+  
+  @media (max-width: 768px) {
+    padding: 3vh 15px 1vh;
+  }
+  
+  @media (max-width: 480px) {
+    padding: 2vh 10px 1vh;
+  }
+}
+
+/* ========== RESPONSIVE DESIGN ========== */
+
+/**
+ * Tablets (768px - 1024px)
+ */
+@media (max-width: 1024px) {
+  .centered-container-wide {
+    max-width: 900px;
+    padding: 0 20px;
+  }
+}
+
+/**
+ * Mobile devices (max 768px)
+ */
+@media (max-width: 768px) {
+  .content-wrapper {
+    padding: 8vh 15px 4vh; /* Mantener espaciado proporcional en mobile */
+    
+    /* Para pantallas móviles cortas */
+    @media (max-height: 600px) {
+      padding: 4vh 15px 2vh;
+    }
+    
+    /* Para móviles muy pequeños */
+    @media (max-height: 500px) {
+      padding: 15px;
+    }
+  }
+
+  .content-wrapper-absolute {
+    padding: 15px;
+  }
+
+  .content-wrapper-minimal {
+    padding: 3vh 15px 1vh;
+  }
+
+  .centered-container,
+  .centered-container-wide,
+  .centered-container-narrow {
+    max-width: 100%;
+    padding: 0 10px;
+  }
+}
+
+/**
+ * Small mobile devices (max 480px)
+ */
+@media (max-width: 480px) {
+  .content-wrapper {
+    padding: 6vh 10px 3vh; /* Espaciado reducido para pantallas muy pequeñas */
+    
+    /* Para móviles extra pequeños */
+    @media (max-height: 480px) {
+      padding: 10px;
+    }
+  }
+
+  .content-wrapper-absolute {
+    padding: 10px;
+  }
+
+  .content-wrapper-minimal {
+    padding: 2vh 10px 1vh;
+  }
+
+  .centered-container,
+  .centered-container-wide,
+  .centered-container-narrow {
+    padding: 0;
+  }
+}
+
+/* ========== UTILIDADES DE CENTRADO ========== */
+
+/**
+ * Centra solo horizontalmente (útil para headers, footers)
+ */
+.center-horizontal {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+/**
+ * Centra solo verticalmente
+ */
+.center-vertical {
+  display: flex;
+  align-items: center;
+  min-height: 100vh;
+}
+
+/**
+ * Flex container con gap estándar
+ */
+.flex-gap-sm {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.flex-gap-md {
+  display: flex;
+  gap: 1rem;
+}
+
+.flex-gap-lg {
+  display: flex;
+  gap: 1.5rem;
+}
+
+/* ========== ACCESIBILIDAD ========== */
+
+/**
+ * Reduce animaciones para usuarios con preferencias de movimiento reducido
+ */
+@media (prefers-reduced-motion: reduce) {
+  .content-centered {
+    transition: none;
+    animation: none;
+  }
+}
+
+/**
+ * Mejora de contraste para tema oscuro
+ */
+[data-theme="dark"],
+body.dark,
+.dark {
+  .content-wrapper,
+  .content-wrapper-absolute,
+  .content-wrapper-minimal {
+    background: var(--ion-background-color, #121212);
+  }
+}
+
+/* ========== EJEMPLOS DE USO ========== */
+
+/**
+ * GUÍA DE IMPLEMENTACIÓN (NUEVA TÉCNICA ROBUSTA):
+ * 
+ * 1. PARA FORMULARIOS DE AUTH (Login, Register, Password):
+ *    HTML: <ion-content>
+ *            <div class="content-wrapper">
+ *              <div class="centered-container">
+ *                <!-- Tu contenido aquí -->
+ *              </div>
+ *            </div>
+ *          </ion-content>
+ * 
+ * 2. PARA DASHBOARDS Y CONTENIDO ANCHO:
+ *    HTML: <ion-content>
+ *            <div class="content-wrapper">
+ *              <div class="centered-container-wide">
+ *                <!-- Tu contenido aquí -->
+ *              </div>
+ *            </div>
+ *          </ion-content>
+ * 
+ * 3. PARA CONTENIDO LARGO (muchos elementos):
+ *    HTML: <ion-content>
+ *            <div class="content-wrapper-minimal">
+ *              <div class="centered-container">
+ *                <!-- Tu contenido aquí -->
+ *              </div>
+ *            </div>
+ *          </ion-content>
+ * 
+ * 4. SI NECESITAS CENTRADO ABSOLUTO (casos especiales):
+ *    HTML: <ion-content>
+ *            <div class="content-wrapper-absolute">
+ *              <div class="centered-container">
+ *                <!-- Tu contenido aquí -->
+ *              </div>
+ *            </div>
+ *          </ion-content>
+ * 
+ * VENTAJAS DE ESTA TÉCNICA:
+ * - ✅ Padding funciona perfectamente (como en home.page)
+ * - ✅ No hay conflictos con justify-content
+ * - ✅ Mayor control y predictibilidad  
+ * - ✅ Espaciado visual equilibrado
+ * - ✅ Sin barras de scroll innecesarias
+ * - ✅ Responsive design automático
+ * - ✅ Compatible con todos los estilos de Ionic
+ */

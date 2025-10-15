@@ -1,0 +1,54 @@
+<ion-content class="ion-padding">
+  <!-- Loading State -->
+  @if (isLoading()) {
+    <div class="loading-container">
+      <div class="logo-placeholder pulse"></div>
+      <h2>Bienvenido a LungLife</h2>
+      <ion-spinner name="crescent" color="primary"></ion-spinner>
+      <p>Cargando aplicación...</p>
+    </div>
+  } @else {
+
+    <!-- Welcome Content -->
+    <div class="welcome-container">
+
+      <!-- Hero Section -->
+      <div class="hero-section">
+        <div class="logo-container">
+          <div class="logo-placeholder"></div>
+          <div class="logo-label">LungLife</div>
+        </div>
+        <p class="subtitle">Tu salud pulmonar es nuestra prioridad</p>
+      </div>
+
+      <!-- Action Button -->
+      <div class="action-section">
+        <ion-button (click)="navigateToLogin()" color="primary" shape="round" size="large" expand="block" class="main-action-button">
+          Continuar al Login
+        </ion-button>
+      </div>
+
+      <!-- Features Section -->
+      <div class="features-section">
+        <h2>¿Por qué elegir LungLife?</h2>
+
+        <div class="features-column">
+          <!-- Feature cards are now rendered directly here -->
+          @for (feature of features; track feature.id) {
+            <div class="feature-card" (click)="onFeatureClick(feature)" [ngClass]="'feature-color-' + feature.color">
+              <div class="feature-icon">
+                <ion-icon [name]="feature.icon" [color]="feature.color"></ion-icon>
+              </div>
+              <div class="feature-content">
+                <h3>{{ feature.title }}</h3>
+                <p>{{ feature.description }}</p>
+              </div>
+              <ion-icon name="arrow-forward" class="arrow-icon"></ion-icon>
+            </div>
+          }
+        </div>
+      </div>
+
+    </div>
+  }
+</ion-content>

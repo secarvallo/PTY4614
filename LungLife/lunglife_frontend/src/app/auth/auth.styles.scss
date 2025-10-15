@@ -335,3 +335,75 @@ app-theme-toggle ion-button {
     transform: translateX(0);
   }
 }
+
+/* ========== RESPONSIVE DESIGN ========== */
+/* Mobile optimization for auth pages */
+@media (max-width: 480px) {
+  .auth-content {
+    padding: 10px;
+    min-height: 100vh;
+  }
+
+  .auth-container {
+    padding: 20px;
+    margin: 10px 0;
+    max-width: 100%;
+    border-radius: 16px;
+  }
+
+  .auth-header {
+    margin-bottom: 20px;
+  }
+
+  .auth-header h1 {
+    font-size: 24px;
+    margin-bottom: 8px;
+  }
+
+  .auth-header p {
+    font-size: 14px;
+  }
+
+  .logo-placeholder {
+    width: 64px;
+    height: 64px;
+    margin-bottom: 16px;
+  }
+
+  .auth-form {
+    margin: 0;
+  }
+
+  .form-group {
+    margin-bottom: 16px;
+  }
+
+  .auth-button {
+    height: 48px;
+    font-size: 16px;
+    margin-top: 16px;
+  }
+
+  .auth-link {
+    font-size: 14px;
+    margin-top: 16px;
+  }
+}
+
+/* ========== MAIN ACTION BUTTON - UNIFIED STYLE ========== */
+/**
+ * Clase global para unificar el estilo de los botones de acción principales
+ * Basado en el diseño de home.page para consistencia visual en toda la app
+ */
+.main-action-button {
+  font-weight: 600 !important;
+  height: 52px !important;
+  --padding-start: 2rem;
+  --padding-end: 2rem;
+  margin: 0 auto !important;
+  max-width: 280px !important;
+  
+  /* Asegurar que el botón tenga el ancho completo pero limitado */
+  width: 100% !important;
+  display: block !important;
+}

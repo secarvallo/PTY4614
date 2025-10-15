@@ -1,5 +1,5 @@
 /**
- * 🔄 Unit of Work Implementation
+ * Unit of Work Implementation
  * Coordina transacciones y repositorios
  * Implementa patrón Unit of Work con Clean Architecture
  */
@@ -52,7 +52,8 @@ export class UnitOfWork implements IUnitOfWork {
 
   async rollback(): Promise<void> {
     if (!this.transaction) {
-      throw new Error('No active transaction to rollback');
+      this.logger.warn('Attempted to rollback but no active transaction exists');
+      return; // Don't throw, just warn and return
     }
 
     try {
@@ -62,6 +63,9 @@ export class UnitOfWork implements IUnitOfWork {
       this.logger.debug('Unit of Work rolled back');
     } catch (error) {
       this.logger.error('Error rolling back Unit of Work:', error);
+      // Still clean up the state even if rollback failed
+      this.transaction = null;
+      this.repositories.clear();
       throw error;
     }
   }

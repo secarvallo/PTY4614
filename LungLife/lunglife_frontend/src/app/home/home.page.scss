@@ -1,0 +1,199 @@
+/**
+ * Home Page Styles - Migrated for LungLife Project
+ */
+
+// Logo Container Styles
+.logo-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+
+  .logo-label {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--ion-color-primary);
+    letter-spacing: -0.02em;
+  }
+}
+
+// Common logo placeholder style - Updated to match auth.styles.scss global logo
+.logo-placeholder {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  margin: 0 auto 24px;
+  background: linear-gradient(135deg, #007aff 0%, #005ce6 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 24px rgba(0, 122, 255, 0.3);
+}
+
+[data-theme="dark"] .logo-placeholder {
+  box-shadow: 0 8px 24px rgba(0, 122, 255, 0.2);
+}
+
+.logo-placeholder::before {
+  content: '🫁';
+  font-size: 40px;
+  filter: brightness(0) invert(1);
+}
+
+// Loading State
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-height: 70vh;
+  gap: 1.5rem;
+
+  .pulse {
+    animation: pulse-animation 2s infinite;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0;
+    color: var(--ion-color-primary);
+  }
+
+  p {
+    font-size: 1rem;
+    margin: 0;
+    color: var(--ion-color-medium);
+  }
+
+  ion-spinner {
+    --size: 60px;
+  }
+}
+
+// Welcome Container
+.welcome-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 1rem 0;
+}
+
+// Hero Section
+.hero-section {
+  text-align: center;
+  margin-bottom: 2rem;
+
+  .subtitle {
+    font-size: 1.1rem;
+    margin: 1rem 0 0 0;
+    color: var(--ion-color-medium);
+  }
+}
+
+// Action Section
+.action-section {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+// Features Section
+.features-section {
+  margin-bottom: 2rem;
+
+  h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 2rem;
+    color: var(--ion-text-color);
+  }
+
+  .features-column {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    align-items: center;
+  }
+}
+
+// Styles for the new inlined feature-card
+.feature-card {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 480px;
+  padding: 16px;
+  background: var(--ion-card-background, #fff);
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--ion-color-step-150, #e0e0e0);
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  }
+
+  .feature-icon {
+    font-size: 24px;
+    margin-right: 16px;
+    padding: 12px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(var(--ion-color-primary-rgb), 0.1);
+  }
+
+  .feature-content {
+    flex: 1;
+
+    h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin: 0 0 4px 0;
+      color: var(--ion-text-color);
+    }
+
+    p {
+      font-size: 0.875rem;
+      margin: 0;
+      color: var(--ion-color-medium);
+      line-height: 1.4;
+    }
+  }
+  
+  .arrow-icon {
+    font-size: 18px;
+    color: var(--ion-color-medium);
+  }
+}
+
+
+// Responsive Design
+@media (max-width: 768px) {
+  .welcome-container {
+    max-width: 100%;
+    padding: 0.5rem;
+  }
+
+  h1 {
+    font-size: 1.8rem;
+  }
+}
+
+// Pulse Animation for loading logo
+@keyframes pulse-animation {
+  0% {
+    box-shadow: 0 8px 20px rgba(108, 99, 255, 0.15);
+  }
+  50% {
+    box-shadow: 0 8px 30px rgba(108, 99, 255, 0.3);
+  }
+  100% {
+    box-shadow: 0 8px 20px rgba(108, 99, 255, 0.15);
+  }
+}

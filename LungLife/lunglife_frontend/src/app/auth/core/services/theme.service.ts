@@ -8,7 +8,7 @@ import { BehaviorSubject } from 'rxjs';
 
 export type AppTheme = 'light' | 'dark';
 
-const STORAGE_KEY = 'app.theme.preference';
+const STORAGE_KEY = 'app-theme-preference';
 
 @Injectable({
   providedIn: 'root'
@@ -39,6 +39,7 @@ export class ThemeService {
    * Set theme and apply to document
    */
   setTheme(theme: AppTheme): void {
+    console.log(`Auth ThemeService setTheme: ${theme}`);
     localStorage.setItem(STORAGE_KEY, theme);
     this.unbindMediaListener();
     this.subject.next(theme);
@@ -49,7 +50,10 @@ export class ThemeService {
    * Toggle between light and dark themes
    */
   toggleTheme(): void {
-    this.setTheme(this.current === 'dark' ? 'light' : 'dark');
+    const currentTheme = this.current;
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    console.log(`Auth ThemeService toggle: ${currentTheme} -> ${newTheme}`);
+    this.setTheme(newTheme);
   }
 
   private readInitialTheme(): AppTheme {
@@ -62,7 +66,19 @@ export class ThemeService {
    * Apply theme to document
    */
   private applyTheme(theme: AppTheme): void {
+    // Aplicar el atributo data-theme al documento
     document.documentElement.setAttribute('data-theme', theme);
+    
+    // Limpiar clases anteriores y aplicar la nueva
+    document.body.classList.remove('dark', 'light');
+    document.body.classList.add(theme);
+    
+    // También aplicar al ion-app si existe
+    const ionApp = document.querySelector('ion-app');
+    if (ionApp) {
+      ionApp.classList.remove('dark', 'light');
+      ionApp.classList.add(theme);
+    }
   }
 
   private mediaListener = (e: MediaQueryListEvent) => {

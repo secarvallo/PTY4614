@@ -87,16 +87,27 @@ export interface IUser {
   nombre: string;
   apellido?: string;
   phone?: string;
+  fecha_nacimiento?: string; // Fecha de nacimiento
   email_verified: boolean;
   two_fa_enabled: boolean;
   two_fa_secret?: string;
   is_active: boolean;
   failed_login_attempts: number;
   locked_until?: Date;
+  
+  // Password reset fields
+  password_reset_token?: string;
+  password_reset_expires?: Date;
+  password_changed_at?: Date;
+  
   created_at: Date;
   updated_at: Date;
   last_login_at?: Date;
   login_count: number;
+  // Campos de aceptación - CRÍTICOS PARA COMPLIANCE
+  accept_terms: boolean;      // OBLIGATORIO: Términos y condiciones
+  accept_privacy: boolean;    // OBLIGATORIO: Política de privacidad  
+  marketing_consent?: boolean; // OPCIONAL: Marketing/comunicaciones
 }
 
 /**
@@ -132,4 +143,9 @@ export interface IUserRepository extends IRepository<IUser> {
    * Buscar usuarios activos
    */
   findActiveUsers(): Promise<IUser[]>;
+  
+  /**
+   * Bloquear usuario hasta una fecha específica
+   */
+  lockUser(userId: number, lockUntil: Date): Promise<void>;
 }

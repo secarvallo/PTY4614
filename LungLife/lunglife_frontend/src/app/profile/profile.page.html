@@ -1,86 +1,65 @@
-<!-- 👤 Profile Page Template -->
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-button fill="clear" (click)="goBack()">
-        <ion-icon name="arrow-back-outline"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-    <ion-title>Profile</ion-title>
-  </ion-toolbar>
-</ion-header>
+<!-- 👤 Profile Page Template - Redesigned -->
 
-<ion-content [fullscreen]="true" class="profile-content" data-test="profile-page">
-  <div class="profile-container">
+<ion-content [fullscreen]="true" data-test="profile-page">
+  <div class="content-wrapper">
+    <div class="centered-container">
 
-  @if (currentUser) {
-      <!-- User Avatar Section -->
-      <div class="profile-avatar" data-test="profile-header">
-        <ion-icon name="person-circle-outline" class="avatar-icon"></ion-icon>
-        <h2 data-test="profile-name">{{ currentUser.firstName }} {{ currentUser.lastName }}</h2>
-        <p data-test="profile-email">{{ currentUser.email }}</p>
-      </div>
+    @if (currentUser) {
+      <!-- User Info Card -->
+      <div class="profile-card">
 
-      <!-- Profile Information Cards -->
-      <div class="profile-cards">
+        <!-- Avatar Section -->
+        <div class="profile-avatar" data-test="profile-header">
+          <ion-icon name="person-circle-outline" class="avatar-icon"></ion-icon>
+          <h2 data-test="profile-name">{{ currentUser.firstName }} {{ currentUser.lastName }}</h2>
+          <p data-test="profile-email">{{ currentUser.email }}</p>
+        </div>
 
-        <!-- Account Status Card -->
-        <ion-card>
-          <ion-card-header>
-            <ion-card-title>Account Status</ion-card-title>
-          </ion-card-header>
-          <ion-card-content>
-            <div class="status-item">
-              <ion-icon name="mail-outline" color="primary"></ion-icon>
-              <span>Email Verified: </span>
-              <ion-badge [color]="currentUser.isEmailVerified ? 'success' : 'warning'">
-                {{ currentUser.isEmailVerified ? 'Yes' : 'No' }}
-              </ion-badge>
-            </div>
-
-            <div class="status-item">
-              <ion-icon name="shield-outline" color="primary"></ion-icon>
-              <span>Two-Factor Auth: </span>
-              <ion-badge [color]="currentUser.twoFAEnabled ? 'success' : 'medium'">
-                {{ currentUser.twoFAEnabled ? 'Enabled' : 'Disabled' }}
-              </ion-badge>
-            </div>
-          </ion-card-content>
-        </ion-card>
-
-        <!-- Account Details Card -->
-        <ion-card>
-          <ion-card-header>
-            <ion-card-title>Account Details</ion-card-title>
-          </ion-card-header>
-          <ion-card-content>
-            <div class="detail-item">
-              <strong>Member Since:</strong>
-              <span>{{ formatDate(currentUser.createdAt) }}</span>
-            </div>
-
-            @if (currentUser.lastLogin) {
-              <div class="detail-item">
-                <strong>Last Login:</strong>
-                <span>{{ formatDateTime(currentUser.lastLogin) }}</span>
-              </div>
+        <!-- Details Section -->
+        <div class="profile-details">
+          <div class="detail-item">
+            <ion-icon name="mail-unread-outline"></ion-icon>
+            <span>Email Verificado</span>
+            @if (isEmailVerified) {
+              <ion-badge color="success">Sí</ion-badge>
+            } @else {
+              <ion-badge color="warning">No</ion-badge>
             }
-          </ion-card-content>
-        </ion-card>
+          </div>
+          <div class="detail-item">
+            <ion-icon name="shield-checkmark-outline"></ion-icon>
+            <span>Autenticación 2FA</span>
+            @if (twoFAEnabled) {
+              <ion-badge color="success">Activada</ion-badge>
+            } @else {
+              <ion-badge color="medium">Desactivada</ion-badge>
+            }
+          </div>
+          <div class="detail-item">
+            <ion-icon name="calendar-outline"></ion-icon>
+            <span>Miembro desde</span>
+            <strong>{{ formatDate(createdAt) }}</strong>
+          </div>
+          <div class="detail-item">
+            <ion-icon name="log-in-outline"></ion-icon>
+            <span>Último acceso</span>
+            <strong>{{ formatDateTime(currentUser.lastLogin) }}</strong>
+          </div>
+        </div>
 
       </div>
 
       <!-- Action Buttons -->
       <div class="profile-actions">
-        <ion-button expand="block" fill="outline" (click)="showUserInfo()">
-          <ion-icon name="information-circle-outline" slot="start"></ion-icon>
-          View Full Details
-        </ion-button>
-        <ion-button expand="block" color="primary" routerLink="/dashboard">
+        <ion-button expand="block" class="action-button primary" (click)="goBack()">
           <ion-icon name="analytics-outline" slot="start"></ion-icon>
-          Go to Dashboard
+          Ir al Dashboard
         </ion-button>
-        <ion-button expand="block" color="danger" fill="outline" (click)="logout()">
+        <ion-button expand="block" class="action-button" fill="outline" (click)="showUserInfo()">
+          <ion-icon name="information-circle-outline" slot="start"></ion-icon>
+          Ver Detalles Completos
+        </ion-button>
+        <ion-button expand="block" class="action-button" color="danger" fill="clear" (click)="logout()">
           <ion-icon name="log-out-outline" slot="start"></ion-icon>
           Cerrar Sesión
         </ion-button>
@@ -93,12 +72,14 @@
         <p>Cargando perfil...</p>
       </div>
     } @else {
-      <!-- Estado sin usuario tras fallback -->
+      <!-- Fallback State -->
       <div class="loading-state" data-test="profile-missing">
-        <ion-icon name="alert-circle-outline" size="large"></ion-icon>
-        <p>No se pudo cargar el perfil.</p>
+        <ion-icon name="alert-circle-outline" color="warning"></ion-icon>
+        <p>No se pudo cargar la información del perfil.</p>
+        <ion-button fill="clear" (click)="logout()">Volver a Intentar</ion-button>
       </div>
     }
 
+    </div>
   </div>
 </ion-content>

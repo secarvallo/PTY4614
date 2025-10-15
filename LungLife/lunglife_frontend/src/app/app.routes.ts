@@ -7,19 +7,19 @@ import { SplashComponent } from './core/components/splash/splash.component';
 import { unifiedAuthGuard, unifiedGuestGuard, unifiedTwoFAGuard } from './auth/core/guards/unified-auth.guards';
 import { DEFAULT_AUTH_REDIRECT, resolvePostAuthRedirect } from './auth/core/utils/auth-navigation';
 
-// Root redirect -> usa unified logic (sin duplicar reglas)
+// Root redirect -> redirige a home como página principal
 const rootRedirectGuard = (): UrlTree | boolean => {
-  const auth = inject(AuthFacadeService);
-  const init = inject(AppInitService);
   const router = inject(Router);
-  if (init.isInitializingSync()) return true; // permanecer en splash inicial
-  if (auth.requiresTwoFASync()) return router.parseUrl('/auth/verify-2fa');
-  if (auth.isAuthenticatedSync()) return router.parseUrl(resolvePostAuthRedirect());
-  return router.createUrlTree(['/auth/login']);
+  return router.createUrlTree(['/home']);
 };
 
 export const routes: Routes = [
-  { path: '', component: SplashComponent, canActivate: [rootRedirectGuard] },
+  { path: '', redirectTo: '/home', pathMatch: 'full' },
+  {
+    path: 'home',
+    loadComponent: () => import('./home/home.page').then(m => m.HomePage),
+    title: 'LungLife - Inicio'
+  },
   {
     path: 'auth',
     children: [
@@ -98,7 +98,6 @@ export const routes: Routes = [
   { path: 'login', redirectTo: '/auth/login', pathMatch: 'full' },
   { path: 'register', redirectTo: '/auth/register', pathMatch: 'full' },
   { path: 'forgot-password', redirectTo: '/auth/forgot-password', pathMatch: 'full' },
-  { path: 'home', redirectTo: DEFAULT_AUTH_REDIRECT, pathMatch: 'full' },
   {
     path: '**',
     loadComponent: () => import('./shared/not-found/not-found.page').then(m => m.NotFoundPage),

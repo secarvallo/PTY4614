@@ -25,13 +25,28 @@ export class ThemeService {
   }
 
   private applyTheme(theme: AppTheme): void {
+    // Aplicar el atributo data-theme al documento
     document.documentElement.setAttribute('data-theme', theme);
+    
+    // Limpiar clases anteriores y aplicar la nueva
     document.body.classList.remove('dark', 'light');
     document.body.classList.add(theme);
+    
+    // También aplicar al ion-app si existe
+    const ionApp = document.querySelector('ion-app');
+    if (ionApp) {
+      ionApp.classList.remove('dark', 'light');
+      ionApp.classList.add(theme);
+    }
   }
 
   public toggleTheme(): void {
-    const newTheme = this.themeSubject.value === 'light' ? 'dark' : 'light';
+    const currentTheme = this.themeSubject.value;
+    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+    
+    // Debug: log para verificar el cambio
+    console.log(`Theme toggle: ${currentTheme} -> ${newTheme}`);
+    
     localStorage.setItem(STORAGE_KEY, newTheme);
     this.applyTheme(newTheme);
     this.themeSubject.next(newTheme);

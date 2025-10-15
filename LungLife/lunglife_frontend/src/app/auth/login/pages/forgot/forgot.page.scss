@@ -4,6 +4,8 @@
  * Uses global auth styles for consistency across authentication pages.
  * The main styling is handled by auth.styles.scss which is imported
  * in the component. This file only contains page-specific overrides.
+ * 
+ * Note: Centering and responsive layout is now handled by shared-layout.scss
  */
 
 /* Message styles for success/error feedback */

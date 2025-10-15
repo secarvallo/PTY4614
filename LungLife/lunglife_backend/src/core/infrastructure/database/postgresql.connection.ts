@@ -36,7 +36,8 @@ export class PostgreSQLConnection implements IDatabaseConnection {
         return this.isConnected();
       }
 
-      this.logger.info('🔄 Inicializando conexión a PostgreSQL...');
+      this.logger.info('Inicializando conexión a PostgreSQL...');
+      this.logger.info(`Conectando a: ${this.config.host}:${this.config.port}/${this.config.database}`);
       
       const poolConfig: PoolConfig = {
         host: this.config.host,
@@ -44,11 +45,12 @@ export class PostgreSQLConnection implements IDatabaseConnection {
         database: this.config.database,
         user: this.config.user,
         password: this.config.password,
-        max: this.config.maxConnections,
-        idleTimeoutMillis: this.config.idleTimeoutMillis,
-        connectionTimeoutMillis: this.config.connectionTimeoutMillis,
+        max: this.config.maxConnections || 20,
+        min: 1, // Mantener al menos 1 conexión activa
+        idleTimeoutMillis: this.config.idleTimeoutMillis || 30000,
+        connectionTimeoutMillis: this.config.connectionTimeoutMillis || 5000,
         keepAlive: true,
-        keepAliveInitialDelayMillis: 10000,
+        allowExitOnIdle: false
       };
 
       this.pool = new Pool(poolConfig);
@@ -56,7 +58,7 @@ export class PostgreSQLConnection implements IDatabaseConnection {
       // Configurar eventos del pool
       this.setupPoolEvents();
       
-      // Probar la conexión
+      // Probar la conexión inmediatamente
       const testResult = await this.testConnection();
       
       if (testResult) {
@@ -65,15 +67,24 @@ export class PostgreSQLConnection implements IDatabaseConnection {
         this.logger.info('Conexión a PostgreSQL establecida exitosamente');
         return true;
       } else {
-        throw new Error('Falló la prueba de conexión');
+        throw new Error('Falló la prueba de conexión inicial');
       }
       
     } catch (error) {
       this.connectionMetrics.connectionErrors++;
       this.logger.error('Error al conectar con PostgreSQL:', error);
       
-      // Intentar reconexión automática
-      this.scheduleReconnection();
+      // Limpiar recursos si falló
+      if (this.pool) {
+        try {
+          await this.pool.end();
+        } catch (cleanupError) {
+          this.logger.error('Error limpiando pool:', cleanupError);
+        }
+        this.pool = null;
+      }
+      this.isInitialized = false;
+      
       return false;
     }
   }
@@ -81,30 +92,19 @@ export class PostgreSQLConnection implements IDatabaseConnection {
   private setupPoolEvents(): void {
     if (!this.pool) return;
 
-    this.pool.on('connect', (client: PoolClient) => {
+    this.pool.on('connect', (client) => {
       this.connectionMetrics.totalConnections++;
-      this.connectionMetrics.activeConnections++;
-      this.logger.debug('Nueva conexión establecida al pool');
+      this.logger.info('Nueva conexión establecida al pool');
     });
 
-    this.pool.on('acquire', (client: PoolClient) => {
-      this.connectionMetrics.activeConnections++;
-      this.logger.debug('Cliente adquirido del pool');
-    });
-
-    this.pool.on('remove', (client: PoolClient) => {
-      this.connectionMetrics.activeConnections--;
-      this.logger.debug('Cliente removido del pool');
-    });
-
-    this.pool.on('error', (err: Error, client: PoolClient) => {
+    this.pool.on('error', (err: Error) => {
       this.connectionMetrics.connectionErrors++;
-      this.logger.error('Error en el pool de conexiones:', err);
-      
-      // Programar reconexión si hay errores críticos
-      if (this.isCriticalError(err)) {
-        this.scheduleReconnection();
-      }
+      this.logger.error('Error en el pool de conexiones:', err.message);
+    });
+
+    // Evento para cuando se remueve una conexión del pool
+    this.pool.on('remove', (client) => {
+      this.logger.warn('Conexión removida del pool');
     });
   }
 
@@ -125,26 +125,49 @@ export class PostgreSQLConnection implements IDatabaseConnection {
     }
 
     this.reconnectTimer = setTimeout(async () => {
-      this.logger.info('🔄 Intentando reconexión automática...');
+      this.logger.info('Intentando reconexión automática...');
       await this.connect();
     }, this.config.retryDelay);
   }
 
   private async testConnection(): Promise<boolean> {
-    if (!this.pool) return false;
+    if (!this.pool) {
+      this.logger.error('Pool no está inicializado');
+      return false;
+    }
 
+    let client: PoolClient | null = null;
     try {
-      const client = await this.pool.connect();
-      const result = await client.query('SELECT NOW() as current_time, version() as pg_version');
-      client.release();
+      this.logger.info('Probando conexión a PostgreSQL...');
       
-      this.logger.info('Hora del servidor:', result.rows[0].current_time);
-      this.logger.info('Versión PostgreSQL:', result.rows[0].pg_version.split(' ')[0]);
+      // Timeout de 5 segundos para la prueba de conexión
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        setTimeout(() => reject(new Error('Timeout en prueba de conexión')), 5000);
+      });
+      
+      client = await Promise.race([
+        this.pool.connect(),
+        timeoutPromise
+      ]) as PoolClient;
+      
+      const result = await client.query('SELECT NOW() as current_time, version() as pg_version');
+      
+      this.logger.info('Prueba de conexión exitosa');
+      this.logger.info(`Hora del servidor: ${result.rows[0].current_time}`);
+      this.logger.info(`PostgreSQL: ${result.rows[0].pg_version.split(' ')[0]}`);
       
       return true;
     } catch (error) {
       this.logger.error('Falló la prueba de conexión:', error);
       return false;
+    } finally {
+      if (client) {
+        try {
+          client.release();
+        } catch (releaseError) {
+          this.logger.error('Error liberando cliente:', releaseError);
+        }
+      }
     }
   }
 
@@ -171,19 +194,31 @@ export class PostgreSQLConnection implements IDatabaseConnection {
   }
 
   async query<T = any>(text: string, params?: any[]): Promise<T[]> {
-    if (!this.pool) {
-      throw new Error('No hay conexión activa a la base de datos');
+    if (!this.pool || !this.isInitialized) {
+      // Intentar reconectar si no hay conexión
+      const connected = await this.connect();
+      if (!connected || !this.pool) {
+        throw new Error('No hay conexión activa a la base de datos');
+      }
     }
+
+    // Timeout de 15 segundos para queries
+    const timeoutPromise = new Promise<never>((_, reject) => {
+      setTimeout(() => reject(new Error('Timeout en query de base de datos')), 15000);
+    });
 
     try {
       const start = Date.now();
-      const result = await this.pool.query(text, params);
+      const result = await Promise.race([
+        this.pool.query(text, params),
+        timeoutPromise
+      ]);
       const duration = Date.now() - start;
       
-      this.logger.debug(`📊 Query ejecutado en ${duration}ms`);
+      this.logger.debug(`Query ejecutado en ${duration}ms`);
       return result.rows;
     } catch (error) {
-      this.logger.error('❌ Error en query:', error);
+      this.logger.error('Error en query:', error);
       this.logger.error('Query:', text);
       this.logger.error('Params:', params);
       throw error;
@@ -191,14 +226,31 @@ export class PostgreSQLConnection implements IDatabaseConnection {
   }
 
   async beginTransaction(): Promise<IDatabaseTransaction> {
-    if (!this.pool) {
-      throw new Error('No hay conexión activa a la base de datos');
+    if (!this.pool || !this.isInitialized) {
+      // Intentar reconectar si no hay conexión
+      const connected = await this.connect();
+      if (!connected || !this.pool) {
+        throw new Error('No hay conexión activa a la base de datos');
+      }
     }
 
-    const client = await this.pool.connect();
-    await client.query('BEGIN');
-    
-    return new PostgreSQLTransaction(client, this.logger);
+    // Timeout de 10 segundos para adquirir cliente y comenzar transacción
+    const timeoutPromise = new Promise<never>((_, reject) => {
+      setTimeout(() => reject(new Error('Timeout al iniciar transacción')), 10000);
+    });
+
+    try {
+      const client = await Promise.race([
+        this.pool.connect(),
+        timeoutPromise
+      ]);
+      
+      await client.query('BEGIN');
+      return new PostgreSQLTransaction(client, this.logger);
+    } catch (error) {
+      this.logger.error('Error al iniciar transacción:', error);
+      throw error;
+    }
   }
 
   getConnectionMetrics(): ConnectionMetrics {
@@ -209,6 +261,13 @@ export class PostgreSQLConnection implements IDatabaseConnection {
     }
     
     return { ...this.connectionMetrics };
+  }
+
+  // Add this new method to handle database creation
+  private async createDatabaseIfNotExists(): Promise<void> {
+    // Por simplicidad, asumimos que la base de datos ya existe
+    // La creación de la BD debe hacerse manualmente o en un script de setup
+    this.logger.info('📝 Asumiendo que la base de datos ya existe: ' + this.config.database);
   }
 }
 

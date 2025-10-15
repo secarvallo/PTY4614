@@ -1,101 +1,96 @@
 /**
- * Profile Page - User Profile Management (Simplified)
- * Ahora sin máquina de estados ni timers de fallback: el guard protege la ruta.
+ * Profile Page - User Profile Management
+ * Displays user information and provides actions like logout.
  */
 import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { IonicModule, AlertController } from '@ionic/angular';
+import { IonicModule, AlertController, MenuController } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
-import { AuthFacadeService, CoreAuthStore } from 'src/app/auth/core/services';
+import { AuthFacadeService } from 'src/app/auth/core/services';
 import { LoggerService } from '../core/services/logger.service';
 import { Subscription } from 'rxjs';
-import { take } from 'rxjs/operators';
-import { User, UserProfile } from 'src/app/auth/core/interfaces/auth.unified';
+import { User } from 'src/app/auth/core/interfaces/auth.unified';
 
 @Component({
   selector: 'app-profile',
   templateUrl: './profile.page.html',
-  styleUrls: ['./profile.page.scss'],
+  // Updated to use the new unified style file
+  styleUrls: [
+    './profile.page.scss',
+    '../theme/shared-layout.scss'
+  ],
   standalone: true,
   imports: [IonicModule, CommonModule]
 })
 export class ProfilePage implements OnInit, OnDestroy {
   private authFacade = inject(AuthFacadeService);
-  private coreStore = inject(CoreAuthStore);
   private router = inject(Router);
   private alertController = inject(AlertController);
   private logger = inject(LoggerService).createChild('ProfilePage');
+  private menuCtrl = inject(MenuController);
 
   currentUser: User | null = null;
-  userProfile: UserProfile | null = null;
   loadingUser = true;
-  private subs: Subscription[] = [];
+  private userSubscription?: Subscription;
+
+  // Getters to simplify template logic and fix parsing errors
+  get isEmailVerified(): boolean {
+    return (this.currentUser as any)?.isEmailVerified === true;
+  }
+
+  get twoFAEnabled(): boolean {
+    return (this.currentUser as any)?.twoFAEnabled === true;
+  }
+
+  get createdAt(): Date | string | undefined {
+    return (this.currentUser as any)?.createdAt || (this.currentUser as any)?.created_at;
+  }
 
   ngOnInit() {
-    const userSub = this.authFacade.user$.subscribe(user => {
+    this.userSubscription = this.authFacade.user$.subscribe(user => {
       if (user) {
         this.currentUser = user;
-        this.userProfile = user.profile ?? null;
-        this.loadingUser = false;
-        this.logger.info('Profile: user loaded', { email: user.email });
-      } else {
-        if (this.authFacade.isAuthenticatedSync()) {
-          this.logger.debug('Profile: authenticated but user null -> bootstrap attempt (store)');
-          this.coreStore.bootstrapSession().pipe(take(1)).subscribe();
-        } else {
-          this.loadingUser = false;
-          this.router.navigate(['/auth/login'], { replaceUrl: true });
-        }
+        this.logger.debug('User data loaded into profile', { userId: user.id });
       }
+      this.loadingUser = false;
     });
-    this.subs.push(userSub);
   }
 
-  ngOnDestroy(): void { this.subs.forEach(s => s.unsubscribe()); }
+  ngOnDestroy() {
+    this.userSubscription?.unsubscribe();
+  }
 
   /**
-   * Obtener nombre completo del usuario
+   * Navigate back to the previous page or dashboard
    */
-  getFullName(): string {
-    if (!this.userProfile) return '';
-    return `${this.userProfile.nombre ?? ''} ${this.userProfile.apellido ?? ''}`.trim();
+  goBack(): void {
+    // This could be improved with a navigation service
+    this.router.navigate(['/dashboard']);
   }
 
   /**
-   * Logout user
+   * Logs the user out
    */
   async logout(): Promise<void> {
     const alert = await this.alertController.create({
       header: 'Cerrar Sesión',
-      message: '¿Estás seguro de que deseas cerrar sesión?',
+      message: '¿Estás seguro de que quieres cerrar sesión?',
       buttons: [
-        { text: 'Cancelar', role: 'cancel' },
+        {
+          text: 'Cancelar',
+          role: 'cancel',
+        },
         {
           text: 'Cerrar Sesión',
           handler: () => {
             this.authFacade.logout();
-            this.router.navigate(['/auth/login']);
-          }
-        }
-      ]
+            this.router.navigate(['/auth/login'], { replaceUrl: true });
+          },
+        },
+      ],
     });
     await alert.present();
   }
-
-  /**
-   * Obtener email del usuario
-   */
-  getEmail(): string { return this.currentUser?.email ?? ''; }
-
-  /**
-   * Obtener teléfono del usuario
-   */
-  getPhone(): string { return this.userProfile?.telefono ?? ''; }
-
-  /**
-   * Obtener fecha de nacimiento
-   */
-  getBirthDate(): string { return this.userProfile?.fecha_nacimiento ? this.formatDate(this.userProfile.fecha_nacimiento) : 'N/A'; }
 
   /**
    * Format date for display
@@ -115,24 +110,24 @@ export class ProfilePage implements OnInit, OnDestroy {
     return isNaN(d.getTime()) ? 'N/A' : d.toLocaleString();
   }
 
+  /**
+   * Show a modal with all user details
+   */
   async showUserInfo(): Promise<void> {
     if (!this.currentUser) return;
-    const created = (this.currentUser as any).createdAt || (this.currentUser as any).created_at;
-    const lastLogin = (this.currentUser as any).lastLogin || (this.currentUser as any).last_login;
     const alert = await this.alertController.create({
-      header: 'Profile Information',
+      header: 'Información del Perfil',
       message: `
-        <strong>Name:</strong> ${this.currentUser.firstName} ${this.currentUser.lastName}<br>
+        <strong>Nombre:</strong> ${this.currentUser.firstName} ${this.currentUser.lastName}<br>
         <strong>Email:</strong> ${this.currentUser.email}<br>
-        <strong>Verified:</strong> ${(this.currentUser as any).isEmailVerified ? 'Yes' : 'No'}<br>
-        <strong>2FA:</strong> ${(this.currentUser as any).twoFAEnabled ? 'Enabled' : 'Disabled'}<br>
-        <strong>Member Since:</strong> ${this.formatDate(created)}<br>
-        <strong>Last Login:</strong> ${lastLogin ? this.formatDateTime(lastLogin) : 'N/A'}
+        <strong>Verificado:</strong> ${this.isEmailVerified ? 'Sí' : 'No'}<br>
+        <strong>2FA:</strong> ${this.twoFAEnabled ? 'Activado' : 'Desactivado'}<br>
+        <strong>Miembro Desde:</strong> ${this.formatDate(this.createdAt)}
       `,
-      buttons: ['OK']
+      buttons: ['OK'],
     });
+
     await alert.present();
   }
-
-  goBack(): void { this.router.navigate(['/dashboard']); }
 }
+

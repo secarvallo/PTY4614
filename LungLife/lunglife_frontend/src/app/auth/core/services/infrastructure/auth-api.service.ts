@@ -10,13 +10,13 @@ export interface LoginResponse { success: boolean; token?: string; refreshToken?
 export interface RegisterRequest {
   email: string;
   password: string;
-  username?: string; // alias opcional si backend lo requiere
   firstName?: string;
   lastName?: string;
   phone?: string;
-  birthDate?: string; // ISO date string
+  birthDate?: string; // Campo añadido para fecha de nacimiento
   acceptTerms?: boolean;
   acceptPrivacy?: boolean;
+  acceptMarketing?: boolean; // Campo añadido para compliance
 }
 export interface RegisterResponse { success: boolean; token?: string; refreshToken?: string; requiresTwoFA?: boolean; user?: any; sessionId?: string; error?: string; }
 

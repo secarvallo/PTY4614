@@ -3,7 +3,7 @@
  * Type-safe configuration with validation
  */
 
-import { AppConfig, DatabaseConfig, JWTConfig, SecurityConfig, EmailConfig } from '../interfaces';
+import { AppConfig, DatabaseConfig, JWTConfig, SecurityConfig, EmailConfig } from '../interfaces/config.interface';
 import dotenv from 'dotenv';
 import { z } from 'zod';
 
@@ -20,6 +20,8 @@ const databaseSchema = z.object({
   maxConnections: z.number().default(20),
   idleTimeoutMillis: z.number().default(30000),
   connectionTimeoutMillis: z.number().default(2000),
+  retryAttempts: z.number().default(5),
+  retryDelay: z.number().default(1000),
 });
 
 const jwtSchema = z.object({
@@ -106,6 +108,8 @@ export class ConfigManager {
           maxConnections: parseInt(process.env.DB_MAX_CONNECTIONS || '20'),
           idleTimeoutMillis: parseInt(process.env.DB_IDLE_TIMEOUT || '30000'),
           connectionTimeoutMillis: parseInt(process.env.DB_CONNECTION_TIMEOUT || '2000'),
+          retryAttempts: parseInt(process.env.DB_RETRY_ATTEMPTS || '5'),
+          retryDelay: parseInt(process.env.DB_RETRY_DELAY || '1000'),
         },
 
         jwt: {

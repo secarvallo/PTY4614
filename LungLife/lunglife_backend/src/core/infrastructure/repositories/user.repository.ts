@@ -1,5 +1,5 @@
 /**
- * 👤 User Repository Implementation
+ * User Repository Implementation
  * Implementación concreta del repositorio de usuarios
  * Sigue patrón Repository con Clean Architecture
  */
@@ -68,8 +68,9 @@ export class UserRepository implements IUserRepository {
       const result = await this.db.query<IUser>(
         `INSERT INTO users (
           email, password_hash, nombre, apellido, phone,
-          email_verified, two_fa_enabled, is_active, created_at, updated_at
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+          email_verified, two_fa_enabled, is_active, created_at, updated_at,
+          accept_terms, accept_privacy, marketing_consent
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
         RETURNING *`,
         [
           user.email,
@@ -81,7 +82,10 @@ export class UserRepository implements IUserRepository {
           user.two_fa_enabled,
           user.is_active,
           user.created_at,
-          user.updated_at
+          user.updated_at,
+          user.accept_terms,
+          user.accept_privacy,
+          user.marketing_consent
         ]
       );
 
@@ -278,10 +282,24 @@ export class UserRepository implements IUserRepository {
   async findActiveUsers(): Promise<IUser[]> {
     try {
       return await this.db.query<IUser>(
-        'SELECT * FROM users WHERE is_active = true ORDER BY last_login DESC'
+        'SELECT * FROM users WHERE is_active = true ORDER BY last_login_at DESC'
       );
     } catch (error) {
       this.logger.error('Error finding active users:', error);
+      throw error;
+    }
+  }
+
+  async lockUser(userId: number, lockUntil: Date): Promise<void> {
+    try {
+      await this.db.query(
+        'UPDATE users SET locked_until = $1, updated_at = $2 WHERE id = $3',
+        [lockUntil, new Date(), userId]
+      );
+
+      this.logger.warn(`User ${userId} locked until ${lockUntil}`);
+    } catch (error) {
+      this.logger.error(`Error locking user ${userId}:`, error);
       throw error;
     }
   }

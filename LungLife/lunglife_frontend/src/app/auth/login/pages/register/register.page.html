@@ -1,5 +1,6 @@
-<ion-content class="auth-content" data-test="register-page">
-  <div class="auth-container">
+<ion-content data-test="register-page">
+  <div class="content-wrapper">
+    <div class="centered-container">
     <div class="auth-header">
       <div class="logo-placeholder"></div>
       <h1>Crear Cuenta</h1>
@@ -19,6 +20,8 @@
         </ion-item>
         <div class="error-message" *ngIf="registerForm.get('nombre')?.invalid && registerForm.get('nombre')?.touched">
           <span *ngIf="registerForm.get('nombre')?.hasError('required')">El nombre es requerido</span>
+          <span *ngIf="registerForm.get('nombre')?.hasError('minlength')">El nombre debe tener al menos 2 caracteres</span>
+          <span *ngIf="registerForm.get('nombre')?.hasError('maxlength')">El nombre no puede tener más de 50 caracteres</span>
         </div>
       </div>
 
@@ -32,7 +35,7 @@
           ></ion-input>
         </ion-item>
         <div class="error-message" *ngIf="registerForm.get('apellido')?.invalid && registerForm.get('apellido')?.touched">
-          <span *ngIf="registerForm.get('apellido')?.hasError('required')">El apellido es requerido</span>
+          <span *ngIf="registerForm.get('apellido')?.hasError('maxlength')">El apellido no puede tener más de 50 caracteres</span>
         </div>
       </div>
 
@@ -48,7 +51,9 @@
         </ion-item>
         <div class="error-message" *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched">
           <span *ngIf="registerForm.get('email')?.hasError('required')">El email es requerido</span>
-          <span *ngIf="registerForm.get('email')?.hasError('email')">Ingresa un email válido</span>
+          <span *ngIf="registerForm.get('email')?.hasError('email')">Formato de email inválido</span>
+          <span *ngIf="registerForm.get('email')?.hasError('blockedDomain')">Dominio de email no permitido</span>
+          <span *ngIf="registerForm.get('email')?.hasError('disposableEmail')">No se permiten emails temporales</span>
         </div>
       </div>
 
@@ -68,7 +73,7 @@
       </div>
 
       <!-- Password Field -->
-      <div class="form-group">
+      <div class="form-group password-field-container">
         <ion-item lines="none">
           <ion-input
             formControlName="password"
@@ -80,26 +85,68 @@
             <ion-icon [name]="showPassword() ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
           </ion-button>
         </ion-item>
+        
+        <!-- Security Indicator Shield -->
+        <ion-icon
+          *ngIf="passwordSecurityStatus().show"
+          name="shield-checkmark-outline"
+          class="security-shield-indicator"
+          [color]="passwordSecurityStatus().color"
+          [class.pulse-warning]="passwordSecurityStatus().level === 'weak'"
+          [class.pulse-tertiary]="passwordSecurityStatus().level === 'medium'"
+          [class.pulse-success]="passwordSecurityStatus().level === 'strong'"
+        ></ion-icon>
         <div class="password-requirements" *ngIf="registerForm.get('password')?.touched">
           <div class="requirement" [class.met]="passwordChecks.minLength">
             <ion-icon [name]="passwordChecks.minLength ? 'checkmark-circle' : 'close-circle'"></ion-icon>
-            Mínimo 8 caracteres
+            Entre 8 y 128 caracteres
           </div>
           <div class="requirement" [class.met]="passwordChecks.uppercase">
             <ion-icon [name]="passwordChecks.uppercase ? 'checkmark-circle' : 'close-circle'"></ion-icon>
-            Una mayúscula
+            Al menos una mayúscula (A-Z)
           </div>
           <div class="requirement" [class.met]="passwordChecks.lowercase">
             <ion-icon [name]="passwordChecks.lowercase ? 'checkmark-circle' : 'close-circle'"></ion-icon>
-            Una minúscula
+            Al menos una minúscula (a-z)
           </div>
           <div class="requirement" [class.met]="passwordChecks.number">
             <ion-icon [name]="passwordChecks.number ? 'checkmark-circle' : 'close-circle'"></ion-icon>
-            Un número
+            Al menos un número (0-9)
           </div>
           <div class="requirement" [class.met]="passwordChecks.special">
             <ion-icon [name]="passwordChecks.special ? 'checkmark-circle' : 'close-circle'"></ion-icon>
-            Un carácter especial
+            Al menos un carácter especial (!@#$%^&*)
+          </div>
+        </div>
+
+        <!-- Advanced Security Validation -->
+        <div class="security-validation" *ngIf="registerForm.get('password')?.value && registerForm.get('password')?.value.length >= 8">
+          <!-- Breach Check Status -->
+          <div class="security-check" *ngIf="breachCheckInProgress()">
+            <ion-spinner name="crescent" color="primary"></ion-spinner>
+            <span>Verificando seguridad de contraseña...</span>
+          </div>
+
+          <!-- Password Security Result -->
+          <div class="security-result" *ngIf="passwordSecurityResult() && !breachCheckInProgress()">
+            <div class="security-level" [ngClass]="'level-' + passwordSecurityLevel">
+              <ion-icon name="shield-outline"></ion-icon>
+              <span>Nivel de seguridad: {{ passwordSecurityLevel | titlecase }}</span>
+            </div>
+
+            <!-- Breach Warning -->
+            <div class="breach-warning" *ngIf="isPasswordBreached">
+              <ion-icon name="warning" color="danger"></ion-icon>
+              <span>⚠️ Esta contraseña ha sido comprometida en brechas de seguridad</span>
+            </div>
+
+            <!-- Security Warnings -->
+            <div class="security-warnings" *ngIf="securityWarningsList.length > 0">
+              <div class="warning-item" *ngFor="let warning of securityWarningsList">
+                <ion-icon name="alert-circle" color="warning"></ion-icon>
+                <span>{{ warning }}</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -118,50 +165,69 @@
           </ion-button>
         </ion-item>
         <div class="error-message" *ngIf="registerForm.get('confirmPassword')?.invalid && registerForm.get('confirmPassword')?.touched">
-          <span *ngIf="registerForm.get('confirmPassword')?.hasError('confirmPassword')">Las contraseñas no coinciden</span>
+          <span *ngIf="registerForm.get('confirmPassword')?.hasError('required')">La confirmación de contraseña es requerida</span>
+          <span *ngIf="registerForm.get('confirmPassword')?.hasError('passwordMismatch')">Las contraseñas no coinciden</span>
         </div>
       </div>
 
-      <!-- Terms and Conditions -->
-      <div class="form-options">
-        <ion-item>
-          <ion-checkbox formControlName="acceptTerms"></ion-checkbox>
-          <ion-label>
+      <!-- Terms and Conditions - Simple Layout -->
+      <div class="checkbox-group">
+        <div class="checkbox-item">
+          <ion-checkbox 
+            formControlName="acceptTerms"
+            shape="round"
+            color="primary"
+          ></ion-checkbox>
+          <span class="checkbox-label">
             Acepto los <a href="/terms" target="_blank">Términos y Condiciones</a>
-          </ion-label>
-        </ion-item>
-      </div>
+          </span>
+        </div>
 
-      <div class="form-options">
-        <ion-item>
-          <ion-checkbox formControlName="acceptPrivacy"></ion-checkbox>
-          <ion-label>
+        <div class="checkbox-item">
+          <ion-checkbox 
+            formControlName="acceptPrivacy"
+            shape="round"
+            color="primary"
+          ></ion-checkbox>
+          <span class="checkbox-label">
             Acepto la <a href="/privacy" target="_blank">Política de Privacidad</a>
-          </ion-label>
-        </ion-item>
-      </div>
+          </span>
+        </div>
 
-      <div class="form-options">
-        <ion-item>
-          <ion-checkbox formControlName="acceptMarketing"></ion-checkbox>
-          <ion-label>
+        <div class="checkbox-item">
+          <ion-checkbox 
+            formControlName="acceptMarketing"
+            shape="round"
+            color="primary"
+          ></ion-checkbox>
+          <span class="checkbox-label">
             Deseo recibir comunicaciones de marketing (opcional)
-          </ion-label>
-        </ion-item>
+          </span>
+        </div>
       </div>
 
       <!-- Submit Button -->
+      <!-- TEMPORAL: Botón habilitado para testing - REVERTIR EN PRODUCCIÓN -->
       <ion-button
         expand="block"
         type="submit"
-        [disabled]="!canSubmit()"
-        class="auth-button primary"
+        [disabled]="false"
+        class="main-action-button"
+        color="primary"
+        shape="round"
+        size="large"
         data-test="register-submit"
       >
         <ion-spinner *ngIf="loading()" name="crescent"></ion-spinner>
         <span *ngIf="!loading()">Crear Cuenta</span>
       </ion-button>
     </form>
+
+    <!-- Rate Limit Warning -->
+    <div class="message warning" *ngIf="isRateLimited()">
+      <ion-icon name="warning-outline"></ion-icon>
+      Demasiados intentos de registro. Por tu seguridad, debes esperar antes de intentar nuevamente.
+    </div>
 
     <!-- Error Display -->
     <div class="message error" *ngIf="error()">{{ error() }}</div>
@@ -177,6 +243,7 @@
       >
         <strong>Inicia sesión aquí</strong>
       </ion-button>
+    </div>
     </div>
   </div>
 </ion-content>

@@ -273,60 +273,11 @@ export interface PaginatedResponse<T> extends ApiResponse<T[]> {
 }
 
 // ========== CONFIGURATION INTERFACES ==========
-
-export interface DatabaseConfig {
-  host: string;
-  port: number;
-  database: string;
-  user: string;
-  password: string;
-  maxConnections: number;
-  idleTimeoutMillis: number;
-  connectionTimeoutMillis: number;
-}
-
-export interface JWTConfig {
-  accessTokenSecret: string;
-  refreshTokenSecret: string;
-  accessTokenExpiry: string;
-  refreshTokenExpiry: string;
-  issuer: string;
-  audience: string;
-}
-
-export interface SecurityConfig {
-  bcryptRounds: number;
-  rateLimitMaxAttempts: number;
-  rateLimitWindowMs: number;
-  rateLimitLockoutMs: number;
-  passwordMinLength: number;
-  passwordRequireUppercase: boolean;
-  passwordRequireLowercase: boolean;
-  passwordRequireNumbers: boolean;
-  passwordRequireSymbols: boolean;
-}
-
-export interface EmailConfig {
-  host: string;
-  port: number;
-  secure: boolean;
-  user: string;
-  password: string;
-  from: string;
-  templates: {
-    welcome: string;
-    passwordReset: string;
-    twoFAEnabled: string;
-  };
-}
-
-export interface AppConfig {
-  port: number;
-  environment: 'development' | 'production' | 'test';
-  corsOrigins: string[];
-  logLevel: 'error' | 'warn' | 'info' | 'debug';
-  database: DatabaseConfig;
-  jwt: JWTConfig;
-  security: SecurityConfig;
-  email: EmailConfig;
-}
+// Re-export from centralized config interfaces
+export type {
+  DatabaseConfig,
+  JWTConfig,
+  SecurityConfig,
+  EmailConfig,
+  AppConfig
+} from './config.interface';
