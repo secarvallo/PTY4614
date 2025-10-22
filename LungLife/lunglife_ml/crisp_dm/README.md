@@ -2,6 +2,14 @@
 
 Proyecto de machine learning para predicción de enfermedades pulmonares utilizando la metodología CRISP-DM.
 
+## Instalación
+
+Para instalar las dependencias necesarias, ejecuta:
+
+```bash
+pip install -r requirements.txt
+```
+
 ## Estructura del Proyecto
 
 ```
