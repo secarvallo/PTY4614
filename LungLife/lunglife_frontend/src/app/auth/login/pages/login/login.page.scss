@@ -7,6 +7,10 @@
  * Note: Centering and responsive layout is now handled by shared-layout.scss
  */
 
+/* Import global styles using modern @use syntax */
+@use '../../../auth.styles.scss';
+@use '../../../../theme/shared-layout.scss';
+
 .two-factor-header {
   text-align: center;
   margin-bottom: 2rem;
@@ -158,5 +162,31 @@
 
   .auth-button {
     height: 48px;
+  }
+}
+
+/* Debug button styles */
+.debug-button {
+  margin-top: 8px;
+  font-size: 0.9em;
+  opacity: 0.8;
+}
+
+/* Register button styles */
+.register-btn {
+  display: inline-block;
+  cursor: pointer;
+  color: var(--ion-color-primary);
+  text-decoration: none;
+  font-size: 14px;
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: var(--ion-color-primary-shade);
+    text-decoration: underline;
+  }
+
+  &:active {
+    color: var(--ion-color-primary-tint);
   }
 }

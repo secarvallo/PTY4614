@@ -17,11 +17,7 @@ import { LoginRequest } from '../../../core/services/infrastructure/auth-api.ser
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, FormsModule, IonicModule, RouterLink],
   templateUrl: './login.page.html',
-  styleUrls: [
-    '../../../auth.styles.scss',
-    '../../../../theme/shared-layout.scss',
-    './login.page.scss'
-  ],
+  styleUrls: ['./login.page.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LoginPage implements OnInit, OnDestroy {
@@ -367,5 +363,12 @@ export class LoginPage implements OnInit, OnDestroy {
    */
   private sanitizeLoginEmail(email: string): string {
     return email.toLowerCase().trim().replace(/[<>'"&]/g, '');
+  }
+
+  /**
+   * Navegar a la página de registro
+   */
+  navigateToRegister(): void {
+    this.router.navigate(['/auth/register']);
   }
 }

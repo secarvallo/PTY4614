@@ -63,6 +63,7 @@ export class EnvironmentAdapter {
   static adapt(appEnv: AppEnvironment): Environment {
     return {
       production: appEnv.production,
+      apiUrl: appEnv.apiUrl, // Add the required apiUrl property
       name: appEnv.production ? 'production' : 'development',
 
       // API Configuration

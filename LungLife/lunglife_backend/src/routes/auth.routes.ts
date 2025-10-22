@@ -5,6 +5,7 @@
 
 import express from 'express';
 import { AuthController } from '../controllers/auth.controller.v2';
+import { AuthMiddleware } from '../core/middleware';
 
 const router = express.Router();
 
@@ -218,22 +219,140 @@ router.post('/reset-password', authController.resetPassword.bind(authController)
 // ========== 2FA ROUTES ==========
 
 /**
- *  Setup 2FA - Compatible with TwoFAStrategy
- * POST /api/auth/2fa/setup
+ * @swagger
+ * /auth/2fa/setup:
+ *   post:
+ *     tags:
+ *       - 2FA
+ *     summary: Configurar autenticación de dos factores
+ *     description: Genera un secreto 2FA y devuelve el código QR para configurar en la app autenticador
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Configuración 2FA generada exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: "Código QR generado exitosamente"
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     qr_code:
+ *                       type: string
+ *                       description: "Código QR en base64"
+ *                     manual_entry_key:
+ *                       type: string
+ *                       description: "Clave para entrada manual"
+ *                       example: "JBSWY3DPEHPK3PXP"
+ *                     backup_codes:
+ *                       type: array
+ *                       items:
+ *                         type: string
+ *                       description: "Códigos de respaldo"
+ *       401:
+ *         description: Token no válido
+ *       500:
+ *         description: Error interno del servidor
  */
-// Note: 2FA endpoints omitted in this minimal setup
+router.post('/2fa/setup', AuthMiddleware.authenticateToken, authController.setup2FA.bind(authController));
 
 /**
- *  Verify 2FA - Compatible with TwoFAStrategy
- * POST /api/auth/2fa/verify
+ * @swagger
+ * /auth/2fa/verify:
+ *   post:
+ *     tags:
+ *       - 2FA
+ *     summary: Verificar y activar 2FA
+ *     description: Verifica el código de la app autenticador y activa 2FA para el usuario
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - code
+ *             properties:
+ *               code:
+ *                 type: string
+ *                 pattern: "^[0-9]{6}$"
+ *                 example: "123456"
+ *                 description: "Código de 6 dígitos de la app autenticador"
+ *     responses:
+ *       200:
+ *         description: 2FA activado exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: "2FA activado exitosamente"
+ *       400:
+ *         description: Código inválido
+ *       401:
+ *         description: Token no válido
  */
-// Note: 2FA verify endpoint omitted
+router.post('/2fa/verify', AuthMiddleware.authenticateToken, authController.verify2FA.bind(authController));
 
 /**
- *  Disable 2FA - Compatible with TwoFAStrategy
- * POST /api/auth/2fa/disable
+ * @swagger
+ * /auth/2fa/disable:
+ *   post:
+ *     tags:
+ *       - 2FA
+ *     summary: Desactivar autenticación de dos factores
+ *     description: Desactiva 2FA para el usuario autenticado
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - password
+ *             properties:
+ *               password:
+ *                 type: string
+ *                 format: password
+ *                 example: "MiContraseña123!"
+ *                 description: "Contraseña actual para confirmar desactivación"
+ *     responses:
+ *       200:
+ *         description: 2FA desactivado exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: "2FA desactivado exitosamente"
+ *       400:
+ *         description: Contraseña incorrecta
+ *       401:
+ *         description: Token no válido
  */
-// Note: 2FA disable endpoint omitted
+router.post('/2fa/disable', AuthMiddleware.authenticateToken, authController.disable2FA.bind(authController));
 
 // ========== USER PROFILE ROUTES ==========
 

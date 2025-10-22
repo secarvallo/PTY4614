@@ -303,4 +303,74 @@ export class UserRepository implements IUserRepository {
       throw error;
     }
   }
+
+  async findByUserId(userId: string): Promise<IUser | null> {
+    try {
+      const id = parseInt(userId, 10);
+      return await this.findById(id);
+    } catch (error) {
+      this.logger.error(`Error finding user by userId ${userId}:`, error);
+      throw error;
+    }
+  }
+
+  async updateTempTwoFactorSecret(userId: string, tempSecret: string, backupCodes: string[]): Promise<void> {
+    try {
+      const id = parseInt(userId, 10);
+      await this.db.query(
+        `UPDATE users 
+         SET two_fa_temp_secret = $1, 
+             two_fa_backup_codes = $2,
+             updated_at = $3 
+         WHERE id = $4`,
+        [tempSecret, JSON.stringify(backupCodes), new Date(), id]
+      );
+
+      this.logger.info(`Temporary 2FA secret updated for user ${userId}`);
+    } catch (error) {
+      this.logger.error(`Error updating temp 2FA secret for user ${userId}:`, error);
+      throw error;
+    }
+  }
+
+  async activateTwoFactor(userId: string, secret: string): Promise<void> {
+    try {
+      const id = parseInt(userId, 10);
+      await this.db.query(
+        `UPDATE users 
+         SET two_fa_enabled = true, 
+             two_fa_secret = $1,
+             two_fa_temp_secret = NULL,
+             updated_at = $2 
+         WHERE id = $3`,
+        [secret, new Date(), id]
+      );
+
+      this.logger.info(`2FA activated for user ${userId}`);
+    } catch (error) {
+      this.logger.error(`Error activating 2FA for user ${userId}:`, error);
+      throw error;
+    }
+  }
+
+  async disableTwoFactor(userId: string): Promise<void> {
+    try {
+      const id = parseInt(userId, 10);
+      await this.db.query(
+        `UPDATE users 
+         SET two_fa_enabled = false, 
+             two_fa_secret = NULL,
+             two_fa_temp_secret = NULL,
+             two_fa_backup_codes = NULL,
+             updated_at = $1 
+         WHERE id = $2`,
+        [new Date(), id]
+      );
+
+      this.logger.info(`2FA disabled for user ${userId}`);
+    } catch (error) {
+      this.logger.error(`Error disabling 2FA for user ${userId}:`, error);
+      throw error;
+    }
+  }
 }

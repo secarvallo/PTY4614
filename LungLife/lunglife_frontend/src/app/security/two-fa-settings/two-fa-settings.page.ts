@@ -159,6 +159,7 @@ export class TwoFaSettingsPage implements OnInit {
   }
 
   goBack(): void {
-    this.router.navigate(['/dashboard']);
+    // Navegar de vuelta al perfil cuando venimos del perfil
+    this.router.navigate(['/profile']);
   }
 }

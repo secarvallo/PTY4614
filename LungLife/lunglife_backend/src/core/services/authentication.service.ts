@@ -17,6 +17,7 @@ export interface RegisterUserRequest {
   firstName: string;
   lastName?: string;
   phone?: string;
+  birthDate?: string;        // Fecha de nacimiento (compatibilidad con frontend)
   acceptTerms: boolean;      // Requerido: Términos y condiciones
   acceptPrivacy: boolean;    // Requerido: Política de privacidad
   acceptMarketing?: boolean; // Opcional: Marketing/comunicaciones
@@ -45,6 +46,24 @@ export interface AuthResult {
   refreshToken?: string;
   error?: string;
   errorCode?: string;
+}
+
+export interface Setup2FAResult {
+  success: boolean;
+  qrCode?: string;
+  manualEntryKey?: string;
+  backupCodes?: string[];
+  error?: string;
+}
+
+export interface Verify2FAResult {
+  success: boolean;
+  error?: string;
+}
+
+export interface Disable2FAResult {
+  success: boolean;
+  error?: string;
 }
 
 export interface ForgotPasswordRequest {
@@ -84,6 +103,26 @@ export class AuthenticationService {
     this.userRepository = userRepository;
     this.unitOfWork = unitOfWork;
     this.logger = logger;
+  }
+
+  /**
+   * Capitaliza la primera letra de cada palabra en una cadena
+   * Maneja espacios múltiples y normaliza el formato
+   * Ejemplo: "juan carlos" -> "Juan Carlos"
+   * Ejemplo: "  MARIA  JOSE  " -> "Maria Jose"
+   */
+  private capitalizeNames(name: string): string {
+    if (!name || typeof name !== 'string') {
+      return '';
+    }
+    
+    return name
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, ' ') // Normalizar espacios múltiples a uno solo
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
   }
 
   async registerUser(request: RegisterUserRequest): Promise<RegisterUserResponse> {
@@ -183,9 +222,10 @@ export class AuthenticationService {
         const userData: Omit<IUser, 'id'> = {
           email: request.email.toLowerCase().trim(),
           password_hash: passwordHash,
-          nombre: request.firstName.trim(),
-          apellido: request.lastName?.trim(),
+          nombre: this.capitalizeNames(request.firstName),
+          apellido: request.lastName ? this.capitalizeNames(request.lastName) : undefined,
           phone: request.phone?.trim(),
+          fecha_nacimiento: request.birthDate, // Nuevo campo para compatibilidad con frontend
           email_verified: false,
           two_fa_enabled: false,
           two_fa_secret: undefined,
@@ -645,6 +685,190 @@ export class AuthenticationService {
         errorCode: 'RESET_FAILED'
       };
     }
+  }
+
+  /**
+   * 🔐 Setup 2FA for user
+   */
+  async setup2FA(userId: string): Promise<Setup2FAResult> {
+    const startTime = Date.now();
+    this.logger.info(`Starting 2FA setup for user: ${userId}`);
+
+    try {
+      // Import required modules
+      const speakeasy = require('speakeasy');
+      const QRCode = require('qrcode');
+
+      // Get user from database
+      const user = await this.userRepository.findByUserId(userId);
+      if (!user) {
+        return {
+          success: false,
+          error: 'Usuario no encontrado'
+        };
+      }
+
+      // Generate a secret for the user
+      const secret = speakeasy.generateSecret({
+        name: `LungLife (${user.email})`,
+        issuer: 'LungLife',
+        length: 32
+      });
+
+      // Generate QR code
+      const qrCodeDataURL = await QRCode.toDataURL(secret.otpauth_url);
+      
+      // Generate backup codes
+      const backupCodes = this.generateBackupCodes();
+
+      // Store temporary secret (not yet activated)
+      await this.userRepository.updateTempTwoFactorSecret(userId, secret.base32, backupCodes);
+
+      const duration = Date.now() - startTime;
+      this.logger.info(`2FA setup generated successfully for user ${userId} in ${duration}ms`);
+
+      return {
+        success: true,
+        qrCode: qrCodeDataURL,
+        manualEntryKey: secret.base32,
+        backupCodes: backupCodes
+      };
+
+    } catch (error: any) {
+      const duration = Date.now() - startTime;
+      this.logger.error(`2FA setup failed after ${duration}ms:`, error);
+      
+      return {
+        success: false,
+        error: 'Error generating 2FA setup'
+      };
+    }
+  }
+
+  /**
+   * ✅ Verify 2FA code and activate 2FA
+   */
+  async verify2FA(userId: string, token: string): Promise<Verify2FAResult> {
+    const startTime = Date.now();
+    this.logger.info(`Verifying 2FA for user: ${userId}`);
+
+    try {
+      const speakeasy = require('speakeasy');
+
+      // Get user from database
+      const user = await this.userRepository.findByUserId(userId);
+      if (!user) {
+        return {
+          success: false,
+          error: 'Usuario no encontrado'
+        };
+      }
+
+      // Get temporary secret
+      const tempSecret = user.two_fa_temp_secret;
+      if (!tempSecret) {
+        return {
+          success: false,
+          error: 'No hay configuración 2FA pendiente. Ejecute setup primero.'
+        };
+      }
+
+      // Verify the token
+      const verified = speakeasy.totp.verify({
+        secret: tempSecret,
+        encoding: 'base32',
+        token: token,
+        window: 2 // Allow 2 time steps tolerance
+      });
+
+      if (!verified) {
+        return {
+          success: false,
+          error: 'Código inválido'
+        };
+      }
+
+      // Activate 2FA permanently
+      await this.userRepository.activateTwoFactor(userId, tempSecret);
+
+      const duration = Date.now() - startTime;
+      this.logger.info(`2FA activated successfully for user ${userId} in ${duration}ms`);
+
+      return {
+        success: true
+      };
+
+    } catch (error: any) {
+      const duration = Date.now() - startTime;
+      this.logger.error(`2FA verification failed after ${duration}ms:`, error);
+      
+      return {
+        success: false,
+        error: 'Error verificando código 2FA'
+      };
+    }
+  }
+
+  /**
+   * ❌ Disable 2FA for user
+   */
+  async disable2FA(userId: string, password: string): Promise<Disable2FAResult> {
+    const startTime = Date.now();
+    this.logger.info(`Disabling 2FA for user: ${userId}`);
+
+    try {
+      // Get user from database
+      const user = await this.userRepository.findByUserId(userId);
+      if (!user) {
+        return {
+          success: false,
+          error: 'Usuario no encontrado'
+        };
+      }
+
+      // Verify password
+      const isPasswordValid = await bcrypt.compare(password, user.password_hash);
+      if (!isPasswordValid) {
+        return {
+          success: false,
+          error: 'Contraseña incorrecta'
+        };
+      }
+
+      // Disable 2FA
+      await this.userRepository.disableTwoFactor(userId);
+
+      const duration = Date.now() - startTime;
+      this.logger.info(`2FA disabled successfully for user ${userId} in ${duration}ms`);
+
+      return {
+        success: true
+      };
+
+    } catch (error: any) {
+      const duration = Date.now() - startTime;
+      this.logger.error(`2FA disable failed after ${duration}ms:`, error);
+      
+      return {
+        success: false,
+        error: 'Error desactivando 2FA'
+      };
+    }
+  }
+
+  /**
+   * Generate backup codes for 2FA
+   */
+  private generateBackupCodes(): string[] {
+    const crypto = require('crypto');
+    const codes: string[] = [];
+    
+    for (let i = 0; i < 10; i++) {
+      const code = crypto.randomBytes(4).toString('hex').toUpperCase();
+      codes.push(code);
+    }
+    
+    return codes;
   }
 
   /**

@@ -15,7 +15,8 @@
     "test:verbose": "jest --verbose",
     "test:auth": "ts-node src/scripts/complete_auth_test.ts",
     "test:registration": "ts-node src/scripts/test_registration_http.ts",
-    "test:forgot-password": "ts-node src/scripts/test_forgot_password.ts"
+    "test:forgot-password": "ts-node src/scripts/test_forgot_password.ts",
+    "test:2fa": "ts-node src/scripts/test_2fa.ts"
   },
   "keywords": [
     "lunglife",

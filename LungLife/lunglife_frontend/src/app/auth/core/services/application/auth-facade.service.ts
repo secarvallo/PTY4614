@@ -6,7 +6,7 @@ import { AuthStrategyContext } from './auth-strategy-context.service';
 import { AuthResult } from '../../interfaces/auth-strategy.interface';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../../environments/environment';
-import { LoggerService } from 'src/app/core/services/logger.service';
+import { LoggerService } from '../../../../core/services/logger.service';
 import { UserSession, RevokeSessionRequest, SessionsResponse } from '../../interfaces/auth-advanced.interface';
 import { CoreAuthStore } from '../core-auth.store';
 import { normalizeUser } from '../../mappers/auth-user.mapper';
@@ -16,20 +16,20 @@ import { normalizeUser } from '../../mappers/auth-user.mapper';
  */
 @Injectable({ providedIn: 'root' })
 export class AuthFacadeService {
-  // Ahora todos los streams provienen del CoreAuthStore
+  // Lazy inject para evitar circular dependencies
   private store = inject(CoreAuthStore);
-
-  readonly isAuthenticated$ = this.store.isAuthenticated$;
-  readonly loading$ = this.store.loading$;
-  readonly error$ = this.store.error$;
-  readonly requiresTwoFA$ = this.store.requiresTwoFA$;
-  readonly user$ = this.store.user$;
-
-  private registerFlow = false;
-
   private strategyContext = inject(AuthStrategyContext);
   private http = inject(HttpClient);
   private logger = inject(LoggerService).createChild('AuthFacade');
+
+  private registerFlow = false;
+
+  // Lazy load observables
+  get isAuthenticated$() { return this.store.isAuthenticated$; }
+  get loading$() { return this.store.loading$; }
+  get error$() { return this.store.error$; }
+  get requiresTwoFA$() { return this.store.requiresTwoFA$; }
+  get user$() { return this.store.user$; }
 
   // Sync getters (delegados al store)
   isAuthenticatedSync(): boolean { return this.store.isAuthenticatedSync(); }

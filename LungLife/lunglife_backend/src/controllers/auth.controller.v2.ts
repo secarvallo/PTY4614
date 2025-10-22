@@ -395,6 +395,104 @@ export class AuthController {
     };
   }
 
+  /**
+   * 🔐 Setup 2FA - POST /api/auth/2fa/setup
+   */
+  async setup2FA(req: Request, res: Response): Promise<void> {
+    try {
+      const userId = (req as any).user?.id;
+      if (!userId) {
+        this.sendErrorResponse(res, 401, 'Usuario no autenticado', 'UNAUTHORIZED');
+        return;
+      }
+
+      const authService = await this.getAuthService();
+      const result = await authService.setup2FA(userId);
+
+      if (result.success) {
+        this.sendSuccessResponse(res, 200, {
+          qr_code: result.qrCode,
+          manual_entry_key: result.manualEntryKey,
+          backup_codes: result.backupCodes,
+          message: '2FA setup generated successfully'
+        });
+      } else {
+        this.sendErrorResponse(res, 400, result.error || 'Error setting up 2FA', 'SETUP_2FA_ERROR');
+      }
+    } catch (error) {
+      this.logger.error('Error in setup2FA:', error);
+      this.sendErrorResponse(res, 500, 'Internal server error', 'INTERNAL_ERROR');
+    }
+  }
+
+  /**
+   * ✅ Verify 2FA - POST /api/auth/2fa/verify
+   */
+  async verify2FA(req: Request, res: Response): Promise<void> {
+    try {
+      const userId = (req as any).user?.id;
+      const { code } = req.body;
+
+      if (!userId) {
+        this.sendErrorResponse(res, 401, 'Usuario no autenticado', 'UNAUTHORIZED');
+        return;
+      }
+
+      if (!code || !/^[0-9]{6}$/.test(code)) {
+        this.sendErrorResponse(res, 400, 'Código de 6 dígitos requerido', 'VALIDATION_ERROR');
+        return;
+      }
+
+      const authService = await this.getAuthService();
+      const result = await authService.verify2FA(userId, code);
+
+      if (result.success) {
+        this.sendSuccessResponse(res, 200, {
+          message: '2FA activated successfully'
+        });
+      } else {
+        this.sendErrorResponse(res, 400, result.error || 'Invalid code', 'INVALID_2FA_CODE');
+      }
+    } catch (error) {
+      this.logger.error('Error in verify2FA:', error);
+      this.sendErrorResponse(res, 500, 'Internal server error', 'INTERNAL_ERROR');
+    }
+  }
+
+  /**
+   * ❌ Disable 2FA - POST /api/auth/2fa/disable
+   */
+  async disable2FA(req: Request, res: Response): Promise<void> {
+    try {
+      const userId = (req as any).user?.id;
+      const { password } = req.body;
+
+      if (!userId) {
+        this.sendErrorResponse(res, 401, 'Usuario no autenticado', 'UNAUTHORIZED');
+        return;
+      }
+
+      if (!password) {
+        this.sendErrorResponse(res, 400, 'Contraseña requerida para desactivar 2FA', 'VALIDATION_ERROR');
+        return;
+      }
+
+      const authService = await this.getAuthService();
+      const result = await authService.disable2FA(userId, password);
+
+      if (result.success) {
+        this.sendSuccessResponse(res, 200, {
+          message: '2FA disabled successfully'
+        });
+      } else {
+        this.sendErrorResponse(res, 400, result.error || 'Invalid password', 'INVALID_PASSWORD');
+      }
+    } catch (error) {
+      this.logger.error('Error in disable2FA:', error);
+      this.sendErrorResponse(res, 500, 'Internal server error', 'INTERNAL_ERROR');
+    }
+  }
+
   private sendErrorResponse(res: Response, statusCode: number, error: string, errorCode: string): void {
     const response: AuthControllerResponse = {
       success: false,

@@ -32,10 +32,24 @@ export const unifiedAuthGuard: CanActivateFn = (_route, state): boolean | UrlTre
 
 export const unifiedGuestGuard: CanActivateFn = (_route, _state): boolean | UrlTree => {
   const auth = inject(AuthFacadeService);
+  
+  // Allow access if not authenticated and not in 2FA flow
+  const isNotAuthenticated = !auth.isAuthenticatedSync();
+  const notIn2FA = !auth.requiresTwoFASync();
+  
+  if (isNotAuthenticated && notIn2FA) {
+    return true; // ✅ Allow access to register/login
+  }
+  
+  // If in 2FA flow, redirect to verify
+  if (auth.requiresTwoFASync()) {
+    const router = inject(Router);
+    return router.parseUrl('/auth/verify-2fa');
+  }
+  
+  // If authenticated, redirect to dashboard
   const router = inject(Router);
-  if (!auth.isAuthenticatedSync() && !auth.requiresTwoFASync()) return true;
-  if (auth.requiresTwoFASync()) return router.parseUrl('/auth/verify-2fa');
-  return router.parseUrl(resolvePostAuthRedirect());
+  return router.parseUrl('/home');
 };
 
 export const unifiedTwoFAGuard: CanActivateFn = (): boolean | UrlTree => {

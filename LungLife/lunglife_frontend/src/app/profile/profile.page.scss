@@ -1,146 +1,326 @@
-/**
- * Profile Page Styles - Aligned with Auth UI
- *
- * This design unifies the profile page with the clean, card-based
- * layout of the registration and login flows for a consistent UX.
- * 
- * Note: Centering and responsive layout is now handled by shared-layout.scss
- */
-
+// Variables para consistencia (pueden heredarse de :root o global.scss)
 :host {
-  --page-bg-start: #f6f7fb;
-  --page-bg-end: #eef2ff;
-  --card-bg: #ffffff;
-  --text-color: #2d3748;
-  --muted-color: #718096;
-  --border-color: #e5e7eb;
-  --primary-grad: linear-gradient(135deg, #6c63ff 0%, #7b4dff 50%, #9a60ff 100%);
+  --profile-card-background: var(--ion-color-step-50, #f9f9f9);
+  --profile-card-border-radius: 16px;
+  --profile-text-color: var(--ion-text-color, #000);
+  --profile-secondary-text-color: var(--ion-color-step-600, #666);
 }
 
-/* Background gradient for profile page */
-ion-content {
-  --background: linear-gradient(180deg, var(--page-bg-start) 0%, var(--page-bg-end) 100%);
+.profile-content {
+  // Hereda el fondo de las páginas de autenticación si es necesario
+  --background: var(--ion-background-color, #f4f5f8);
 }
 
-.profile-card {
-  background: var(--card-bg);
-  border-radius: 20px;
-  padding: 24px 20px;
-  box-shadow: 0 18px 40px rgba(29, 33, 84, 0.08);
-  margin-bottom: 24px;
+.profile-container {
+  // Replica la estructura del.auth-container
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 16px;
 }
 
-.profile-avatar {
-  text-align: center;
-  margin-bottom: 24px;
-  padding-bottom: 24px;
-  border-bottom: 1px solid var(--border-color);
-
-  .avatar-icon {
-    font-size: 80px;
-    color: #6c63ff;
-    margin-bottom: 8px;
-  }
-
-  h2 {
-    color: var(--text-color);
-    font-weight: 700;
-    font-size: 22px;
-    margin: 0 0 4px;
-  }
-
-  p {
-    color: var(--muted-color);
-    margin: 0;
-    font-size: 14px;
-  }
-}
-
-.profile-details {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.detail-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 14px;
-
-  ion-icon {
-    color: #9ca3af;
-    font-size: 20px;
-  }
-
-  span {
-    flex: 1;
-    color: var(--muted-color);
-  }
-
-  strong {
-    color: var(--text-color);
-    font-weight: 600;
-  }
-
-  ion-badge {
-    font-size: 0.75rem;
-    padding: 4px 10px;
-    border-radius: 999px;
-  }
-}
-
-.profile-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding: 0 8px;
-
-  .action-button {
-    --border-radius: 14px;
-    height: 50px;
-    font-weight: 700;
-    letter-spacing: 0.2px;
-    text-transform: none;
-
-    &.primary {
-      --background: var(--primary-grad);
-      box-shadow: 0 10px 24px rgba(108, 99, 255, 0.35);
-    }
-  }
-}
-
-.loading-state {
+/* 1. Encabezado de Usuario */
+.profile-header {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 60vh;
-  color: var(--muted-color);
+  text-align: center;
+  margin-bottom: 24px;
+  width: 100%;
 
-  ion-spinner {
-    margin-bottom: 16px;
+ .profile-avatar {
+    width: 90px;
+    height: 90px;
+    margin-bottom: 12px;
+    border: 4px solid var(--ion-color-primary);
   }
 
-  ion-icon {
-    font-size: 48px;
+ .profile-name {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0 0 12px 0;
+    color: var(--profile-text-color);
+    text-align: center;
+  }
+
+ .status-chip {
+    margin-top: 8px;
+    --background: var(--ion-color-success-tint);
+    --color: var(--ion-color-success-shade);
+    font-weight: 500;
+  }
+
+  /* Mini Edit Profile Button Styling */
+  .edit-profile-button {
     margin-bottom: 16px;
+    --border-radius: 16px;
+    height: 28px !important;
+    font-weight: 500;
+    font-size: 0.75rem !important;
+    --padding-start: 8px;
+    --padding-end: 8px;
+    max-width: 110px;
+    min-width: 110px;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+    
+    ion-icon {
+      font-size: 0.8rem !important;
+      margin-right: 4px !important;
+    }
   }
 }
 
-/* Mobile Responsive - Profile Specific */
-@media (max-width: 480px) {
-  .profile-card {
-    padding: 20px 16px;
-    border-radius: 16px;
+/* Dashboard Button Styling */
+.dashboard-button {
+  margin: 24px 0 16px 0;
+  --border-radius: 12px;
+  height: 48px;
+  font-weight: 600;
+  font-size: 1rem;
+  --border-color: var(--ion-color-primary);
+  --color: var(--ion-color-primary);
+  
+  ion-icon {
+    font-size: 1.2rem;
+    margin-right: 8px;
+  }
+  
+  &:hover {
+    --background: rgba(var(--ion-color-primary-rgb), 0.05);
+  }
+}
+
+/* Título de sección reutilizable */
+.section-title {
+  margin-top: 24px;
+  margin-bottom: 8px;
+  h2 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--profile-text-color);
+  }
+}
+
+/* 2. Estilo de Tarjetas de Perfil (BEM Block) */
+.profile-card {
+  --background: var(--profile-card-background);
+  border-radius: var(--profile-card-border-radius);
+  box-shadow: none; // Estilo minimalista
+  margin-left: 0;
+  margin-right: 0;
+  margin-bottom: 16px;
+
+  ion-card-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+  }
+}
+
+/* Modificador para la tarjeta de cesación */
+.cessation-card {
+ .stat-grid {
+    display: flex;
+    justify-content: space-around;
+    text-align: center;
+    padding-top: 16px;
   }
 
-  .profile-avatar .avatar-icon {
-    font-size: 64px;
+ .stat-item {
+    ion-icon {
+      font-size: 2.5rem;
+    }
+   .stat-value {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--profile-text-color);
+      margin-top: 4px;
+    }
+   .stat-label {
+      font-size: 0.8rem;
+      color: var(--profile-secondary-text-color);
+    }
+  }
+}
+
+/* 3. Estilo para tarjetas de hábitos */
+.habit-card {
+  ion-card-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 16px 8px;
+    height: 120px;
+
+    ion-icon {
+      font-size: 2rem;
+      margin-bottom: 8px;
+    }
+
+   .habit-value {
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+
+   .habit-label {
+      font-size: 0.8rem;
+      color: var(--profile-secondary-text-color);
+    }
+  }
+  
+ .mindful-content {
+    flex-direction: row;
+    justify-content: flex-start;
+    padding-left: 24px;
+    gap: 16px;
+    align-items: center;
+  }
+}
+
+/* 4. Contenedor de Logros */
+.achievements-container {
+  display: flex;
+  overflow-x: auto;
+  gap: 16px;
+  padding-bottom: 16px; // Espacio para la barra de scroll
+
+ .achievement-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 80px;
+    text-align: center;
+
+   .achieved-icon {
+      font-size: 48px;
+      color: var(--ion-color-warning);
+    }
+    
+   .locked-icon {
+      font-size: 48px;
+      color: var(--ion-color-step-300);
+    }
+
+    ion-label {
+      font-size: 0.75rem;
+      margin-top: 4px;
+      color: var(--profile-secondary-text-color);
+    }
+    
+    &.locked ion-label {
+      color: var(--ion-color-step-400);
+    }
+  }
+}
+
+/* 5. Security Card */
+.security-card {
+  margin-top: 8px;
+
+  ion-card-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.1rem;
+    
+    ion-icon {
+      font-size: 1.2rem;
+      color: var(--ion-color-primary);
+    }
   }
 
-  .action-button {
-    font-size: 14px;
-    height: 48px;
+  ion-card-subtitle {
+    color: var(--profile-secondary-text-color);
+    margin-top: 4px;
+    line-height: 1.4;
+  }
+}
+
+.twofa-status {
+  .status-info {
+    margin-bottom: 16px;
+    
+    .status-badge {
+      --padding-start: 12px;
+      --padding-end: 12px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      margin-bottom: 12px;
+      
+      ion-icon {
+        margin-right: 4px;
+      }
+    }
+    
+    .status-description {
+      margin: 8px 0 0 0;
+      font-size: 0.9rem;
+      line-height: 1.4;
+      color: var(--profile-secondary-text-color);
+    }
+  }
+
+  .twofa-actions {
+    .action-button {
+      --border-radius: 12px;
+      height: 44px;
+      font-weight: 500;
+      
+      ion-icon {
+        margin-right: 8px;
+      }
+    }
+  }
+}
+
+/* 6. Lista de Configuración */
+.settings-list {
+  margin-top: 24px;
+  border-radius: var(--profile-card-border-radius);
+  overflow: hidden;
+
+  ion-item {
+    --padding-start: 16px;
+    --padding-end: 16px;
+    --min-height: 60px;
+
+    ion-label {
+      h3 {
+        font-size: 1rem;
+        font-weight: 500;
+        margin: 0 0 2px 0;
+        color: var(--profile-text-color);
+      }
+
+      p {
+        font-size: 0.85rem;
+        color: var(--profile-secondary-text-color);
+        margin: 0;
+      }
+    }
+
+    ion-icon[slot="start"] {
+      margin-right: 16px;
+      font-size: 1.2rem;
+    }
+
+    ion-icon[slot="end"] {
+      font-size: 1rem;
+      color: var(--profile-secondary-text-color);
+    }
+
+    &[color="danger"] {
+      ion-label h3 {
+        color: var(--ion-color-danger);
+      }
+      
+      ion-icon[slot="start"] {
+        color: var(--ion-color-danger);
+      }
+    }
   }
 }

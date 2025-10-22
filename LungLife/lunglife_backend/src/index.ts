@@ -3,8 +3,10 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import authRoutes from './routes/auth.routes';
 import { healthRoutes } from './routes/health.routes';
+import { userRoutes } from './routes/user.routes';
 import { DatabaseServiceFactory } from './core/factories/database.factory';
 import { setupSwagger } from './core/config/swagger.config';
+import { AuthMiddleware } from './core/middleware';
 
 dotenv.config();
 
@@ -66,6 +68,9 @@ app.use(express.json());
 
 // Authentication routes - Compatible with frontend strategies
 app.use('/api/auth', authRoutes);
+
+// User management routes - Requires authentication
+app.use('/api/auth', AuthMiddleware.authenticateToken, userRoutes);
 
 // Health check routes - Comprehensive monitoring endpoints
 app.use('/api/health', healthRoutes);

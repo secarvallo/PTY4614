@@ -1,4 +1,4 @@
--- 🔄 Script de Migración para Agregar Campos de Aceptación
+-- Script de Migración para Agregar Campos de Aceptación
 -- Agregar columnas faltantes a la tabla users
 
 -- Conectar a la base de datos

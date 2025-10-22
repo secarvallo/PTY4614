@@ -1,85 +1,218 @@
-<!-- 👤 Profile Page Template - Redesigned -->
+<ion-content [fullscreen]="true" class="profile-content">
+  <div class="profile-container">
 
-<ion-content [fullscreen]="true" data-test="profile-page">
-  <div class="content-wrapper">
-    <div class="centered-container">
-
-    @if (currentUser) {
-      <!-- User Info Card -->
-      <div class="profile-card">
-
-        <!-- Avatar Section -->
-        <div class="profile-avatar" data-test="profile-header">
-          <ion-icon name="person-circle-outline" class="avatar-icon"></ion-icon>
-          <h2 data-test="profile-name">{{ currentUser.firstName }} {{ currentUser.lastName }}</h2>
-          <p data-test="profile-email">{{ currentUser.email }}</p>
-        </div>
-
-        <!-- Details Section -->
-        <div class="profile-details">
-          <div class="detail-item">
-            <ion-icon name="mail-unread-outline"></ion-icon>
-            <span>Email Verificado</span>
-            @if (isEmailVerified) {
-              <ion-badge color="success">Sí</ion-badge>
-            } @else {
-              <ion-badge color="warning">No</ion-badge>
-            }
-          </div>
-          <div class="detail-item">
-            <ion-icon name="shield-checkmark-outline"></ion-icon>
-            <span>Autenticación 2FA</span>
-            @if (twoFAEnabled) {
-              <ion-badge color="success">Activada</ion-badge>
-            } @else {
-              <ion-badge color="medium">Desactivada</ion-badge>
-            }
-          </div>
-          <div class="detail-item">
-            <ion-icon name="calendar-outline"></ion-icon>
-            <span>Miembro desde</span>
-            <strong>{{ formatDate(createdAt) }}</strong>
-          </div>
-          <div class="detail-item">
-            <ion-icon name="log-in-outline"></ion-icon>
-            <span>Último acceso</span>
-            <strong>{{ formatDateTime(currentUser.lastLogin) }}</strong>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- Action Buttons -->
-      <div class="profile-actions">
-        <ion-button expand="block" class="action-button primary" (click)="goBack()">
-          <ion-icon name="analytics-outline" slot="start"></ion-icon>
-          Ir al Dashboard
-        </ion-button>
-        <ion-button expand="block" class="action-button" fill="outline" (click)="showUserInfo()">
-          <ion-icon name="information-circle-outline" slot="start"></ion-icon>
-          Ver Detalles Completos
-        </ion-button>
-        <ion-button expand="block" class="action-button" color="danger" fill="clear" (click)="logout()">
-          <ion-icon name="log-out-outline" slot="start"></ion-icon>
-          Cerrar Sesión
-        </ion-button>
-      </div>
-
-    } @else if (loadingUser) {
-      <!-- Loading State -->
-      <div class="loading-state" data-test="profile-loading">
-        <ion-spinner name="crescent"></ion-spinner>
-        <p>Cargando perfil...</p>
-      </div>
-    } @else {
-      <!-- Fallback State -->
-      <div class="loading-state" data-test="profile-missing">
-        <ion-icon name="alert-circle-outline" color="warning"></ion-icon>
-        <p>No se pudo cargar la información del perfil.</p>
-        <ion-button fill="clear" (click)="logout()">Volver a Intentar</ion-button>
-      </div>
-    }
-
+    <div class="profile-header">
+      <ion-avatar class="profile-avatar">
+        <img alt="User Avatar" src="https://ionicframework.com/docs/img/demos/avatar.svg" />
+      </ion-avatar>
+      
+      <h1 class="profile-name">secarvallo</h1>
+      
+      <!-- Compact Edit Button -->
+      <ion-button 
+        fill="solid" 
+        color="primary" 
+        size="small"
+        class="edit-profile-button"
+        (click)="editProfile()"
+        aria-label="Editar perfil"
+      >
+        <ion-icon name="create-outline" slot="start"></ion-icon>
+        Editar Perfil
+      </ion-button>
+      
+      <ion-chip class="status-chip" color="success">
+        <ion-icon name="trophy-outline"></ion-icon>
+        <ion-label>21 Días Sin Fumar</ion-label>
+      </ion-chip>
     </div>
+
+    <ion-card class="profile-card cessation-card">
+      <ion-card-header>
+        <ion-card-title>Tu Progreso</ion-card-title>
+        <ion-card-subtitle>¡Sigue así!</ion-card-subtitle>
+      </ion-card-header>
+      <ion-card-content>
+        <div class="stat-grid">
+          <div class="stat-item">
+            <ion-icon name="logo-no-smoking" color="primary"></ion-icon>
+            <div class="stat-value">420</div>
+            <div class="stat-label">Cigarrillos evitados</div>
+          </div>
+          <div class="stat-item">
+            <ion-icon name="wallet-outline" color="primary"></ion-icon>
+            <div class="stat-value">$150.00</div>
+            <div class="stat-label">Dinero ahorrado</div>
+          </div>
+          <div class="stat-item">
+            <ion-icon name="pulse-outline" color="primary"></ion-icon>
+            <div class="stat-value">+72h</div>
+            <div class="stat-label">Vida recuperada</div>
+          </div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <div class="section-title">
+      <h2>Hábitos Saludables</h2>
+    </div>
+    <ion-grid>
+      <ion-row>
+        <ion-col size="6">
+          <ion-card class="profile-card habit-card">
+            <ion-card-content>
+              <ion-icon name="footsteps-outline" color="secondary"></ion-icon>
+              <div class="habit-value">7,500</div>
+              <div class="habit-label">Pasos hoy</div>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+        <ion-col size="6">
+          <ion-card class="profile-card habit-card">
+            <ion-card-content>
+              <ion-icon name="barbell-outline" color="tertiary"></ion-icon>
+              <div class="habit-value">45 min</div>
+              <div class="habit-label">Ejercicio</div>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+        <ion-col size="12">
+           <ion-card class="profile-card habit-card">
+            <ion-card-content class="mindful-content">
+              <ion-icon name="leaf-outline" color="warning"></ion-icon>
+              <div class="habit-value">10 min</div>
+              <div class="habit-label">Respiración Meditativa</div>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+
+    <div class="section-title">
+      <h2>Logros</h2>
+    </div>
+    <div class="achievements-container">
+      <div class="achievement-item">
+        <ion-icon name="sparkles" class="achieved-icon"></ion-icon>
+        <ion-label>Primer Día</ion-label>
+      </div>
+      <div class="achievement-item">
+        <ion-icon name="flame" class="achieved-icon"></ion-icon>
+        <ion-label>Racha de 3 Días</ion-label>
+      </div>
+      <div class="achievement-item locked">
+        <ion-icon name="shield-checkmark-outline" class="locked-icon"></ion-icon>
+        <ion-label>Una Semana</ion-label>
+      </div>
+      <div class="achievement-item locked">
+        <ion-icon name="medal-outline" class="locked-icon"></ion-icon>
+        <ion-label>Un Mes</ion-label>
+      </div>
+    </div>
+
+    <!-- Dashboard Button -->
+    <ion-button 
+      expand="block" 
+      fill="outline" 
+      color="primary" 
+      class="dashboard-button"
+      (click)="navigateToDashboard()"
+      aria-label="Ir al Dashboard"
+    >
+      <ion-icon name="analytics-outline" slot="start"></ion-icon>
+      Ver Dashboard
+    </ion-button>
+
+    <!-- Security Section -->
+    <div class="section-title">
+      <h2>Seguridad</h2>
+    </div>
+
+    <ion-card class="profile-card security-card">
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon name="shield-checkmark-outline"></ion-icon>
+          Autenticación de Dos Factores (2FA)
+        </ion-card-title>
+        <ion-card-subtitle>
+          Protege tu cuenta con una capa adicional de seguridad
+        </ion-card-subtitle>
+      </ion-card-header>
+      <ion-card-content>
+        <div class="twofa-status">
+          <div class="status-info">
+            <ion-badge 
+              [color]="twoFAEnabled ? 'success' : 'warning'" 
+              class="status-badge"
+            >
+              <ion-icon 
+                [name]="twoFAEnabled ? 'checkmark-circle' : 'warning'" 
+                slot="start"
+              ></ion-icon>
+              {{ twoFAEnabled ? 'Activado' : 'Desactivado' }}
+            </ion-badge>
+            
+            <p class="status-description">
+              {{ twoFAEnabled 
+                ? 'Tu cuenta está protegida con 2FA. Puedes gestionar tus configuraciones desde aquí.' 
+                : 'Mejora la seguridad de tu cuenta activando la autenticación de dos factores.' 
+              }}
+            </p>
+          </div>
+
+          <div class="twofa-actions">
+            <ion-button 
+              *ngIf="!twoFAEnabled" 
+              expand="block" 
+              color="primary" 
+              (click)="activate2FA()"
+              class="action-button"
+            >
+              <ion-icon name="shield-outline" slot="start"></ion-icon>
+              Activar 2FA
+            </ion-button>
+
+            <ion-button 
+              *ngIf="twoFAEnabled" 
+              expand="block" 
+              fill="outline" 
+              color="primary" 
+              (click)="manage2FA()"
+              class="action-button"
+            >
+              <ion-icon name="settings-outline" slot="start"></ion-icon>
+              Administrar 2FA
+            </ion-button>
+          </div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-list lines="full" class="settings-list">
+      <ion-item button (click)="manageSessionSecurity()">
+        <ion-icon name="devices-outline" slot="start"></ion-icon>
+        <ion-label>
+          <h3>Gestión de Sesiones</h3>
+          <p>Ver y administrar dispositivos conectados</p>
+        </ion-label>
+        <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
+      </ion-item>
+      <ion-item button>
+        <ion-icon name="notifications-outline" slot="start"></ion-icon>
+        <ion-label>
+          <h3>Notificaciones</h3>
+          <p>Configurar alertas y recordatorios</p>
+        </ion-label>
+        <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
+      </ion-item>
+      <ion-item button color="danger" (click)="logout()">
+        <ion-icon name="log-out-outline" slot="start"></ion-icon>
+        <ion-label>
+          <h3>Cerrar Sesión</h3>
+          <p>Salir de tu cuenta de forma segura</p>
+        </ion-label>
+      </ion-item>
+    </ion-list>
+
   </div>
 </ion-content>

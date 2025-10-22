@@ -88,6 +88,10 @@ export class TwoFaSetupPage implements OnInit {
       next: (response) => {
         this.loading = false;
         if (response.success) {
+          // Obtener códigos de respaldo del response si están disponibles
+          if (response.metadata && (response.metadata as any).backupCodes) {
+            this.backupCodes = (response.metadata as any).backupCodes;
+          }
           this.currentStep = 'backup';
         } else {
           this.error = response.error || 'Código incorrecto';
@@ -139,8 +143,12 @@ export class TwoFaSetupPage implements OnInit {
   }
 
   completeSetup() {
+    // Después de completar el setup, redirigir a 2FA settings para mostrar códigos de respaldo
     this.router.navigate(['/security/2fa-settings'], {
-      queryParams: { success: 'true' }
+      queryParams: { 
+        success: 'true', 
+        showBackupCodes: 'true' 
+      }
     });
   }
 }

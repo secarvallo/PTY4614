@@ -1,0 +1,130 @@
+/* SCSS styles for ngx-intl-tel-input phone component */
+
+/* Container styles */
+.phone-field-container {
+  .phone-input-wrapper {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    background: var(--ion-color-light);
+    
+    ::ng-deep {
+      .iti {
+        width: 100%;
+        
+        .iti__flag-container {
+          background: var(--ion-color-light);
+          border: none;
+          border-radius: 0;
+          
+          .iti__selected-flag {
+            padding: 12px 16px;
+            background: var(--ion-color-light);
+            border-right: 1px solid rgba(var(--ion-color-medium-rgb), 0.3);
+            
+            &:hover {
+              background: rgba(var(--ion-color-primary-rgb), 0.05);
+            }
+          }
+        }
+        
+        input[type="tel"] {
+          width: 100%;
+          padding: 12px 16px;
+          border: none;
+          background: var(--ion-color-light);
+          font-size: 16px;
+          border-radius: 0;
+          color: var(--ion-color-dark);
+          
+          &:focus {
+            outline: none;
+            background: var(--ion-color-light);
+          }
+        }
+        
+        .iti__country-list {
+          background: var(--ion-background-color);
+          border: 1px solid var(--ion-color-medium);
+          border-radius: 8px;
+          max-height: 200px;
+          z-index: 9999;
+          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+          
+          .iti__country {
+            padding: 10px 16px;
+            
+            &:hover {
+              background: rgba(var(--ion-color-primary-rgb), 0.1);
+            }
+            
+            &.iti__highlight {
+              background: rgba(var(--ion-color-primary-rgb), 0.2);
+            }
+          }
+        }
+      }
+    }
+  }
+  
+  .phone-hint {
+    margin-top: 8px;
+    color: var(--ion-color-medium);
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    
+    ion-icon {
+      font-size: 16px;
+    }
+  }
+}
+
+/* Input label styles */
+.input-label {
+  font-weight: 500;
+  color: var(--ion-color-dark);
+  margin-bottom: 10px;
+  display: block;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .phone-field-container .phone-input-wrapper ::ng-deep {
+    .iti .iti__flag-container .iti__selected-flag {
+      padding: 10px 12px;
+    }
+    
+    .iti input[type="tel"] {
+      padding: 10px 12px;
+    }
+  }
+}
+
+/* Dark theme support */
+@media (prefers-color-scheme: dark) {
+  .phone-field-container .phone-input-wrapper {
+    background: var(--ion-color-light);
+    
+    ::ng-deep {
+      .iti .iti__flag-container {
+        background: var(--ion-color-light);
+        
+        .iti__selected-flag {
+          background: var(--ion-color-light);
+          border-right-color: rgba(255, 255, 255, 0.1);
+        }
+      }
+      
+      .iti input[type="tel"] {
+        background: var(--ion-color-light);
+        color: var(--ion-text-color);
+        
+        &:focus {
+          background: var(--ion-color-light);
+        }
+      }
+    }
+  }
+}

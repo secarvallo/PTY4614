@@ -2,11 +2,10 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-button fill="clear" (click)="goBack()">
-        <ion-icon name="arrow-back-outline"></ion-icon>
-      </ion-button>
+      <ion-back-button defaultHref="/profile" (click)="goBack()">
+      </ion-back-button>
     </ion-buttons>
-    <ion-title>Two-Factor Authentication</ion-title>
+    <ion-title>Configuración 2FA</ion-title>
   </ion-toolbar>
 </ion-header>
 

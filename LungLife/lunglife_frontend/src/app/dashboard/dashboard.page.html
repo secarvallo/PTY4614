@@ -1,38 +1,71 @@
-<ion-content [fullscreen]="true" data-test="dashboard-page">
-  <div class="content-wrapper">
-    <div class="centered-container-wide">
+<ion-content [fullscreen]="true" class="dashboard-content" data-test="dashboard-page">
+  <div class="dashboard-container">
 
     @if (user) {
       <div class="welcome-header">
         <h1>Bienvenido de nuevo, {{ user.firstName }}</h1>
-        <p>Aquí tienes un resumen de tu progreso. ¡Sigue así!</p>
+        <p>Este es tu resumen de progreso de hoy.</p>
       </div>
 
-      <div class="dashboard-card">
-
-        <div class="metrics-grid">
-          <div class="metric-item smoke-free">
-            <ion-icon name="leaf-outline"></ion-icon>
-            <span class="value">{{ smokeFreeDays }}</span>
-            <span class="label">Días sin fumar</span>
+      <div class="dashboard-card cessation-summary">
+        <div class="hero-metric">
+          <span class="value">{{ smokeFreeDays }}</span>
+          <span class="label">Días sin Fumar</span>
+        </div>
+        <div class="secondary-metrics">
+          <div class="metric-item">
+            <ion-icon name="wallet-outline" color="success"></ion-icon>
+            <div class="text">
+              <span class="value">{{ moneySaved | currency:'USD':'symbol':'1.0-0' }}</span>
+              <span class="label">Ahorrado</span>
+            </div>
           </div>
-
-          <div class="metric-item money-saved">
-            <ion-icon name="cash-outline"></ion-icon>
-            <span class="value">{{ moneySaved | currency:'USD':'symbol':'1.0-0' }}</span>
-            <span class="label">Dinero Ahorrado</span>
+          <div class="metric-item">
+            <ion-icon name="leaf-outline" color="tertiary"></ion-icon>
+            <div class="text">
+              <span class="value">{{ cigarettesAvoided }}</span>
+              <span class="label">Cigarrillos Evitados</span>
+            </div>
           </div>
+        </div>
+      </div>
 
-          <div class="metric-item cigarettes-avoided">
-            <ion-icon name="medical-outline"></ion-icon>
-            <span class="value">{{ cigarettesAvoided }}</span>
-            <span class="label">Cigarrillos Evitados</span>
+      <div class="section-title">
+        <h2>Tus Hábitos de Hoy</h2>
+      </div>
+      <div class="habits-grid">
+        <div class="dashboard-card habit-card">
+          <div class="progress-chart-container">
+            <svg class="progress-ring" width="80" height="80">
+              <circle class="progress-ring__track" stroke-width="8" fill="transparent" r="36" cx="40" cy="40"/>
+              <circle class="progress-ring__circle steps" stroke-width="8" fill="transparent" r="36" cx="40" cy="40"
+                     [attr.stroke-dasharray]="stepsCircumference"
+                     [attr.stroke-dashoffset]="stepsCircleOffset"/>
+            </svg>
+            <div class="progress-icon">
+              <ion-icon name="walk-outline"></ion-icon>
+            </div>
           </div>
-
-          <div class="metric-item lung-health">
-            <ion-icon name="fitness-outline"></ion-icon>
-            <span class="value">{{ lungHealthPercentage }}%</span>
-            <span class="label">Salud Pulmonar</span>
+          <div class="habit-details">
+            <span class="value">{{ dailySteps.toLocaleString() }}</span>
+            <span class="label">Pasos</span>
+          </div>
+        </div>
+        <div class="dashboard-card habit-card">
+          <div class="progress-chart-container">
+            <svg class="progress-ring" width="80" height="80">
+              <circle class="progress-ring__track" stroke-width="8" fill="transparent" r="36" cx="40" cy="40"/>
+              <circle class="progress-ring__circle exercise" stroke-width="8" fill="transparent" r="36" cx="40" cy="40"
+                     [attr.stroke-dasharray]="exerciseCircumference"
+                     [attr.stroke-dashoffset]="exerciseCircleOffset"/>
+            </svg>
+            <div class="progress-icon">
+              <ion-icon name="barbell-outline"></ion-icon>
+            </div>
+          </div>
+          <div class="habit-details">
+            <span class="value">{{ exerciseMinutes }}</span>
+            <span class="label">Minutos de Ejercicio</span>
           </div>
         </div>
       </div>
@@ -40,19 +73,19 @@
       <div class="dashboard-actions">
         <ion-button expand="block" class="action-button primary" (click)="logHabit()">
           <ion-icon name="add-circle-outline" slot="start"></ion-icon>
-          Registrar Hábito de Hoy
+          Registrar Hábito
         </ion-button>
-        <ion-button expand="block" class="action-button" fill="outline" (click)="viewProgress()">
-          <ion-icon name="bar-chart-outline" slot="start"></ion-icon>
-          Ver Progreso Detallado
+        <ion-button expand="block" class="action-button" fill="outline" routerLink="/profile">
+          <ion-icon name="person-circle-outline" slot="start"></ion-icon>
+          Ver Mi Perfil Completo
         </ion-button>
       </div>
+
     } @else {
       <div class="loading-state">
         <ion-spinner name="crescent"></ion-spinner>
         <p>Cargando tu dashboard...</p>
       </div>
     }
-    </div>
   </div>
 </ion-content>

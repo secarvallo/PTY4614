@@ -1,18 +1,20 @@
 import { ApplicationConfig, APP_INITIALIZER } from '@angular/core';
 import { RouteReuseStrategy, provideRouter, withPreloading, PreloadAllModules } from '@angular/router';
 import { IonicRouteStrategy, provideIonicAngular } from '@ionic/angular/standalone';
-import { provideHttpClient, withInterceptors, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { provideHttpClient } from '@angular/common/http';
 import { ErrorHandler } from '@angular/core';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
 import { routes } from './app.routes';
-import { AuthFacadeService, CoreAuthStore } from './auth/core/services';
+// Temporarily comment out problematic imports
+// import { AuthFacadeService, CoreAuthStore } from './auth/core/services';
 // Interceptor unificado (reemplaza simpleAuth/jwt/auth previos)
-import { unifiedAuthInterceptor } from './auth/core/interceptors/unified-auth.interceptor';
+// import { unifiedAuthInterceptor } from './auth/core/interceptors/unified-auth.interceptor';
 import { GlobalErrorHandler } from './core/services/error.service';
-import { EnvironmentService } from './core/config/environment.service';
-import { ENVIRONMENT } from './core/config/environment.interface';
-import { EnvironmentAdapter } from '../environments/environment.model';
-import { environment } from '../environments/environment';
+// import { EnvironmentService } from './core/config/environment.service';
+// import { ENVIRONMENT } from './core/config/environment.interface';
+// import { EnvironmentAdapter } from '../environments/environment.model';
+// import { environment } from '../environments/environment';
 import { AppInitService } from './core/services/app-init.service';
 
 /**
@@ -28,12 +30,15 @@ export const appConfig: ApplicationConfig = {
       mode: 'ios' // or 'md' for Material Design
     }),
 
+    // ✅ Enable animations for Angular and Ionic components (fixes AnimationBuilder circular dependency)
+    provideAnimationsAsync(),
+
     // Router with preloading strategy for performance
     provideRouter(routes, withPreloading(PreloadAllModules)),
 
     // HTTP Client with Authentication Interceptor
     provideHttpClient(
-      withInterceptors([unifiedAuthInterceptor])
+      // withInterceptors([unifiedAuthInterceptor]) // Temporarily disabled
     ),
 
     // Global Error Handler
@@ -42,12 +47,12 @@ export const appConfig: ApplicationConfig = {
       useClass: GlobalErrorHandler
     },
 
-    // Environment Configuration
-    {
-      provide: ENVIRONMENT,
-      useValue: EnvironmentAdapter.adapt(environment)
-    },
-    EnvironmentService,
+    // Environment Configuration (temporarily simplified)
+    // {
+    //   provide: ENVIRONMENT,
+    //   useValue: EnvironmentAdapter.adapt(environment)
+    // },
+    // EnvironmentService,
 
     // Bootstrap unificado: sólo CoreAuthStore (reduce race conditions)
     {

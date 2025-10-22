@@ -6,10 +6,10 @@ import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { IonicModule, AlertController, MenuController } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
-import { AuthFacadeService } from 'src/app/auth/core/services';
+import { AuthFacadeService } from '../auth/core/services';
 import { LoggerService } from '../core/services/logger.service';
 import { Subscription } from 'rxjs';
-import { User } from 'src/app/auth/core/interfaces/auth.unified';
+import { User } from '../auth/core/interfaces/auth.unified';
 
 @Component({
   selector: 'app-profile',
@@ -128,6 +128,46 @@ export class ProfilePage implements OnInit, OnDestroy {
     });
 
     await alert.present();
+  }
+
+  /**
+   * Navigate to profile edit page
+   */
+  editProfile(): void {
+    this.logger.info('Navigating to profile edit page');
+    this.router.navigate(['/profile/edit']);
+  }
+
+  /**
+   * Navigate to dashboard page
+   */
+  navigateToDashboard(): void {
+    this.logger.info('Navigating to dashboard page');
+    this.router.navigate(['/dashboard']);
+  }
+
+  /**
+   * Navigate to 2FA activation setup page
+   */
+  activate2FA(): void {
+    this.logger.info('Navigating to 2FA setup page');
+    this.router.navigate(['/security/2fa-setup']);
+  }
+
+  /**
+   * Navigate to 2FA management/settings page
+   */
+  manage2FA(): void {
+    this.logger.info('Navigating to 2FA settings page');
+    this.router.navigate(['/security/2fa-settings']);
+  }
+
+  /**
+   * Navigate to session management page
+   */
+  manageSessionSecurity(): void {
+    this.logger.info('Navigating to session management page');
+    this.router.navigate(['/security/sessions']);
   }
 }
 

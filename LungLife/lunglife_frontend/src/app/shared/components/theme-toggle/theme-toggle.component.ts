@@ -1,5 +1,4 @@
 import { Component, inject } from '@angular/core';
-import { AsyncPipe } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { ThemeService } from '../../../core/services/theme.service';
 
@@ -8,7 +7,7 @@ import { ThemeService } from '../../../core/services/theme.service';
   templateUrl: './theme-toggle.component.html',
   styleUrls: ['./theme-toggle.component.scss'],
   standalone: true,
-  imports: [IonicModule, AsyncPipe]
+  imports: [IonicModule]
 })
 export class ThemeToggleComponent {
   private themeService = inject(ThemeService);
@@ -56,3 +55,42 @@ export class ThemeToggleComponent {
     return theme === 'dark';
   }
 }
+
+
+// Interfaces para estructurar los datos del perfil
+interface HealthMilestone {
+  name: string;
+  achieved: boolean;
+}
+
+interface Workout {
+  type: string;
+  duration: string; // p.ej., "45 min"
+}
+
+interface Achievement {
+  name: string;
+  icon: string;
+  achieved: boolean;
+}
+
+// Interfaz principal para los datos de salud del perfil
+export interface ProfileHealthData {
+  userName: string;
+  userAvatarUrl: string;
+  daysSmokeFree: number;
+  cigarettesAvoided: number;
+  moneySaved: number;
+  lifeRegained: string; // p.ej., "+72h"
+  healthMilestones: HealthMilestone;
+  dailySteps: {
+    current: number;
+    goal: number;
+  };
+  recentWorkouts: Workout;
+  mindfulMinutes: number;
+  achievements: Achievement;
+}
+
+// En la clase del componente, se tendría una propiedad para almacenar estos datos:
+// public healthData: ProfileHealthData | null = null;

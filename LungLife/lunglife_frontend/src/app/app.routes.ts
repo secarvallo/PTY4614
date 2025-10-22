@@ -1,17 +1,7 @@
 import { Routes, UrlTree, Router } from '@angular/router';
 import { inject } from '@angular/core';
-import { AuthFacadeService } from './auth/core/services';
-import { AppInitService } from './core/services/app-init.service';
-import { SplashComponent } from './core/components/splash/splash.component';
-// Legacy simple-auth guards replaced by unified versions
+// Services, Guards, and Utils remain the same
 import { unifiedAuthGuard, unifiedGuestGuard, unifiedTwoFAGuard } from './auth/core/guards/unified-auth.guards';
-import { DEFAULT_AUTH_REDIRECT, resolvePostAuthRedirect } from './auth/core/utils/auth-navigation';
-
-// Root redirect -> redirige a home como página principal
-const rootRedirectGuard = (): UrlTree | boolean => {
-  const router = inject(Router);
-  return router.createUrlTree(['/home']);
-};
 
 export const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
@@ -95,9 +85,16 @@ export const routes: Routes = [
       }
     ]
   },
-  { path: 'login', redirectTo: '/auth/login', pathMatch: 'full' },
-  { path: 'register', redirectTo: '/auth/register', pathMatch: 'full' },
-  { path: 'forgot-password', redirectTo: '/auth/forgot-password', pathMatch: 'full' },
+  {
+    path: 'terms',
+    loadComponent: () => import('./shared/pages/terms/terms.page').then(m => m.TermsPage),
+    title: 'Términos y Condiciones - LungLife'
+  },
+  {
+    path: 'privacy',
+    loadComponent: () => import('./shared/pages/privacy/privacy.page').then(m => m.PrivacyPage),
+    title: 'Política de Privacidad - LungLife'
+  },
   {
     path: '**',
     loadComponent: () => import('./shared/not-found/not-found.page').then(m => m.NotFoundPage),

@@ -4,7 +4,7 @@ import { map, catchError, switchMap, retryWhen, delay, scan, finalize } from 'rx
 import { environment } from '../../../../environments/environment';
 import { User } from '../interfaces/auth.unified';
 import { HttpClient } from '@angular/common/http';
-import { LoggerService } from 'src/app/core/services/logger.service';
+import { LoggerService } from '../../../core/services/logger.service';
 
 // ================== REFRESH CONFIG ==================
 export interface AuthRefreshConfig {

@@ -40,7 +40,11 @@
                 "output": "assets"
               }
             ],
-            "styles": ["src/global.scss", "src/theme/variables.scss"],
+            "styles": [
+              "src/global.scss", 
+              "src/theme/variables.scss",
+              "node_modules/intl-tel-input/build/css/intlTelInput.css"
+            ],
             "scripts": [],
             "browser": "src/main.ts",
             "allowedCommonJsDependencies": ["@stencil/core"]
@@ -111,7 +115,10 @@
                 "output": "assets"
               }
             ],
-            "styles": ["src/global.scss", "src/theme/variables.scss"],
+            "styles": [
+              "src/global.scss", 
+              "src/theme/variables.scss"
+            ],
             "scripts": []
           },
           "configurations": {

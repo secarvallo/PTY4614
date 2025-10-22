@@ -159,13 +159,14 @@
     </ion-item>
 
     <!-- Auth Footer -->
-    <div class="auth-footer" *ngIf="!requiresTwoFactor()">
+    <div class="auth-footer">
       <p>¿No tienes cuenta?</p>
       <ion-button
         fill="clear"
         type="button"
-        routerLink="/auth/register"
-        class="link-button"
+        (click)="navigateToRegister()"
+        class="link-button register-btn"
+        data-test="register-link"
       >
         <strong>Regístrate aquí</strong>
       </ion-button>
