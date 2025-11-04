@@ -9,10 +9,10 @@ import pandas as pd
 import sys
 import os
 
-# Add src to path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
+# Add parent directory to path to enable imports
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
-from taxi_data_processor import (
+from src.taxi_data_processor import (
     agregar_columna_color_taxi,
     cargar_dataset_con_color,
     crear_dataset_final

@@ -96,7 +96,8 @@ def cargar_dataset_con_color(
 
 def crear_dataset_final(
     *dataframes: pd.DataFrame,
-    validar_columna_color: bool = True
+    validar_columna_color: bool = True,
+    verbose: bool = True
 ) -> pd.DataFrame:
     """
     Combina múltiples datasets de taxi en un dataset final.
@@ -111,6 +112,8 @@ def crear_dataset_final(
         Uno o más DataFrames de taxi para combinar
     validar_columna_color : bool, default=True
         Si es True, valida que todos los DataFrames tengan la columna 'taxi_color'
+    verbose : bool, default=True
+        Si es True, imprime información sobre el dataset creado
         
     Returns:
     --------
@@ -147,12 +150,13 @@ def crear_dataset_final(
     # Combinar todos los DataFrames
     df_final = pd.concat(dataframes, ignore_index=True)
     
-    print(f"Dataset final creado con {len(df_final)} registros")
-    
-    # Solo mostrar distribución de colores si la columna existe
-    if 'taxi_color' in df_final.columns:
-        print(f"Distribución de colores:")
-        print(df_final['taxi_color'].value_counts())
+    if verbose:
+        print(f"Dataset final creado con {len(df_final)} registros")
+        
+        # Solo mostrar distribución de colores si la columna existe
+        if 'taxi_color' in df_final.columns:
+            print(f"Distribución de colores:")
+            print(df_final['taxi_color'].value_counts())
     
     return df_final
 
