@@ -1,0 +1,655 @@
+/* Profile Form - Login Reference */
+
+/* ========== VARIABLES CSS PARA CONSISTENCIA EXACTA ========== */
+:root {
+  --surface: var(--ion-background-color, #ffffff);
+  --border: var(--ion-color-step-300, #e1e5e9);
+  --primary: var(--ion-color-primary, #007aff);
+  --text: var(--ion-text-color, #1d1d1f);
+  --text-light: var(--ion-color-step-600, #8e8e93);
+}
+
+[data-theme="dark"] {
+  --surface: var(--ion-color-step-100);
+  --border: var(--ion-color-step-600);
+  --text: var(--ion-color-light);
+  --text-light: var(--ion-color-step-400);
+}
+
+/* ========== ANIMACIONES ========== */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* ========== ESTRUCTURA BASE ========== */
+.profile-content {
+  background: var(--ion-background-color);
+  min-height: 100vh;
+}
+
+.content-wrapper {
+  min-height: 100vh;
+  padding: 6vh 20px 4vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  background: var(--ion-background-color);
+}
+
+.centered-container {
+  width: 100%;
+  max-width: 800px;
+  display: flex;
+  justify-content: center;
+}
+
+.profile-container {
+  background: var(--surface);
+  border-radius: 20px;
+  padding: 32px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  border: none;
+  width: 100%;
+  max-width: 600px;
+}
+
+[data-theme="dark"] .profile-container {
+  background: var(--ion-color-step-100);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+}
+
+/* ========== HEADER ========== */
+.profile-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.logo-placeholder {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  margin: 0 auto 20px;
+  background: linear-gradient(135deg, #007aff 0%, #005ce6 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 20px rgba(0, 122, 255, 0.3);
+}
+
+[data-theme="dark"] .logo-placeholder {
+  box-shadow: 0 6px 20px rgba(0, 122, 255, 0.2);
+}
+
+.logo-placeholder::before {
+  content: '🫁';
+  font-size: 32px;
+  filter: brightness(0) invert(1);
+}
+
+.profile-header h1 {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--ion-color-primary);
+  margin: 0 0 8px 0;
+  letter-spacing: -0.02em;
+}
+
+.profile-header p {
+  color: var(--text-light);
+  font-size: 16px;
+  margin: 0;
+  font-weight: 400;
+}
+
+/* ========== INDICADORES ========== */
+.progress-container {
+  background: var(--surface);
+  border-radius: 20px;
+  padding: 10px;
+  margin-bottom: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  border: 1px solid rgba(var(--ion-color-primary-rgb), 0.1);
+}
+
+.progress-bar {
+  height: 6px;
+  background: rgba(var(--ion-color-primary-rgb), 0.1);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--ion-color-primary), var(--ion-color-primary-tint));
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  font-size: 13px;
+  color: var(--ion-color-primary);
+  font-weight: 600;
+  text-align: center;
+  margin: 0;
+}
+
+.auto-save-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: rgba(var(--ion-color-success-rgb), 0.1);
+  font-size: 13px;
+  color: var(--ion-color-success);
+  transition: all 0.3s ease;
+}
+
+.auto-save-indicator.saving {
+  background: rgba(var(--ion-color-warning-rgb), 0.1);
+  color: var(--ion-color-warning);
+}
+
+.auto-save-indicator.saving ion-icon {
+  animation: spin 1s linear infinite;
+}
+
+.auto-save-indicator.saved {
+  background: rgba(var(--ion-color-success-rgb), 0.1);
+  color: var(--ion-color-success);
+}
+
+/* ========== TABS ========== */
+.form-tabs {
+  margin-bottom: 32px;
+}
+
+.form-tabs ion-segment {
+  --background: rgba(var(--ion-color-light-rgb), 0.5);
+  border-radius: 16px;
+  padding: 4px;
+}
+
+.form-tabs ion-segment-button {
+  --color: var(--text-light);
+  --color-checked: var(--primary);
+  --background-checked: white;
+  --border-radius: 12px;
+  min-height: 48px;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+/* ========== SECCIONES DE FORMULARIO ========== */
+.form-section {
+  margin-bottom: 32px;
+}
+
+.form-section-header {
+  margin: 0 auto 24px;
+  max-width: 600px;
+  text-align: left;
+  padding: 16px;
+  background: rgba(var(--ion-color-primary-rgb), 0.05);
+  border-radius: 16px;
+  border: 1px solid rgba(var(--ion-color-primary-rgb), 0.1);
+}
+
+.form-section-header h3 {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--primary);
+  margin: 0 0 6px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.form-section-header p {
+  font-size: 14px;
+  color: var(--text-light);
+  margin: 0;
+}
+
+.subsection h4 {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--primary);
+  margin: 24px auto 16px;
+  max-width: 600px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ========== FORMULARIO - ESTILOS EXACTOS DEL LOGIN ========== */
+.profile-form {
+  width: 100%;
+}
+
+.profile-form .form-group {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto 16px;
+}
+
+.profile-form .form-group ion-item {
+  --background: transparent;
+  --border-width: 0;
+  --padding-start: 0;
+  --padding-end: 0;
+  --min-height: 56px;
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: 16px;
+  padding: 0 20px;
+  transition: all 0.2s ease;
+  animation: fadeIn 0.3s ease-out;
+  width: 100%;
+  max-width: 600px;
+  height: 56px;
+  font-size: 16px;
+}
+
+.profile-form .form-group ion-item:focus-within {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.1);
+}
+
+.profile-form .form-group ion-item:hover {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.1);
+}
+
+.profile-form .form-group ion-item.error {
+  border-color: #ff3b30;
+  background: rgba(255, 59, 48, 0.03);
+  box-shadow: 0 0 0 4px rgba(255, 59, 48, 0.1);
+}
+
+.profile-form .form-group ion-item ion-input,
+.profile-form .form-group ion-item ion-select {
+  --color: var(--text);
+  --placeholder-color: var(--text-light);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.4;
+  width: 100%;
+  height: 100%;
+}
+
+.profile-form .dynamic-item {
+  position: relative;
+  width: 100%;
+  max-width: 600px;
+  margin: 16px auto;
+}
+
+.profile-form .dynamic-item ion-item {
+  --background: transparent;
+  --border-width: 0;
+  --padding-start: 0;
+  --padding-end: 0;
+  --min-height: 56px;
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: 16px;
+  margin-bottom: 8px;
+  padding: 0 52px 0 20px;
+  transition: all 0.2s ease;
+  animation: fadeIn 0.3s ease-out;
+  width: 100%;
+  max-width: 600px;
+  height: 56px;
+  font-size: 16px;
+  position: relative;
+}
+
+.profile-form .dynamic-item ion-item:focus-within {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.1);
+}
+
+.profile-form .dynamic-item ion-item:hover {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.1);
+}
+
+.profile-form .dynamic-item ion-item ion-input {
+  --color: var(--text);
+  --placeholder-color: var(--text-light);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.4;
+  width: 100%;
+  height: 100%;
+}
+
+.profile-form .dynamic-item ion-item ion-button[slot="end"] {
+  --color: var(--ion-color-danger);
+  --background: rgba(var(--ion-color-danger-rgb), 0.1);
+  --border-radius: 8px;
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%) scale(0.9);
+  z-index: 10;
+  margin: 0;
+  width: 32px;
+  height: 32px;
+  opacity: 0.8;
+  transition: all 0.2s ease;
+}
+
+.profile-form .dynamic-item ion-item ion-button[slot="end"]:hover {
+  --background: var(--ion-color-danger);
+  --color: white;
+  transform: translateY(-50%) scale(1);
+  opacity: 1;
+}
+
+/* ========== MENSAJES DE ERROR - EXACTOS DEL LOGIN ========== */
+.error-message {
+  color: #ff3b30;
+  font-size: 14px;
+  margin-top: 4px;
+  font-weight: 500;
+}
+
+/* ========== ELEMENTOS ESPECÍFICOS DEL PROFILE ========== */
+.form-label {
+  display: block;
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  margin-left: 4px;
+}
+
+.age-display {
+  padding: 8px 16px;
+  background: rgba(var(--ion-color-success-rgb), 0.08);
+  border-radius: 8px;
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--ion-color-success);
+  font-weight: 600;
+  border: 1px solid rgba(var(--ion-color-success-rgb), 0.2);
+}
+
+/* ========== BOTONES ========== */
+.add-button {
+  --background: transparent;
+  --border-radius: 16px;
+  --border-width: 2px;
+  --border-color: var(--primary);
+  --color: var(--primary);
+  margin: 16px auto;
+  height: 48px;
+  width: 100%;
+  max-width: 600px;
+  font-weight: 600;
+  font-size: 15px;
+  text-transform: none;
+  transition: all 0.2s ease;
+}
+
+.add-button:hover {
+  --background: var(--primary);
+  --color: white;
+}
+
+/* ========== SECCIONES DE CONSENTIMIENTO ========== */
+.consent-section {
+  margin-top: 32px;
+}
+
+.consent-section h4 {
+  color: var(--text);
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.checkbox-group {
+  margin: 20px auto;
+  gap: 16px;
+  display: flex;
+  flex-direction: column;
+  max-width: 600px;
+}
+
+.checkbox-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.checkbox-item:hover {
+  border-color: var(--primary);
+}
+
+.checkbox-item ion-label h3 {
+  font-size: 15px;
+  font-weight: 600;
+  margin: 0 0 4px 0;
+  line-height: 1.4;
+}
+
+.checkbox-item ion-label p {
+  font-size: 13px;
+  font-weight: 400;
+  margin: 0;
+  color: var(--text-light);
+  line-height: 1.4;
+}
+
+/* ========== BOTONES DE ACCIÓN ========== */
+.form-actions {
+  border-top: 1px solid var(--border);
+  padding-top: 32px;
+  margin-top: 32px;
+}
+
+.button-group {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto 24px;
+}
+
+.secondary-button {
+  --background: transparent;
+  --color: var(--text);
+  --border-radius: 16px;
+  --border-width: 2px;
+  --border-color: var(--border);
+  height: 56px;
+  font-weight: 600;
+  font-size: 16px;
+  text-transform: none;
+  transition: all 0.2s ease;
+}
+
+.secondary-button:hover {
+  --border-color: var(--primary);
+  --color: var(--primary);
+}
+
+.primary-button {
+  --background: var(--primary);
+  --color: white;
+  --border-radius: 28px;
+  --border-width: 0;
+  height: 56px;
+  font-size: 16px;
+  font-weight: 700;
+  text-transform: none;
+  margin: 24px auto;
+  max-width: 280px;
+  box-shadow: 0 6px 20px rgba(0, 122, 255, 0.35);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.primary-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(0, 122, 255, 0.45);
+  border-radius: 30px;
+}
+
+.primary-button:disabled {
+  opacity: 0.6;
+  transform: none;
+  box-shadow: 0 6px 20px rgba(0, 122, 255, 0.2);
+  cursor: not-allowed;
+}
+
+/* ========== VALIDATION SUMMARY ========== */
+.validation-summary {
+  padding: 20px;
+  background: rgba(var(--ion-color-warning-rgb), 0.08);
+  border-radius: 12px;
+  border: 1px solid rgba(var(--ion-color-warning-rgb), 0.2);
+}
+
+.validation-summary h4 {
+  color: var(--ion-color-warning-shade);
+  font-size: 15px;
+  font-weight: 700;
+  margin: 0 0 12px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.validation-summary h4::before {
+  content: '⚠️';
+  font-size: 16px;
+}
+
+/* ========== FOOTER ========== */
+.auth-footer {
+  text-align: center;
+  margin-top: 32px;
+  color: var(--text-light);
+  font-size: 15px;
+}
+
+.auth-footer p a {
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.auth-footer p a:hover {
+  text-decoration: underline;
+}
+
+/* ========== RESPONSIVE DESIGN ========== */
+@media (max-width: 768px) {
+  .content-wrapper {
+    padding: 4vh 15px 3vh;
+  }
+  .profile-container {
+    padding: 20px;
+    margin: 0 10px;
+    border-radius: 16px;
+  }
+  .profile-header h1 {
+    font-size: 24px;
+  }
+  .logo-placeholder {
+    width: 64px;
+    height: 64px;
+  }
+  .primary-button {
+    height: 48px !important;
+    font-size: 16px !important;
+    margin: 16px auto !important;
+  }
+  .secondary-button {
+    height: 48px !important;
+    font-size: 16px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .content-wrapper {
+    padding: 3vh 10px 2vh;
+  }
+  .profile-container {
+    padding: 16px;
+    margin: 0 8px;
+  }
+  .profile-form .form-group ion-item,
+  .profile-form .dynamic-item ion-item {
+    height: 56px !important;
+    min-height: 56px !important;
+    font-size: 16px !important;
+  }
+}
+
+/* ========== TEMA DARK ========== */
+[data-theme="dark"] .progress-container,
+[data-theme="dark"] .form-section-header {
+  background: rgba(var(--ion-color-primary-rgb), 0.1);
+  border-color: rgba(var(--ion-color-primary-rgb), 0.2);
+}
+
+[data-theme="dark"] .checkbox-item {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="dark"] .primary-button {
+  box-shadow: 0 6px 20px rgba(0, 122, 255, 0.25) !important;
+}
+
+[data-theme="dark"] .primary-button:hover {
+  box-shadow: 0 10px 30px rgba(0, 122, 255, 0.35) !important;
+}
+
+/* ========== ACCESSIBILITY ========== */
+@media (prefers-reduced-motion: reduce) {
+  .progress-fill,
+  .auto-save-indicator,
+  .add-button,
+  .checkbox-item {
+    transition: none;
+    animation: none;
+  }
+  .primary-button:hover {
+    transform: none !important;
+  }
+}
+
+@media (prefers-contrast: high) {
+  .profile-form .form-group ion-item,
+  .profile-form .dynamic-item ion-item {
+    border-width: 3px;
+  }
+  .add-button {
+    --border-width: 3px;
+  }
+}

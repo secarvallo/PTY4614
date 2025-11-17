@@ -93,17 +93,9 @@ ion-content {
   gap: 12px;
   padding: 0 8px;
 
+  /* Action buttons now use global auth-button styles from auth.styles.scss */
   .action-button {
-    --border-radius: 14px;
-    height: 50px;
-    font-weight: 700;
-    letter-spacing: 0.2px;
-    text-transform: none;
-
-    &.primary {
-      --background: var(--primary-grad);
-      box-shadow: 0 10px 24px rgba(108, 99, 255, 0.35);
-    }
+    /* All styles are inherited from global .action-button rule */
   }
 }
 

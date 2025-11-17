@@ -5,6 +5,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { AuthFacadeService } from '../auth/core/services';
 import { User } from '../auth/core/interfaces/auth.unified';
 
@@ -16,7 +17,7 @@ import { User } from '../auth/core/interfaces/auth.unified';
     '../theme/shared-layout.scss'
   ],
   standalone: true,
-  imports: [IonicModule, CommonModule],
+  imports: [IonicModule, CommonModule, RouterModule],
 })
 export class DashboardPage implements OnInit {
   private authFacade = inject(AuthFacadeService);

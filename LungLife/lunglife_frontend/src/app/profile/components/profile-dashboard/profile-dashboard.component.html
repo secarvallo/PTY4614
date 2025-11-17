@@ -1,0 +1,195 @@
+<ion-content>
+  <div class="content-wrapper">
+    <div class="centered-container">
+      
+      <!-- Auth Header Style (igual que login/register) -->
+      <div class="auth-header">
+        <div class="logo-placeholder"></div>
+        <h1>Mi Perfil de Salud</h1>
+        <p>Panel de información médica personal</p>
+      </div>
+
+      <!-- Profile Header Card -->
+      <div class="auth-form">
+        <div class="form-group" *ngIf="profile$ | async as profile">
+          <div class="profile-info">
+            <div class="avatar">
+              <ion-icon name="person-circle" size="large" color="primary"></ion-icon>
+            </div>
+            <div class="details">
+              <h2>{{ profile.first_name }} {{ profile.last_name }}</h2>
+              <p>{{ calculateAge(profile.birth_date) }} años</p>
+              <ion-chip [color]="getGenderColor(profile.gender)" fill="outline">
+                {{ getGenderLabel(profile.gender) }}
+              </ion-chip>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="auth-form">
+        <div class="form-header">
+          <h2>Acciones Rápidas</h2>
+        </div>
+        
+        <div class="form-group">
+          <ion-button 
+            expand="block" 
+            shape="round" 
+            size="large" 
+            color="primary"
+            routerLink="/profile/risk-assessment"
+            class="main-action-button"
+          >
+            <ion-icon name="analytics-outline" slot="start"></ion-icon>
+            Evaluación de Riesgo
+          </ion-button>
+        </div>
+        
+        <div class="form-group">
+          <ion-button 
+            expand="block" 
+            shape="round" 
+            size="large" 
+            fill="outline"
+            routerLink="/profile/metrics"
+            class="main-action-button"
+          >
+            <ion-icon name="fitness-outline" slot="start"></ion-icon>
+            Métricas de Salud
+          </ion-button>
+        </div>
+
+        <div class="form-group">
+          <ion-button 
+            expand="block" 
+            shape="round" 
+            size="large" 
+            fill="outline"
+            routerLink="/profile/form"
+            class="main-action-button"
+          >
+            <ion-icon name="create-outline" slot="start"></ion-icon>
+            Editar Perfil
+          </ion-button>
+        </div>
+      </div>
+
+      <!-- Health Summary -->
+      <div class="auth-form" *ngIf="profile$ | async as profile">
+        <div class="form-header">
+          <h2>Resumen de Salud</h2>
+        </div>
+        
+        <div class="health-summary">
+          <div class="health-item">
+            <ion-icon name="medical-outline" color="primary"></ion-icon>
+            <div class="health-content">
+              <strong>Historia Médica</strong>
+              <p>{{ profile.medical_history.length || 0 }} condiciones registradas</p>
+            </div>
+          </div>
+          
+          <div class="health-item">
+            <ion-icon name="warning-outline" color="warning"></ion-icon>
+            <div class="health-content">
+              <strong>Alergias</strong>
+              <p>{{ profile.allergies.length || 0 }} alergias registradas</p>
+            </div>
+          </div>
+          
+          <div class="health-item">
+            <ion-icon name="medkit-outline" color="secondary"></ion-icon>
+            <div class="health-content">
+              <strong>Medicamentos</strong>
+              <p>{{ profile.current_medications.length || 0 }} medicamentos actuales</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Lifestyle Factors -->
+      <div class="auth-form" *ngIf="profile$ | async as profile">
+        <div class="form-header">
+          <h2>Factores de Estilo de Vida</h2>
+        </div>
+        
+        <div class="lifestyle-summary">
+          <div class="lifestyle-item">
+            <ion-icon name="ban-outline" [color]="getSmokingColor(profile.lifestyle_factors.smoking_status)"></ion-icon>
+            <div class="lifestyle-content">
+              <strong>Tabaco</strong>
+              <p>{{ getSmokingLabel(profile.lifestyle_factors.smoking_status) }}</p>
+            </div>
+          </div>
+          
+          <div class="lifestyle-item">
+            <ion-icon name="barbell-outline" color="primary"></ion-icon>
+            <div class="lifestyle-content">
+              <strong>Ejercicio</strong>
+              <p>{{ getExerciseLabel(profile.lifestyle_factors.exercise_frequency) }}</p>
+            </div>
+          </div>
+          
+          <div class="lifestyle-item">
+            <ion-icon name="moon-outline" color="secondary"></ion-icon>
+            <div class="lifestyle-content">
+              <strong>Sueño</strong>
+              <p>{{ profile.lifestyle_factors.sleep_hours }} horas/noche</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contact Information -->
+      <div class="auth-form" *ngIf="profile$ | async as profile">
+        <div class="form-header">
+          <h2>Información de Contacto</h2>
+        </div>
+        
+        <div class="contact-summary">
+          <div class="contact-item" *ngIf="profile.phone">
+            <ion-icon name="call-outline" color="primary"></ion-icon>
+            <div class="contact-content">
+              <strong>Teléfono</strong>
+              <p>{{ profile.phone }}</p>
+            </div>
+          </div>
+          
+          <div class="contact-item" *ngIf="profile.emergency_contact_name">
+            <ion-icon name="people-outline" color="danger"></ion-icon>
+            <div class="contact-content">
+              <strong>Contacto de Emergencia</strong>
+              <p>{{ profile.emergency_contact_name }}</p>
+              <p *ngIf="profile.emergency_contact_phone">{{ profile.emergency_contact_phone }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Loading State -->
+      <div class="auth-form" *ngIf="(profile$ | async) === null">
+        <div class="loading-state">
+          <ion-spinner name="crescent" color="primary"></ion-spinner>
+          <p>Cargando perfil...</p>
+        </div>
+      </div>
+
+      <!-- Footer (igual que auth pages) -->
+      <div class="auth-footer">
+        <p>Panel de gestión personal LungLife</p>
+        <ion-button
+          expand="block"
+          shape="round" 
+          size="large"
+          fill="outline"
+          routerLink="/dashboard"
+          class="main-action-button">
+          <strong>← Volver al dashboard principal</strong>
+        </ion-button>
+      </div>
+
+    </div>
+  </div>
+</ion-content>

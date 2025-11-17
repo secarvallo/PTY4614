@@ -1,29 +1,31 @@
-<ion-content data-test="register-page">
-  <div class="content-wrapper">
-    <div class="centered-container">
-    <div class="auth-header">
-      <div class="logo-placeholder"></div>
-      <h1>Crear Cuenta</h1>
-      <p>Únete a LungLife y protege tu salud respiratoria</p>
-    </div>
-
-    <form [formGroup]="registerForm" (ngSubmit)="onRegister()" class="auth-form" data-test="register-form">
-      
-      <!-- Nombre Field -->
-      <div class="form-group">
-        <ion-item lines="none">
-          <ion-input
-            formControlName="nombre"
-            placeholder="Nombre *"
-            data-test="register-nombre"
-          ></ion-input>
-        </ion-item>
-        <div class="error-message" *ngIf="registerForm.get('nombre')?.invalid && registerForm.get('nombre')?.touched">
-          <span *ngIf="registerForm.get('nombre')?.hasError('required')">El nombre es requerido</span>
-          <span *ngIf="registerForm.get('nombre')?.hasError('minlength')">El nombre debe tener al menos 2 caracteres</span>
-          <span *ngIf="registerForm.get('nombre')?.hasError('maxlength')">El nombre no puede tener más de 50 caracteres</span>
-        </div>
+<ion-content class="ion-padding" data-test="register-page">
+  <!-- Welcome Content -->
+  <div class="welcome-container">
+    <!-- Register Action Section - Envuelve todo el contenido -->
+    <div class="action-section">
+      <div class="auth-header">
+        <div class="logo-placeholder"></div>
+        <h1>Crear Cuenta</h1>
+        <p>Únete a LungLife y protege tu salud respiratoria</p>
       </div>
+
+      <form [formGroup]="registerForm" (ngSubmit)="onRegister()" class="auth-form" data-test="register-form">
+        
+        <!-- Nombre Field -->
+        <div class="form-group">
+          <ion-item lines="none">
+            <ion-input
+              formControlName="nombre"
+              placeholder="Nombre *"
+              data-test="register-nombre"
+            ></ion-input>
+          </ion-item>
+          <div class="error-message" *ngIf="registerForm.get('nombre')?.invalid && registerForm.get('nombre')?.touched">
+            <span *ngIf="registerForm.get('nombre')?.hasError('required')">El nombre es requerido</span>
+            <span *ngIf="registerForm.get('nombre')?.hasError('minlength')">El nombre debe tener al menos 2 caracteres</span>
+            <span *ngIf="registerForm.get('nombre')?.hasError('maxlength')">El nombre no puede tener más de 50 caracteres</span>
+          </div>
+        </div>
 
       <!-- Apellido Field -->
       <div class="form-group">
@@ -229,21 +231,21 @@
       Demasiados intentos de registro. Por tu seguridad, debes esperar antes de intentar nuevamente.
     </div>
 
-    <!-- Error Display -->
-    <div class="message error" *ngIf="error()">{{ error() }}</div>
+      <!-- Error Display -->
+      <div class="message error" *ngIf="error()">{{ error() }}</div>
 
-    <!-- Auth Footer -->
-    <div class="auth-footer">
-      <p>¿Ya tienes cuenta?</p>
-      <ion-button
-        fill="clear"
-        type="button"
-        routerLink="/auth/login"
-        class="link-button"
-      >
-        <strong>Inicia sesión aquí</strong>
-      </ion-button>
-    </div>
+      <!-- Auth Footer -->
+      <div class="auth-footer">
+        <p>¿Ya tienes cuenta?</p>
+        <ion-button
+          fill="clear"
+          type="button"
+          routerLink="/auth/login"
+          class="link-button"
+        >
+          <strong>Inicia sesión aquí</strong>
+        </ion-button>
+      </div>
     </div>
   </div>
 </ion-content>

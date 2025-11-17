@@ -1,0 +1,245 @@
+/**
+ * Profile Info Component - Following Auth Design System
+ * Styles extending auth.styles.scss and shared-layout.scss
+ */
+
+/* Main containers extending auth design */
+.status-card,
+.features-section,
+.tech-section {
+  background: var(--ion-background-color, #ffffff);
+  border-radius: 20px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  border: none;
+}
+
+[data-theme="dark"] .status-card,
+[data-theme="dark"] .features-section,
+[data-theme="dark"] .tech-section {
+  background: var(--ion-color-step-100);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+}
+
+/* Card headers with auth typography */
+.card-header h2 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--ion-color-primary);
+  margin: 0 0 20px 0;
+  letter-spacing: -0.02em;
+}
+
+/* Progress tracking section */
+.progress-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.progress-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--ion-color-step-50, #ffffff);
+  border: 2px solid var(--ion-color-step-200);
+  border-radius: 12px;
+  transition: all 0.2s ease;
+
+  &.completed {
+    border-color: var(--ion-color-success);
+    background: rgba(var(--ion-color-success-rgb), 0.05);
+  }
+
+  &.in-progress {
+    border-color: var(--ion-color-warning);
+    background: rgba(var(--ion-color-warning-rgb), 0.05);
+  }
+
+  span {
+    color: var(--ion-text-color);
+    font-weight: 500;
+    font-size: 15px;
+  }
+}
+
+/* Secondary buttons matching auth style */
+.auth-button.secondary {
+  --background: transparent;
+  --color: var(--ion-color-primary);
+  --border-color: var(--ion-color-primary);
+  --border-width: 2px;
+  height: 52px;
+  font-size: 15px;
+  font-weight: 600;
+  margin: 8px 0;
+  border-radius: 16px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    --background: var(--ion-color-primary);
+    --color: white;
+    transform: translateY(-1px);
+  }
+}
+
+/* Technology stack section */
+.tech-header h3 {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--ion-color-primary);
+  margin: 0 0 16px 0;
+  text-align: center;
+}
+
+.tech-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 16px;
+}
+
+.tech-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 16px;
+  background: rgba(var(--ion-color-light-rgb), 0.3);
+  border-radius: 12px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    background: rgba(var(--ion-color-primary-rgb), 0.1);
+  }
+
+  ion-icon {
+    font-size: 24px;
+  }
+
+  span {
+    color: var(--ion-text-color);
+    font-weight: 500;
+    font-size: 13px;
+    text-align: center;
+  }
+}
+
+/* Mobile responsive design */
+@media (max-width: 480px) {
+  .tech-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .status-card,
+  .features-section,
+  .tech-section {
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+
+  .card-header h2 {
+    font-size: 18px;
+    margin-bottom: 16px;
+  }
+
+  .progress-item {
+    padding: 10px 12px;
+    
+    span {
+      font-size: 14px;
+    }
+  }
+
+  .auth-button.secondary {
+    height: 48px;
+    font-size: 14px;
+  }
+
+  .tech-item {
+    padding: 12px;
+    
+    ion-icon {
+      font-size: 20px;
+    }
+    
+    span {
+      font-size: 12px;
+    }
+  }
+}
+
+/* Animation and interaction enhancements */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.status-card,
+.features-section,
+.tech-section {
+  animation: fadeInUp 0.4s ease-out;
+}
+
+.progress-item:hover {
+  transform: translateX(4px);
+}
+
+/* Dark theme specific adjustments */
+[data-theme="dark"] {
+  .progress-item {
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  .tech-item {
+    background: rgba(255, 255, 255, 0.05);
+    
+    &:hover {
+      background: rgba(var(--ion-color-primary-rgb), 0.2);
+    }
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .progress-item,
+  .tech-item {
+    border-width: 3px;
+  }
+
+  .progress-item.completed {
+    background: rgba(var(--ion-color-success-rgb), 0.15);
+  }
+
+  .progress-item.in-progress {
+    background: rgba(var(--ion-color-warning-rgb), 0.15);
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .status-card,
+  .features-section,
+  .tech-section {
+    animation: none;
+  }
+
+  .progress-item,
+  .tech-item,
+  .auth-button.secondary {
+    transition: none;
+  }
+
+  .progress-item:hover,
+  .tech-item:hover {
+    transform: none;
+  }
+}

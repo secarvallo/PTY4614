@@ -1,178 +1,187 @@
-<ion-content data-test="login-page">
-  <div class="content-wrapper">
-    <div class="centered-container">
-    <div class="auth-header">
-      <div class="logo-placeholder"></div>
-      <h1>Bienvenido a LungLife</h1>
-      <p>Accede a tu cuenta de forma segura</p>
-    </div>
-
-    <!-- Login Form -->
-    <form [formGroup]="loginForm" (ngSubmit)="onLogin()" *ngIf="!requiresTwoFactor()" class="auth-form" data-test="login-form">
-      
-      <!-- Email Field -->
-      <div class="form-group">
-        <ion-item lines="none">
-          <ion-input
-            formControlName="email"
-            type="email"
-            placeholder="Correo electrónico"
-            data-test="login-email"
-          ></ion-input>
-        </ion-item>
-        <div class="error-message" *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
-          <span *ngIf="loginForm.get('email')?.hasError('required')">El email es requerido</span>
-          <span *ngIf="loginForm.get('email')?.hasError('email')">Ingresa un email válido</span>
-        </div>
+<ion-content class="ion-padding" data-test="login-page">
+  <!-- Welcome Content -->
+  <div class="welcome-container">
+    <!-- Login Action Section - Envuelve todo el contenido -->
+    <div class="action-section">
+      <div class="auth-header">
+        <div class="logo-placeholder"></div>
+        <h1>Bienvenido a LungLife</h1>
+        <p>Accede a tu cuenta de forma segura</p>
       </div>
 
-      <!-- Password Field -->
-      <div class="form-group">
-        <ion-item lines="none">
-          <ion-input
-            formControlName="password"
-            [type]="showPassword() ? 'text' : 'password'"
-            placeholder="Contraseña"
-            data-test="login-password"
-          ></ion-input>
-          <ion-button fill="clear" slot="end" (click)="togglePassword()">
-            <ion-icon [name]="showPassword() ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
-          </ion-button>
-        </ion-item>
-        <div class="error-message" *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
-          <span *ngIf="loginForm.get('password')?.hasError('required')">La contraseña es requerida</span>
-        </div>
-      </div>
-
-      <!-- Form Options (Remember me & Forgot password) -->
-      <div class="form-options">
-        <ion-item lines="none" class="remember-me">
-          <ion-checkbox formControlName="rememberMe" slot="start"></ion-checkbox>
-          <ion-label>Recordarme</ion-label>
-        </ion-item>
-        <ion-button
-          fill="clear"
-          size="small"
-          type="button"
-          routerLink="/auth/forgot"
-          routerDirection="forward"
-          class="forgot-password-link"
-        >¿Olvidaste tu contraseña?</ion-button>
-      </div>
-
-      <!-- Submit Button -->
-      <ion-button
-        expand="block"
-        type="submit"
-        [disabled]="loginForm.invalid || loading()"
-        class="main-action-button"
-        color="primary"
-        shape="round"
-        size="large"
-        data-test="login-submit"
-      >
-        <ion-spinner *ngIf="loading()" name="crescent"></ion-spinner>
-        <span *ngIf="!loading()">Iniciar Sesión</span>
-      </ion-button>
-    </form>
-
-    <!-- Formulario de 2FA -->
-    <form [formGroup]="twoFactorForm" (ngSubmit)="onVerify2FA()" *ngIf="requiresTwoFactor()">
-      <div class="two-factor-header">
-        <ion-icon name="shield-checkmark" size="large" color="primary"></ion-icon>
-        <h2>Verificación de Dos Factores</h2>
-        <p>Ingresa el código de tu aplicación de autenticación</p>
-      </div>
-
-      <ion-item class="form-item">
-        <ion-label position="stacked">Código de Verificación</ion-label>
-        <ion-input
-          formControlName="code"
-          type="number"
-          placeholder="000000"
-          maxlength="6"
-          [class.ion-invalid]="twoFactorForm.get('code')?.invalid && twoFactorForm.get('code')?.touched"
-        ></ion-input>
-        <ion-note slot="error" *ngIf="twoFactorForm.get('code')?.hasError('required')">
-          El código es requerido
-        </ion-note>
-        <ion-note slot="error" *ngIf="twoFactorForm.get('code')?.hasError('twoFactorCode')">
-          Debe ser un código de 6 dígitos
-        </ion-note>
-      </ion-item>
-
-      <ion-button
-        expand="block"
-        type="submit"
-        [disabled]="!twoFactorForm.valid || loading()"
-        class="main-action-button"
-        color="primary"
-        shape="round"
-        size="large"
-      >
-        <ion-spinner *ngIf="loading()" name="crescent"></ion-spinner>
-        {{ loading() ? 'Verificando...' : 'Verificar' }}
-      </ion-button>
-
-      <div class="backup-options">
-        <ion-button fill="clear" (click)="toggleBackupCodeInput()">
-          Usar código de respaldo
-        </ion-button>
-
-        <div *ngIf="showBackupCodeInput()" class="backup-code-section">
-          <ion-item>
-            <ion-label position="stacked">Código de Respaldo</ion-label>
+      <!-- Login Form -->
+      <form [formGroup]="loginForm" (ngSubmit)="onLogin()" *ngIf="!requiresTwoFactor()" class="auth-form" data-test="login-form">
+        
+        <!-- Email Field -->
+        <div class="form-group">
+          <ion-item lines="none">
             <ion-input
-              [ngModel]="backupCode()"
-              (ngModelChange)="backupCode.set($event)"
-              type="text"
-              placeholder="12345678"
-              maxlength="8"
+              formControlName="email"
+              type="email"
+              placeholder="Correo electrónico"
+              data-test="login-email"
             ></ion-input>
           </ion-item>
+          <div class="error-message" *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
+            <span *ngIf="loginForm.get('email')?.hasError('required')">El email es requerido</span>
+            <span *ngIf="loginForm.get('email')?.hasError('email')">Ingresa un email válido</span>
+          </div>
+        </div>
 
-          <ion-button expand="block" (click)="verifyBackupCode()" [disabled]="!backupCode() || loading()">
-            Verificar Código de Respaldo
+        <!-- Password Field -->
+        <div class="form-group">
+          <ion-item lines="none">
+            <ion-input
+              formControlName="password"
+              [type]="showPassword() ? 'text' : 'password'"
+              placeholder="Contraseña"
+              data-test="login-password"
+            ></ion-input>
+            <ion-button fill="clear" slot="end" (click)="togglePassword()">
+              <ion-icon [name]="showPassword() ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
+            </ion-button>
+          </ion-item>
+          <div class="error-message" *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
+            <span *ngIf="loginForm.get('password')?.hasError('required')">La contraseña es requerida</span>
+          </div>
+        </div>
+
+        <!-- Form Options (Remember me & Forgot password) -->
+        <div class="form-options">
+          <ion-item lines="none" class="remember-me">
+            <ion-checkbox formControlName="rememberMe" slot="start"></ion-checkbox>
+            <ion-label>Recordarme</ion-label>
+          </ion-item>
+          <ion-button
+            fill="clear"
+            size="small"
+            type="button"
+            routerLink="/auth/forgot"
+            routerDirection="forward"
+            class="forgot-password-link"
+          >¿Olvidaste tu contraseña?</ion-button>
+        </div>
+
+        <!-- Submit Button -->
+        <ion-button
+          expand="block"
+          type="submit"
+          [disabled]="loginForm.invalid || loading()"
+          class="main-action-button"
+          color="primary"
+          shape="round"
+          size="large"
+          data-test="login-submit"
+        >
+          <ion-spinner *ngIf="loading()" name="crescent"></ion-spinner>
+          <span *ngIf="!loading()">Iniciar Sesión</span>
+        </ion-button>
+      </form>
+
+      <!-- Formulario de 2FA -->
+      <form [formGroup]="twoFactorForm" (ngSubmit)="onVerify2FA()" *ngIf="requiresTwoFactor()">
+        <div class="two-factor-header">
+          <ion-icon name="shield-checkmark" size="large" color="primary"></ion-icon>
+          <h2>Verificación de Dos Factores</h2>
+          <p>Ingresa el código de tu aplicación de autenticación</p>
+        </div>
+
+        <ion-item class="form-item">
+          <ion-label position="stacked">Código de Verificación</ion-label>
+          <ion-input
+            formControlName="code"
+            type="number"
+            placeholder="000000"
+            maxlength="6"
+            [class.ion-invalid]="twoFactorForm.get('code')?.invalid && twoFactorForm.get('code')?.touched"
+          ></ion-input>
+          <ion-note slot="error" *ngIf="twoFactorForm.get('code')?.hasError('required')">
+            El código es requerido
+          </ion-note>
+          <ion-note slot="error" *ngIf="twoFactorForm.get('code')?.hasError('twoFactorCode')">
+            Debe ser un código de 6 dígitos
+          </ion-note>
+        </ion-item>
+
+        <ion-button
+          expand="block"
+          type="submit"
+          [disabled]="!twoFactorForm.valid || loading()"
+          class="main-action-button"
+          color="primary"
+          shape="round"
+          size="large"
+        >
+          <ion-spinner *ngIf="loading()" name="crescent"></ion-spinner>
+          {{ loading() ? 'Verificando...' : 'Verificar' }}
+        </ion-button>
+
+        <div class="backup-options">
+          <ion-button fill="clear" (click)="toggleBackupCodeInput()">
+            Usar código de respaldo
           </ion-button>
+
+          <div *ngIf="showBackupCodeInput()" class="backup-code-section">
+            <ion-item>
+              <ion-label position="stacked">Código de Respaldo</ion-label>
+              <ion-input
+                [ngModel]="backupCode()"
+                (ngModelChange)="backupCode.set($event)"
+                type="text"
+                placeholder="12345678"
+                maxlength="8"
+              ></ion-input>
+            </ion-item>
+
+            <ion-button 
+              expand="block" 
+              shape="round" 
+              size="large" 
+              color="primary"
+              class="main-action-button"
+              (click)="verifyBackupCode()" 
+              [disabled]="!backupCode() || loading()">
+              Verificar Código de Respaldo
+            </ion-button>
+          </div>
+        </div>
+
+        <ion-button fill="clear" (click)="cancelTwoFactor()">
+          Volver al login
+        </ion-button>
+      </form>
+
+      <!-- Social Auth -->
+      <div class="social-section" *ngIf="!requiresTwoFactor()">
+        <div class="divider"><span>o continuar con</span></div>
+        <div class="social-auth">
+          <button type="button" class="social-btn" (click)="loginWithGoogle()">
+            <img src="assets/icon/google.webp" alt="Google" height="24" width="24">
+          </button>
         </div>
       </div>
 
-      <ion-button fill="clear" (click)="cancelTwoFactor()">
-        Volver al login
-      </ion-button>
-    </form>
+      <!-- Error display -->
+      <ion-item *ngIf="error()" color="danger" class="error-item">
+        <ion-icon name="alert-circle" slot="start"></ion-icon>
+        <ion-label>{{ error() }}</ion-label>
+      </ion-item>
 
-    <!-- Social Auth -->
-    <div class="social-section" *ngIf="!requiresTwoFactor()">
-      <div class="divider"><span>o continuar con</span></div>
-      <div class="social-auth">
-        <button type="button" class="social-btn" (click)="loginWithGoogle()">
-          <img src="assets/icon/google.webp" alt="Google" height="24" width="24">
-        </button>
+      <!-- Auth Footer -->
+      <div class="auth-footer" *ngIf="!requiresTwoFactor()">
+        <p>¿No tienes cuenta?</p>
+        <ion-button
+          fill="clear"
+          type="button"
+          routerLink="/auth/register"
+          class="link-button"
+        >
+          <strong>Regístrate aquí</strong>
+        </ion-button>
       </div>
-    </div>
 
-    <!-- Error display -->
-    <ion-item *ngIf="error()" color="danger" class="error-item">
-      <ion-icon name="alert-circle" slot="start"></ion-icon>
-      <ion-label>{{ error() }}</ion-label>
-    </ion-item>
-
-    <!-- Auth Footer -->
-    <div class="auth-footer" *ngIf="!requiresTwoFactor()">
-      <p>¿No tienes cuenta?</p>
-      <ion-button
-        fill="clear"
-        type="button"
-        routerLink="/auth/register"
-        class="link-button"
-      >
-        <strong>Regístrate aquí</strong>
-      </ion-button>
-    </div>
-
-    <!-- Error Display -->
-    <div class="message error" *ngIf="error()">{{ error() }}</div>
+      <!-- Error Display -->
+      <div class="message error" *ngIf="error()">{{ error() }}</div>
     </div>
   </div>
 </ion-content>

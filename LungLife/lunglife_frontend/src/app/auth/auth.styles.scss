@@ -2,6 +2,70 @@
  * ✨ Clean & Professional Auth UI
  */
 
+// Welcome Container - Similar to Home
+.welcome-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center; // Centrado vertical perfecto
+  min-height: 100vh;
+  padding: 20px; // Padding base
+  background: var(--bg);
+  
+  // Responsive padding según tamaño de monitor
+  @media (min-width: 768px) {
+    padding: 40px; // Tablets y pantallas medianas
+  }
+  
+  @media (min-width: 1024px) {
+    padding: 60px; // Pantallas grandes
+    padding-top: 20px; // Reducido al 50% (era 40px)
+    padding-bottom: 60px;
+  }
+  
+  @media (min-width: 1440px) {
+    padding: 80px; // Pantallas muy grandes
+    padding-top: 30px; // Reducido al 50% (era 60px)
+    padding-bottom: 80px;
+  }
+  
+  @media (min-height: 800px) {
+    // Para pantallas altas, ajustar padding vertical
+    padding-top: 5vh; // Reducido al 50% (era 10vh)
+    padding-bottom: 10vh;
+  }
+}
+
+// Action Section - Similar to Home  
+.action-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  max-width: 400px;
+  background: var(--surface);
+  border-radius: 20px;
+  padding: 32px; // Padding base generoso
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  border: none;
+  
+  // Responsive padding para action-section
+  @media (min-width: 768px) {
+    padding: 40px; // Más espacio en tablets
+    max-width: 450px; // Ligeramente más ancho
+  }
+  
+  @media (min-width: 1024px) {
+    padding: 48px; // Aún más padding en pantallas grandes
+    max-width: 480px;
+  }
+}
+
+[data-theme="dark"] .action-section {
+  box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+}
+
 .auth-content {
   background: var(--bg);
   display: flex;
@@ -28,14 +92,19 @@
 /* Header */
 .auth-header {
   text-align: center;
-  margin-bottom: 32px;
+  margin-bottom: 24px; // Reducido de 32px a 24px
+}
+
+// Ajuste específico cuando auth-header está dentro de action-section
+.action-section .auth-header {
+  margin-bottom: 20px; // Aún más pequeño para mejor espaciado
 }
 
 .logo-placeholder {
-  width: 100px;
-  height: 100px;
+  width: 80px; // Reducido de 100px a 80px
+  height: 80px; // Reducido de 100px a 80px
   border-radius: 50%;
-  margin: 0 auto 24px;
+  margin: 0 auto 16px; // Reducido de 24px a 16px
   background: linear-gradient(135deg, #007aff 0%, #005ce6 100%);
   display: flex;
   align-items: center;
@@ -86,6 +155,11 @@
   padding: 0 20px;
   transition: all 0.2s ease;
   animation: fadeIn 0.3s ease-out;
+  // Standardize input proportions across all auth pages
+  width: 100%;
+  max-width: 100%;
+  height: 56px;
+  font-size: 16px;
 }
 
 @keyframes fadeIn {
@@ -109,6 +183,21 @@
   --placeholder-color: var(--text-light);
   font-size: 16px;
   font-weight: 500;
+  // Ensure consistent input styling
+  width: 100%;
+  height: 100%;
+  line-height: 1.4;
+}
+
+// Standardize form groups across all auth pages
+.form-group {
+  width: 100%;
+  margin-bottom: 16px;
+  
+  ion-item {
+    width: 100%;
+    max-width: 100%;
+  }
 }
 
 .error-message {
@@ -167,25 +256,62 @@
 }
 
 /* Primary Button */
-.auth-button {
+/* Primary Button - Global Standard */
+.main-action-button {
   --background: var(--primary);
   --color: white;
-  --border-radius: 16px;
+  --border-radius: 28px;
   height: 56px;
   font-size: 16px;
   font-weight: 700;
-  margin: 24px 0;
-  box-shadow: 0 4px 16px rgba(0, 122, 255, 0.3);
+  margin: 24px auto;
+  max-width: 280px;
+  width: 100%;
+  box-shadow: 0 6px 20px rgba(0, 122, 255, 0.35);
   text-transform: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: none;
+  display: block;
+}
+
+.main-action-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(0, 122, 255, 0.45);
+  border-radius: 30px;
+}
+
+.main-action-button:disabled {
+  opacity: 0.6;
+  transform: none;
+  box-shadow: 0 6px 20px rgba(0, 122, 255, 0.2);
+}
+
+[data-theme="dark"] .main-action-button {
+  box-shadow: 0 6px 20px rgba(0, 122, 255, 0.25);
+}
+
+.auth-button {
+  --background: var(--primary);
+  --color: white;
+  --border-radius: 28px;
+  height: 56px;
+  font-size: 16px;
+  font-weight: 700;
+  margin: 24px auto;
+  max-width: 280px;
+  box-shadow: 0 6px 20px rgba(0, 122, 255, 0.35);
+  text-transform: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .auth-button:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 8px 24px rgba(0, 122, 255, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(0, 122, 255, 0.45);
+  border-radius: 30px;
 }
 
 [data-theme="dark"] .auth-button {
-  box-shadow: 0 4px 16px rgba(0, 122, 255, 0.2);
+  box-shadow: 0 6px 20px rgba(0, 122, 255, 0.25);
 }
 
 /* Social */
@@ -194,25 +320,45 @@
   text-align: center;
 }
 
+// Versión alternativa y más robusta del divider
 .social-section .divider {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  margin: 20px 0;
+  gap: 16px;
+  margin: 24px 0;
+  width: 100%;
 }
 
 .social-section .divider::before,
 .social-section .divider::after {
   content: '';
-  flex: 1;
   height: 1px;
   background: var(--border);
+  opacity: 0.6;
+  display: block;
 }
 
 .social-section .divider span {
-  padding: 0 16px;
   color: var(--text-light);
   font-size: 14px;
   font-weight: 500;
+  white-space: nowrap;
+  text-align: center;
+  padding: 0 8px;
+  background: var(--bg);
+  position: relative;
+}
+
+// Estilos para tema oscuro del divider
+[data-theme="dark"] .social-section .divider span {
+  background: var(--bg);
+}
+
+[data-theme="dark"] .social-section .divider::before,
+[data-theme="dark"] .social-section .divider::after {
+  background: var(--border);
+  opacity: 0.4;
 }
 
 .social-auth {
@@ -221,28 +367,71 @@
 }
 
 .social-btn {
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
+  width: 64px; // Aumentar tamaño para mejor presencia visual
+  height: 64px;
+  border-radius: 50%; // Perfectamente redondo
   border: 2px solid var(--border);
   background: var(--surface);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1); // Sombra sutil base
+  position: relative;
+  overflow: hidden;
 }
 
 .social-btn:hover {
   border-color: var(--primary);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 122, 255, 0.2);
+  transform: translateY(-3px) scale(1.05); // Efecto de elevación y escala
+  box-shadow: 0 8px 24px rgba(0, 122, 255, 0.25);
+  background: #ffffff; // Fondo blanco en hover para contraste
+}
+
+.social-btn:active {
+  transform: translateY(-1px) scale(1.02);
+  transition: all 0.1s ease;
+}
+
+// Efecto de ondas al hacer click
+.social-btn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(0, 122, 255, 0.1);
+  transform: translate(-50%, -50%);
+  transition: width 0.3s, height 0.3s;
+}
+
+.social-btn:active::before {
+  width: 120%;
+  height: 120%;
 }
 
 .social-btn img {
-  width: 24px;
-  height: 24px;
+  width: 28px; // Imagen ligeramente más grande
+  height: 28px;
   object-fit: contain;
+  z-index: 1;
+  position: relative;
+}
+
+// Estilos para tema oscuro
+[data-theme="dark"] .social-btn {
+  border-color: rgba(255, 255, 255, 0.2);
+  background: var(--surface);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+[data-theme="dark"] .social-btn:hover {
+  border-color: var(--primary);
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 24px rgba(0, 122, 255, 0.35);
 }
 
 /* Footer */
@@ -294,10 +483,17 @@ app-theme-toggle ion-button {
 
 /* Mobile Responsive */
 @media (max-width: 480px) {
-  .auth-container {
-    padding: 24px;
-    margin: 16px;
+  .welcome-container {
+    padding: 16px; // Menos padding en móviles
+    justify-content: flex-start; // En móviles, alinear al inicio
+    padding-top: 20px; // Reducido al 50% (era 40px)
+  }
+  
+  .action-section {
+    padding: 24px; // Padding reducido para móviles
+    margin: 0; // Sin márgenes adicionales
     border-radius: 16px;
+    max-width: 100%; // Aprovecha todo el ancho disponible
   }
 
   .auth-header h1 {
@@ -317,6 +513,47 @@ app-theme-toggle ion-button {
   app-theme-toggle ion-button {
     width: 44px;
     height: 44px;
+  }
+}
+
+// Ajustes para pantallas muy anchas (ultrawide monitors)
+@media (min-width: 1920px) {
+  .welcome-container {
+    padding: 120px; // Mucho padding en pantallas ultrawide
+    padding-top: 40px; // Reducido al 50% (era 80px)
+    padding-bottom: 120px;
+  }
+  
+  .action-section {
+    max-width: 520px; // Más ancho en pantallas muy grandes
+    padding: 56px; // Padding generoso
+  }
+}
+
+// Ajustes para pantallas muy altas
+@media (min-height: 1080px) {
+  .welcome-container {
+    padding-top: 7.5vh; // Reducido al 50% (era 15vh)
+    padding-bottom: 15vh;
+  }
+}
+
+// Ajustes para pantallas ultrawide (aspect ratio muy ancho)
+@media (min-aspect-ratio: 16/9) {
+  .welcome-container {
+    padding-left: 10vw; // Usar viewport width para pantallas anchas
+    padding-right: 10vw;
+  }
+}
+
+@media (min-aspect-ratio: 21/9) {
+  .welcome-container {
+    padding-left: 15vw; // Más padding en pantallas ultrawide
+    padding-right: 15vw;
+  }
+  
+  .action-section {
+    max-width: 500px; // Permitir un poco más de ancho
   }
 }
 
@@ -393,17 +630,100 @@ app-theme-toggle ion-button {
 /* ========== MAIN ACTION BUTTON - UNIFIED STYLE ========== */
 /**
  * Clase global para unificar el estilo de los botones de acción principales
- * Basado en el diseño de home.page para consistencia visual en toda la app
+ * Todos los botones principales de la aplicación deben usar estos estilos
+ * Diseño mejorado con mayor curvatura y ancho optimizado
+ * MANTIENE EL CENTRADO ORIGINAL DE LAS PÁGINAS
  */
-.main-action-button {
-  font-weight: 600 !important;
-  height: 52px !important;
-  --padding-start: 2rem;
-  --padding-end: 2rem;
-  margin: 0 auto !important;
-  max-width: 280px !important;
+.main-action-button, .action-button {
+  --background: var(--primary) !important;
+  --color: white !important;
+  --border-radius: 28px !important;
+  height: 56px !important;
+  font-size: 16px !important;
+  font-weight: 700 !important;
+  box-shadow: 0 6px 20px rgba(0, 122, 255, 0.35) !important;
+  text-transform: none !important;
   
-  /* Asegurar que el botón tenga el ancho completo pero limitado */
-  width: 100% !important;
-  display: block !important;
+  /* SOLO ancho específico optimizado - SIN cambiar margin para preservar centrado */
+  max-width: 280px !important; // Ancho reducido y optimizado
+  --padding-start: 2rem !important;
+  --padding-end: 2rem !important;
+  
+  /* Curvatura específica de las esquinas - MEJORADA */
+  border-radius: 28px !important;
+  
+  /* Transiciones suaves mejoradas */
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.main-action-button:hover, .action-button:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 10px 30px rgba(0, 122, 255, 0.45) !important;
+  border-radius: 30px !important; // Aún más curvado al hacer hover
+}
+
+/* Para botones outline */
+.main-action-button[fill="outline"], .action-button[fill="outline"] {
+  --background: transparent !important;
+  --color: var(--primary) !important;
+  --border-color: var(--primary) !important;
+  --border-width: 2px !important;
+  box-shadow: 0 4px 16px rgba(0, 122, 255, 0.25) !important;
+  
+  &:hover {
+    --background: var(--primary) !important;
+    --color: white !important;
+    box-shadow: 0 10px 30px rgba(0, 122, 255, 0.4) !important;
+    border-radius: 30px !important;
+  }
+}
+
+/* Para botones clear */
+.main-action-button[fill="clear"], .action-button[fill="clear"] {
+  --background: transparent !important;
+  --color: var(--primary) !important;
+  box-shadow: none !important;
+  height: auto !important;
+  font-weight: 600 !important;
+  max-width: 280px !important;
+}
+
+/* Dark theme support */
+[data-theme="dark"] .main-action-button, 
+[data-theme="dark"] .action-button {
+  box-shadow: 0 6px 20px rgba(0, 122, 255, 0.25) !important;
+}
+
+[data-theme="dark"] .main-action-button:hover,
+[data-theme="dark"] .action-button:hover {
+  box-shadow: 0 10px 30px rgba(0, 122, 255, 0.35) !important;
+}
+
+/* Responsive Design para todos los botones */
+@media (max-width: 320px) {
+  .main-action-button, .action-button {
+    max-width: 260px !important;
+    font-size: 15px !important;
+  }
+}
+
+@media (max-width: 280px) {
+  .main-action-button, .action-button {
+    max-width: 240px !important;
+    font-size: 14px !important;
+  }
+}
+
+/* Contenedor para centrar botones - PRESERVA EL CENTRADO ORIGINAL */
+.button-container, .auth-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.button-container .main-action-button, 
+.auth-form .main-action-button {
+  margin-left: auto;
+  margin-right: auto;
 }

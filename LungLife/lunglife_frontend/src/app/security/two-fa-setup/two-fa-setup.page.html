@@ -8,7 +8,9 @@
 </ion-header>
 
 <ion-content class="ion-padding">
-  <div class="setup-container">
+  <div class="content-wrapper">
+    <div class="centered-container">
+      <div class="setup-container">
     <div class="header-section">
       <ion-icon name="shield-checkmark" size="large" color="primary"></ion-icon>
       <h2>Protege tu cuenta</h2>
@@ -48,7 +50,14 @@
         </ion-item>
       </ion-radio-group>
 
-      <ion-button expand="block" [disabled]="!selectedMethod" (click)="startSetup()">
+      <ion-button 
+        expand="block" 
+        shape="round" 
+        size="large" 
+        color="primary"
+        class="main-action-button" 
+        [disabled]="!selectedMethod" 
+        (click)="startSetup()">
         Continuar
       </ion-button>
     </div>
@@ -74,7 +83,13 @@
           <p><strong>O ingresa manualmente:</strong></p>
           <ion-item>
             <ion-input [value]="secretKey" readonly></ion-input>
-            <ion-button fill="clear" slot="end" (click)="copySecret()">
+            <ion-button 
+              fill="outline"
+              shape="round" 
+              size="large"
+              class="main-action-button" 
+              slot="end" 
+              (click)="copySecret()">
               <ion-icon name="copy"></ion-icon>
             </ion-button>
           </ion-item>
@@ -97,7 +112,14 @@
               ></ion-input>
             </ion-item>
 
-            <ion-button type="submit" expand="block" [disabled]="!verificationForm.valid || loading">
+            <ion-button 
+              type="submit" 
+              expand="block" 
+              shape="round" 
+              size="large" 
+              color="primary"
+              class="main-action-button"
+              [disabled]="!verificationForm.valid || loading">
               <ion-spinner *ngIf="loading" name="crescent"></ion-spinner>
               {{ loading ? 'Verificando...' : 'Verificar y Activar' }}
             </ion-button>
@@ -118,12 +140,24 @@
       </div>
 
       <div class="backup-actions">
-        <ion-button fill="outline" (click)="downloadCodes()">
+        <ion-button 
+          fill="outline" 
+          expand="block" 
+          shape="round" 
+          size="large"
+          class="main-action-button"
+          (click)="downloadCodes()">
           <ion-icon name="download" slot="start"></ion-icon>
           Descargar
         </ion-button>
 
-        <ion-button fill="outline" (click)="printCodes()">
+        <ion-button 
+          fill="outline" 
+          expand="block" 
+          shape="round" 
+          size="large"
+          class="main-action-button"
+          (click)="printCodes()">
           <ion-icon name="print" slot="start"></ion-icon>
           Imprimir
         </ion-button>
@@ -133,15 +167,24 @@
         He guardado mis códigos de respaldo de forma segura
       </ion-checkbox>
 
-      <ion-button expand="block" [disabled]="!codesConfirmed" (click)="completeSetup()">
+      <ion-button 
+        expand="block" 
+        shape="round" 
+        size="large" 
+        color="primary"
+        class="main-action-button"
+        [disabled]="!codesConfirmed" 
+        (click)="completeSetup()">
         Completar Configuración
       </ion-button>
     </div>
 
     <!-- Error display -->
     <ion-item *ngIf="error" color="danger">
-  <ion-icon name="alert-circle" slot="start"></ion-icon>
+      <ion-icon name="alert-circle" slot="start"></ion-icon>
       <ion-label>{{ error }}</ion-label>
     </ion-item>
+      </div>
+    </div>
   </div>
 </ion-content>

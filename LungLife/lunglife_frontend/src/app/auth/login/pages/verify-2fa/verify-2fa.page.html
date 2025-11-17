@@ -1,7 +1,11 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-button (click)="cancelLogin()">
+      <ion-button 
+        shape="round" 
+        size="large"
+        class="main-action-button"
+        (click)="cancelLogin()">
         <ion-icon name="arrow-back-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
@@ -55,10 +59,21 @@
 
     <!-- Options -->
     <div class="auth-footer">
-      <ion-button fill="clear" (click)="useBackupCode()" class="link-button">
+      <ion-button 
+        fill="clear" 
+        expand="block"
+        shape="round" 
+        size="large"
+        class="main-action-button"
+        (click)="useBackupCode()">
         Usar código de respaldo
       </ion-button>
-      <ion-button fill="clear" size="small" class="link-button">
+      <ion-button 
+        fill="clear" 
+        expand="block"
+        shape="round" 
+        size="large"
+        class="main-action-button">
         Reenviar código
       </ion-button>
     </div>
