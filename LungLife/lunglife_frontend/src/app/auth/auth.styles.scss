@@ -207,6 +207,37 @@
   font-weight: 500;
 }
 
+// Estilos para el botón de mostrar/ocultar contraseña
+.auth-form ion-item ion-button[slot="end"] {
+  --color: var(--text-light);
+  --padding-start: 8px;
+  --padding-end: 8px;
+  margin: 0;
+  min-height: 44px; // Altura mínima específica en lugar de auto
+  height: 44px;
+  transition: all 0.2s ease;
+}
+
+.auth-form ion-item ion-button[slot="end"]:hover {
+  --color: var(--primary);
+  transform: scale(1.1);
+}
+
+.auth-form ion-item ion-button[slot="end"] ion-icon {
+  font-size: 20px;
+  transition: all 0.2s ease;
+}
+
+// Estados específicos para el icono del ojo
+.auth-form ion-item ion-button[slot="end"] ion-icon[name="eye-outline"] {
+  opacity: 0.7; // Ojo cerrado más sutil cuando la contraseña está oculta
+}
+
+.auth-form ion-item ion-button[slot="end"] ion-icon[name="eye-off-outline"] {
+  opacity: 0.9; // Ojo tachado más visible cuando la contraseña está mostrada
+  color: var(--primary); // Color primario cuando está activo
+}
+
 /* Form Options - Fix the "Recordarme" visibility */
 .form-options {
   display: flex;
@@ -320,34 +351,34 @@
   text-align: center;
 }
 
-// Versión alternativa y más robusta del divider
+// Implementación simple y efectiva del divider
 .social-section .divider {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  align-items: center;
-  gap: 16px;
+  position: relative;
+  text-align: center;
   margin: 24px 0;
-  width: 100%;
+  overflow: hidden;
 }
 
-.social-section .divider::before,
-.social-section .divider::after {
+.social-section .divider::before {
   content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
   height: 1px;
-  background: var(--border);
-  opacity: 0.6;
-  display: block;
+  background: var(--ion-color-medium);
+  opacity: 0.3;
 }
 
 .social-section .divider span {
-  color: var(--text-light);
-  font-size: 14px;
+  background: var(--ion-background-color);
+  padding: 0 1rem;
+  color: var(--ion-color-medium);
+  font-size: 0.9rem;
   font-weight: 500;
-  white-space: nowrap;
-  text-align: center;
-  padding: 0 8px;
-  background: var(--bg);
   position: relative;
+  z-index: 1;
+  display: inline-block;
 }
 
 // Estilos para tema oscuro del divider
@@ -364,6 +395,7 @@
 .social-auth {
   display: flex;
   justify-content: center;
+  margin-top: 20px; // Espacio claro entre divider y botón
 }
 
 .social-btn {

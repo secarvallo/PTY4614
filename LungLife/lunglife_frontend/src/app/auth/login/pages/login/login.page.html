@@ -38,7 +38,7 @@
               data-test="login-password"
             ></ion-input>
             <ion-button fill="clear" slot="end" (click)="togglePassword()">
-              <ion-icon [name]="showPassword() ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
+              <ion-icon [name]="showPassword() ? 'eye-outline':'eye-off-outline'"></ion-icon>
             </ion-button>
           </ion-item>
           <div class="error-message" *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
@@ -48,10 +48,10 @@
 
         <!-- Form Options (Remember me & Forgot password) -->
         <div class="form-options">
-          <ion-item lines="none" class="remember-me">
-            <ion-checkbox formControlName="rememberMe" slot="start"></ion-checkbox>
+          <div class="remember-me">
+            <ion-checkbox formControlName="rememberMe"></ion-checkbox>
             <ion-label>Recordarme</ion-label>
-          </ion-item>
+          </div>
           <ion-button
             fill="clear"
             size="small"
@@ -152,9 +152,9 @@
       </form>
 
       <!-- Social Auth -->
-      <div class="social-section" *ngIf="!requiresTwoFactor()">
-        <div class="divider"><span>o continuar con</span></div>
-        <div class="social-auth">
+      <div class="social-section">
+        <div class="divider"><span>o continuar con</span></div>  <!-- Divider arriba -->
+        <div class="social-auth">         
           <button type="button" class="social-btn" (click)="loginWithGoogle()">
             <img src="assets/icon/google.webp" alt="Google" height="24" width="24">
           </button>
