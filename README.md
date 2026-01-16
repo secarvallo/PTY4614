@@ -219,3 +219,16 @@ Update 1.104.2: The update addresses these issues.
     Copyright (c) 2020 Thomas Brouard
 
 > This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+Empresa de distribución de energía
+Diagnóstico de Situación Actual y Recomendaciones
+Coordenadas geograficas
+historial de deudas
+emplazamiento (rural/urbano)
+Imágenes satelitales urbanas
+imágenes satelitales rurales
+
+# habitantes/ vivienda
+
+Mediciones inteligentes
+flujos de equipo

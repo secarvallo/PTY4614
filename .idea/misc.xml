@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.13 (PTY4614)" project-jdk-type="Python SDK" />
+  <component name="Black">
+    <option name="sdkName" value="Python 3.13 virtualenv at C:\Users\scarv\Downloads\08_semestre_ingenieria_en_informatica_2025\02.-Machine_Learning_704V\MLY0100\.venv" />
+  </component>
+  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.13 virtualenv at C:\Users\scarv\Downloads\08_semestre_ingenieria_en_informatica_2025\02.-Machine_Learning_704V\MLY0100\.venv" project-jdk-type="Python SDK" />
   <component name="PyCharmDSProjectLayout">
     <option name="id" value="JupyterRightHiddenStructureLayout" />
   </component>

@@ -40,11 +40,24 @@
       </div>
 
       <div class="action-buttons">
-        <ion-button expand="block" class="auth-button primary" (click)="continueToApp()">
+        <ion-button 
+          expand="block" 
+          shape="round" 
+          size="large" 
+          color="primary"
+          class="main-action-button"
+          (click)="continueToApp()">
           <ion-icon name="arrow-forward-outline" slot="end"></ion-icon>
           Continuar a LungLife
         </ion-button>
-        <ion-button expand="block" fill="outline" color="medium" (click)="logout()">
+        <ion-button 
+          expand="block" 
+          shape="round" 
+          size="large"
+          fill="outline" 
+          color="medium"
+          class="main-action-button"
+          (click)="logout()">
           <ion-icon name="log-out-outline" slot="start"></ion-icon>
           Cerrar Sesión
         </ion-button>

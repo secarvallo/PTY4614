@@ -38,13 +38,41 @@
       </div>
 
       <div class="dashboard-actions">
-        <ion-button expand="block" class="action-button primary" (click)="logHabit()">
+        <ion-button 
+          expand="block" 
+          type="button"
+          color="primary" 
+          shape="round" 
+          size="large"
+          class="main-action-button"
+          (click)="logHabit()"
+        >
           <ion-icon name="add-circle-outline" slot="start"></ion-icon>
           Registrar Hábito de Hoy
         </ion-button>
-        <ion-button expand="block" class="action-button" fill="outline" (click)="viewProgress()">
+        <ion-button 
+          expand="block" 
+          type="button"
+          fill="outline" 
+          shape="round" 
+          size="large"
+          class="main-action-button"
+          (click)="viewProgress()"
+        >
           <ion-icon name="bar-chart-outline" slot="start"></ion-icon>
           Ver Progreso Detallado
+        </ion-button>
+        <ion-button 
+          expand="block" 
+          type="button"
+          fill="outline" 
+          shape="round" 
+          size="large"
+          class="main-action-button"
+          routerLink="/profile"
+        >
+          <ion-icon name="person-outline" slot="start"></ion-icon>
+          Gestión de Perfil
         </ion-button>
       </div>
     } @else {

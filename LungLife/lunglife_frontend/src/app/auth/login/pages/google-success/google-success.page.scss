@@ -24,7 +24,17 @@ ion-content.auth-content { --background: linear-gradient(180deg, var(--bg-start)
 .google-info { display: flex; justify-content: center; margin: 8px 0 12px; }
 
 .action-buttons { display: grid; gap: 10px; margin-bottom: 12px; }
-.auth-button.primary { --background: var(--primary-grad); --border-radius: 14px; height: 50px; font-weight: 700; letter-spacing: 0.2px; box-shadow: 0 10px 24px rgba(108,99,255,0.35); }
+.auth-button.primary { 
+  --background: var(--primary); 
+  --color: white;
+  --border-radius: 16px; 
+  height: 56px; 
+  font-size: 16px;
+  font-weight: 700; 
+  margin: 24px 0;
+  box-shadow: 0 4px 16px rgba(0, 122, 255, 0.3); 
+  text-transform: none;
+}
 
 .info-card ion-item { --padding-start: 0; --padding-end: 0; }
 .info-card ion-label h3 { margin: 0 0 4px 0; font-size: 0.95rem; font-weight: 600; }
