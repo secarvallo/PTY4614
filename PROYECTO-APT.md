@@ -1,0 +1,99 @@
+PAGE 1:
+Proyecto APT  - Escuela  
+Fase 2  
+1. Propuesta Proyecto APT  - Escuela  
+ 
+Cada unidad académica (Escuela) debe disponer de Proyectos APT para todas las áreas de desempeño de 
+sus Planes de Estudio, con el propósito de entregar alternativas que puedan representar los intereses 
+profesionales de los /las estudiantes.  
+ 
+Los/las estudiantes para definir un proyecto tienen las siguientes opciones:  
+I. Seleccionar una de sus propuestas de Proyecto APT realizadas en el último semestre de APP, y 
+realizar ajustes si lo requiere  
+II. Proponer un nuevo Proyecto APT  
+III. Seleccionar alguno de los proyectos propuestos por la escuela  
+ 
+Por ello, las escuelas deben disponer, al menos, de un proyecto por cada área de desempeño de la carrera . 
+En caso de no tener definidas áreas de desempeño, se deben proponer al menos tres tipos de proyectos 
+diferentes . 
+ 
+Los Proyectos APT, tanto aquellos que sean propuestos por estudiantes o por las Escuelas, deben cumplir 
+con los siguientes criterios:  
+ 
+1. Integración de competencias:  debe integrar la mayor cantidad de competencias del perfil de egreso 
+(al menos dos competencias ), que permitan que el estudiante ponga en manifiesto aprendizajes de 
+diferentes asignaturas de la carrera.  
+2. Situación real o simulada:  debe ser una situación real o simulada a la que el estudiante podría 
+enfrentarse en el campo laboral. El proyecto APT a evaluar debe ser consistente con los principios 
+de la evaluación auténtica, es decir, representar situaciones contextualizadas, a través de 
+problemáticas lo más parecidas o cercanas a la proyectada en su desarrollo profesional y reflejar de 
+manera integrad a, las competencias del perfil de egreso.  
+3. Factibilidad: Debe ser un proyecto posible de realizar, considerando los siguientes aspectos:  
+a. el tiempo estipulado para esta asignatura (durante un semestre y 20 créditos);  
+b. los materiales que se requieren;  
+c. los factores externos que podrían facilitar o dificultar su implementación.  
+ 
+El proyecto APT debe ser individual, salvo en los casos en que su ejecución y/o desarrollo requieran de la 
+conformación de un equipo de trabajo.  
+ 
+A continuación, encontrarás los campos mínimos que se deben completar por cada propuesta de proyecto 
+escuela.  
+ 
+Proyecto APT – Escuela  de Ingeniería 
+informática  
+Asignatura Capstone  
+
+PAGE 2:
+Proyecto APT  - Escuela  
+Fase 2  
+ 
+Propuesta n° 3 Proyecto Escuela  
+Nombre (*)  Proyecto diagnóstico temprano de Cáncer  
+Área (s) de desempeño(s) (*)  Análisis y Evaluación de soluciones informáticas.    
+Desarrollo de software.  
+Competencias (*)  o Desarrollar una solución de software utilizando técnicas que permitan sistematizar el 
+proceso de desarrollo y mantenimiento, asegurando el logro de los objetivos.  
+o Construir modelos de datos para soportar los requerimientos de la organización de acuerdo 
+a un diseño definido y escalable en el tiempo.  
+o Realizar pruebas de certificación tanto de los productos como de los procesos utilizando 
+buenas prácticas definidas por la industria.  
+Problema o situación abordada 
+(*) El cáncer es una enfermedad grave que puede invadir los órganos vitales y en muchas ocasiones 
+ser mortal, según las estadísticas, es la segunda causa de muerte en Chile y a nivel mundial, sin 
+embargo, un diagnóstico temprano mejora considerablemente la exp ectativa de vida de las 
+personas afectadas por esta enfermedad.  
+El machine learning es de gran utilidad en el diagnóstico precoz del cáncer, los sistemas que lo 
+incorporan pueden «aprender» sobre esta enfermedad y detectar una dolencia con la misma 
+exactitud que un médico y comenzar a tratar los síntomas de la enfermed ad cuando antes, incluso 
+antes de que llegue a manifestarse.  
+Descripción del Proyecto APT (*)  Construir un sistema que prediga el cáncer en pacientes utilizando las competencias adquiridas 
+sobre desarrollo de software, base de datos y machine learning.  
+ 
+Se espera que el sistema permita:  
+o Predecir si un paciente o varios pacientes pueden tener cáncer utilizando algoritmos de 
+machine learning e identificar los factores de riesgos de estos pacientes.  
+o Generar al menos 5 preguntas de negocio.  
+o Publicar los resultados predictivos utilizando Power BI.  
+o Considerar atributos de calidad funcionalidad, usabilidad y confiabilidad (considerar que el 
+sistema no será utilizado por un informático, sino por una persona de salud)  
+ 
+Para el desarrollo del este proyecto, el estudiante debe investigar  y enfocarse en un tipo de 
+Cáncer (E ntre los más comunes: Cáncer de colon y recto, Leucemia, Melanoma, Cáncer de 
+páncreas, Cáncer de próstata, Cáncer de pulmón, Cáncer de seno), evaluar al menos 3 algoritmos 
+predictivos para los tipos de cáncer estudiados y seleccionar el que asegure un mayo r 
+rendimiento. * 
+Objetivos (*)  Objetivo general:  
+o Predecir el cáncer diferentes pacientes de acuerdo a sus condiciones físicas y 
+ambientales actuales.  
+Los objetivos específicos deben ser especificados por los estudiantes.  
+Metodología  La metodología utilizar debe ser CRISP -DM complementada con alguna metodología de gestión 
+seleccionada por el estudiante con la guía/aprobación de su docente (Ejemplo: Cascada, 
+Iterativo -Incremental, Scrum u Otra).  
+Evidencias  o Documentos de planificación, análisis y diseño (arquitectura, GUI y BD). Incorporar toda la 
+evidencia de las investigaciones realizadas.  
+o Documentos de control y pruebas.  
+o Documentos de cierre.  
+o Sistema (Web y/o APP, BD, Algoritmos) . 
+*Se utilizarán datos Demo que puede encontrar en internet en la página  o en similares.  
+ 
+ 
