@@ -35,6 +35,8 @@ export interface User {
   isActive: boolean;
 }
 
+// ⚠️ NOTA: UserProfile específico de autenticación (NO confundir con el de profile module)
+// Este UserProfile es para datos básicos de auth, diferente del UserProfile médico completo
 export interface UserProfile {
   userId: number; // Changed from user_id to userId for consistency
   nombre: string;

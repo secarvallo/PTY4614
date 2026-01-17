@@ -7,7 +7,9 @@ import { ProfileService } from '../../services/profile.service';
 import { 
   UserProfile, 
   CreateProfileRequest, 
-  UpdateProfileRequest,
+  UpdateProfileRequest
+} from '../../interfaces/profile.interface';
+import { 
   FormValidationError,
   FormTabConfig,
   FormProgressInfo,
@@ -15,11 +17,6 @@ import {
   AllergyItem,
   MedicationItem
 } from './profile-form.interface';
-import { 
-  UserProfile as ServiceUserProfile,
-  CreateProfileRequest as ServiceCreateProfileRequest,
-  UpdateProfileRequest as ServiceUpdateProfileRequest
-} from '../../interfaces/profile.interface';
 import { Observable, of, Subject, BehaviorSubject, combineLatest } from 'rxjs';
 import { catchError, tap, takeUntil, debounceTime, distinctUntilChanged, startWith } from 'rxjs/operators';
 
@@ -512,56 +509,21 @@ export class ProfileFormComponent implements OnInit, OnDestroy {
     return this.profileService.updateProfile(this.profileId!, serviceData).toPromise();
   }
 
-  private transformToServiceCreateRequest(componentData: CreateProfileRequest): ServiceCreateProfileRequest {
+  private transformToServiceCreateRequest(componentData: CreateProfileRequest): CreateProfileRequest {
     return {
-      user_id: 1, // This should come from auth service
-      first_name: componentData.first_name,
-      last_name: componentData.last_name,
-      birth_date: componentData.birth_date,
-      gender: componentData.gender,
-      phone: componentData.phone,
-      emergency_contact_name: componentData.emergency_contact_name,
-      emergency_contact_phone: componentData.emergency_contact_phone,
-      medical_history: componentData.medical_history,
-      allergies: componentData.allergies,
-      current_medications: componentData.current_medications,
-      lifestyle_factors: componentData.lifestyle_factors,
-      occupation: componentData.occupation,
-      preferred_language: componentData.preferred_language,
-      preferred_communication_method: componentData.preferred_communication_method,
-      consent_terms: componentData.consent_terms,
-      consent_data_sharing: componentData.consent_data_sharing,
-      consent_marketing: componentData.consent_marketing
+      ...componentData,
+      user_id: 1 // This should come from auth service
     };
   }
 
-  private transformToServiceUpdateRequest(componentData: UpdateProfileRequest): ServiceUpdateProfileRequest {
-    const serviceData: ServiceUpdateProfileRequest = {};
-    
-    if (componentData.first_name !== undefined) serviceData.first_name = componentData.first_name;
-    if (componentData.last_name !== undefined) serviceData.last_name = componentData.last_name;
-    if (componentData.birth_date !== undefined) serviceData.birth_date = componentData.birth_date;
-    if (componentData.gender !== undefined) serviceData.gender = componentData.gender;
-    if (componentData.phone !== undefined) serviceData.phone = componentData.phone;
-    if (componentData.emergency_contact_name !== undefined) serviceData.emergency_contact_name = componentData.emergency_contact_name;
-    if (componentData.emergency_contact_phone !== undefined) serviceData.emergency_contact_phone = componentData.emergency_contact_phone;
-    if (componentData.medical_history !== undefined) serviceData.medical_history = componentData.medical_history;
-    if (componentData.allergies !== undefined) serviceData.allergies = componentData.allergies;
-    if (componentData.current_medications !== undefined) serviceData.current_medications = componentData.current_medications;
-    if (componentData.lifestyle_factors !== undefined) serviceData.lifestyle_factors = componentData.lifestyle_factors;
-    if (componentData.occupation !== undefined) serviceData.occupation = componentData.occupation;
-    if (componentData.preferred_language !== undefined) serviceData.preferred_language = componentData.preferred_language;
-    if (componentData.preferred_communication_method !== undefined) serviceData.preferred_communication_method = componentData.preferred_communication_method;
-    if (componentData.consent_terms !== undefined) serviceData.consent_terms = componentData.consent_terms;
-    if (componentData.consent_data_sharing !== undefined) serviceData.consent_data_sharing = componentData.consent_data_sharing;
-    if (componentData.consent_marketing !== undefined) serviceData.consent_marketing = componentData.consent_marketing;
-    
-    return serviceData;
+  private transformToServiceUpdateRequest(componentData: UpdateProfileRequest): UpdateProfileRequest {
+    return componentData;
   }
 
   private createProfileRequest(): CreateProfileRequest {
     const formValue = this.profileForm.value;
     return {
+      user_id: 1, // This should come from auth service
       first_name: formValue.first_name,
       last_name: formValue.last_name,
       birth_date: formValue.birth_date,
@@ -583,10 +545,25 @@ export class ProfileFormComponent implements OnInit, OnDestroy {
   }
 
   private createUpdateRequest(): UpdateProfileRequest {
-    const createRequest = this.createProfileRequest();
+    const formValue = this.profileForm.value;
     return {
-      ...createRequest,
-      id: this.profileId!
+      first_name: formValue.first_name,
+      last_name: formValue.last_name,
+      birth_date: formValue.birth_date,
+      gender: formValue.gender,
+      phone: formValue.phone,
+      occupation: formValue.occupation,
+      emergency_contact_name: formValue.emergency_contact_name,
+      emergency_contact_phone: formValue.emergency_contact_phone,
+      medical_history: this.filterValidArrayItems(formValue.medical_history),
+      allergies: this.filterValidArrayItems(formValue.allergies),
+      current_medications: this.filterValidArrayItems(formValue.current_medications),
+      lifestyle_factors: formValue.lifestyle_factors,
+      preferred_language: formValue.preferred_language,
+      preferred_communication_method: formValue.preferred_communication_method,
+      consent_terms: formValue.consent_terms,
+      consent_data_sharing: formValue.consent_data_sharing,
+      consent_marketing: formValue.consent_marketing
     };
   }
 

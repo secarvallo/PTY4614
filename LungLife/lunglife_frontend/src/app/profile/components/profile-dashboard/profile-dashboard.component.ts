@@ -3,9 +3,9 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { ProfileService } from '../../services/profile.service';
-import { UserProfile } from './profile-dashboard.interface';
-import { UserProfile as ServiceUserProfile } from '../../interfaces/profile.interface';
-import { Observable, map } from 'rxjs';
+import { UserProfile } from '../../interfaces/profile.interface';
+import { DashboardMetric, HealthSummary } from './profile-dashboard.interface';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-profile-dashboard',
@@ -26,35 +26,7 @@ export class ProfileDashboardComponent implements OnInit {
   ngOnInit() {
     // For now, we'll use a mock user ID
     // In a real app, this would come from the auth service
-    this.profile$ = this.profileService.getProfileByUserId(1).pipe(
-      map((serviceProfile: ServiceUserProfile) => this.transformToComponentProfile(serviceProfile))
-    );
-  }
-
-  private transformToComponentProfile(serviceProfile: ServiceUserProfile): UserProfile {
-    return {
-      id: serviceProfile.id || 0,
-      user_id: serviceProfile.user_id,
-      first_name: serviceProfile.first_name,
-      last_name: serviceProfile.last_name,
-      birth_date: serviceProfile.birth_date,
-      gender: serviceProfile.gender,
-      phone: serviceProfile.phone,
-      emergency_contact_name: serviceProfile.emergency_contact_name,
-      emergency_contact_phone: serviceProfile.emergency_contact_phone,
-      medical_history: serviceProfile.medical_history,
-      allergies: serviceProfile.allergies,
-      current_medications: serviceProfile.current_medications,
-      lifestyle_factors: serviceProfile.lifestyle_factors,
-      occupation: serviceProfile.occupation,
-      preferred_language: serviceProfile.preferred_language,
-      preferred_communication_method: serviceProfile.preferred_communication_method,
-      consent_terms: serviceProfile.consent_terms,
-      consent_data_sharing: serviceProfile.consent_data_sharing,
-      consent_marketing: serviceProfile.consent_marketing,
-      created_at: serviceProfile.created_at || '',
-      updated_at: serviceProfile.updated_at || ''
-    };
+    this.profile$ = this.profileService.getProfileByUserId(1);
   }
 
   calculateAge(birthDate: string): number {

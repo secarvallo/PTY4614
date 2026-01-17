@@ -1,5 +1,4 @@
 import { Component, inject } from '@angular/core';
-import { AsyncPipe } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { ThemeService } from '../../../core/services/theme.service';
 
@@ -8,7 +7,7 @@ import { ThemeService } from '../../../core/services/theme.service';
   templateUrl: './theme-toggle.component.html',
   styleUrls: ['./theme-toggle.component.scss'],
   standalone: true,
-  imports: [IonicModule, AsyncPipe]
+  imports: [IonicModule]
 })
 export class ThemeToggleComponent {
   private themeService = inject(ThemeService);

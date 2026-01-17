@@ -37,7 +37,8 @@ export interface OperatingSystem {
   created_at?: Date;
 }
 
-// Datos personales
+// ⚠️ NOTA: UserProfile específico de autenticación (NO confundir con el de profile module)
+// Este UserProfile es para datos básicos de auth, diferente del UserProfile médico completo
 export interface UserProfile {
   user_id: number;
   nombre: string;
