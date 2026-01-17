@@ -1,14 +1,47 @@
-### LungLife - Early Cancer Detection & Predictive Analytics.
+### LungLife - Diagnóstico temprano para el cáncer pulmonar.
+
+#### **Problemática**
+
+El cáncer es una enfermedad grave que puede invadir los órganos
+vitales y en muchas ocasiones ser mortal, según las estadísticas, es la segunda
+causa de muerte en Chile y a nivel mundial, sin embargo, un diagnóstico
+temprano mejora considerablemente la expectativa de vida de las personas
+afectadas por esta enfermedad. El machine Learning es de gran utilidad en el
+diagnóstico precoz del cáncer, los sistemas que lo incorporan pueden «aprender»
+sobre esta enfermedad y detectar una dolencia con la misma exactitud que un
+médico y comenzar a tratar los síntomas de la enfermedad cuando antes, incluso
+antes de que llegue a manifestarse.
 
 #### Descripción General
 
-El cáncer es una enfermedad grave que puede invadir los órganos vitales y en muchas ocasiones ser mortal, según las estadísticas, es la segunda causa de muerte en Chile y a nivel mundial, sin embargo, un diagnóstico temprano mejora considerablemente la expectativa de vida de las personas afectadas por esta enfermedad. El machine learning es de gran utilidad en el diagnóstico precoz del cáncer, los sistemas que lo incorporan pueden «aprender» sobre esta enfermedad y detectar una dolencia con la misma exactitud que un médico y comenzar a tratar los síntomas de la enfermedad cuando antes, incluso antes de que llegue a manifestarse.  
-
-El objetivo de este proyecto es desarrollar un sistema que prediga el cáncer en pacientes por medios de machine learning con metodologías CRISP-DM junto a un app mobile en base de ionic, que permita predecir si un paciente o varios pacientes pueden tener cáncer,identificar los factores de riesgos de estos pacientes, responder 5 preguntas de negocio y mostrar resultados predictivos utilizando Power BI, considerando la funcionalidad, usabilidad y confiabilidad del sistema, teniendo como usuarios finales personal de salud y usuario paciente.  
-
-La justificación de este proyecto radica en la urgente necesidad de desarrollar herramientas tecnológicas que apoyen la detección precoz del cáncer, específicamente el cáncer pulmonar, dado su impacto epidemiológico. El uso de machine learning permite analizar grandes volúmenes de datos clínicos y ambientales para identificar patrones predictivos con una precisión comparable a la de un especialista, facilitando diagnósticos antes de la aparición de síntomas. Este proyecto se propone cerrar la brecha en la detección temprana mediante un sistema que no solo predice la probabilidad de cáncer en pacientes, sino que también identifica factores de riesgo clave, optimizando la toma de decisiones clínicas y reduciendo la carga en los sistemas de salud.  
+El proyecto Lung Life surge como una respuesta tecnológica a la crítica situación
+del cáncer pulmonar en Chile, siendo la primera causa de muerte por cáncer a
+nivel nacional. Como una herramienta de salud digital, el sistema se enfoca en
+el desarrollo de un Producto Mínimo Viable (MVP) que integra Machine Learning
+para apoyar la detección temprana. Esta solución busca impactar positivamente
+en la supervivencia de pacientes en estadios iniciales (Estadio I), donde la
+intervención oportuna incrementa la probabilidad de éxito entre un 88% y 92%
 
 #### Arquitectura del Sistema
+
+### Arquitectura 3 Capas / 3-Tier Architecture
+
+```mermaid
+flowchart LR
+    A["Frontend"] -- HTTP/REST + JWT --> B["Backend"]
+    B -- SQL --> C[("PostgreSQL")]
+    B <-. API REST .-> D["Modelo ML"]
+
+     A:::Peach
+     B:::Peach
+     D:::Peach
+    classDef Aqua stroke-width:1px, stroke-dasharray:none, stroke:#46EDC8, fill:#DEFFF8, color:#378E7A
+    classDef Peach stroke-width:1px, stroke-dasharray:none, stroke:#FBB35A, fill:#FFEFDB, color:#8F632D
+    style A fill:#FFF9C4,stroke:#FFF9C4,stroke-width:2px
+    style B fill:#E1BEE7,stroke:#E1BEE7,stroke-width:2px
+    style C fill:#336791,stroke:#333,stroke-width:2px
+    style D fill:#BBDEFB,stroke:#BBDEFB,stroke-width:2px
+```
 
 #### Frontend Mobile (Ionic + Angular Standalone)
 
@@ -62,59 +95,9 @@ La justificación de este proyecto radica en la urgente necesidad de desarrollar
 - **Logging**: Sistema de logging estructurado
 - **Testing**: Tests unitarios e integración  
 
-#### Google Colab
+#### 
 
-La elección de Google Colaboratory (Colab) como plataforma para un proyecto de machine learning ofrece una base sólida y eficiente desde el inicio. Esta herramienta basada en la nube elimina las barreras de configuración de entorno, proporcionando acceso gratuito a recursos computacionales potentes como GPUs, esenciales para acelerar el entrenamiento de modelos complejos. Su entorno interactivo de notebooks, basado en Jupyter, es ideal para el desarrollo de un flujo de trabajo secuencial que abarca desde la carga y exploración de datos hasta el entrenamiento y la evaluación de algoritmos. Además, su integración nativa con Google Drive simplifica enormemente el manejo de datasets, el control de versiones de los notebooks y la persistencia de los modelos entrenados, permitiendo que el enfoque se centre directamente en la experimentación y el desarrollo desde el primer momento.  
-
-**[Google Drive CRISP-DM](https://drive.google.com/drive/folders/1PfLfkxpk_ykxriyJQuFAnnRtgT9plHA8?usp=drive_link)**  
-
-#### CRISP-DM
-
-[Business Understand](https://colab.research.google.com/drive/1-_ws0-wYwStwEON1uKARBl6UNOegKZo-?authuser=1)  
-[Data Understand](https://colab.research.google.com/drive/1Zf6HPZYlpLpLnplN92aQG4ajqO8mc-5e?authuser=1)  
-[Data Preparation](https://colab.research.google.com/drive/1n6MeKtCK6GX_o4FPIcqialJdO3vufyhn?authuser=1)  
-[Modeling](https://colab.research.google.com/drive/1rgKTA53S9-GKi3ruG0hF2FAsD1_900LI?authuser=1)  
-[Evaluation](https://colab.research.google.com/drive/1upzA1r_le8WYYV54FDa78P-7Gxds_mQv?authuser=1)  
-[Deployment](https://colab.research.google.com/drive/19wDxKsoqpfZHwMKHP5IfgWNA8-CHoEM9?authuser=1)  
-
-###### Estructura de directorios LungLife_ml
-
-<pre style="font-size: 14px;">
-crisp_dm/                            # Carpeta principal en Google Drive
-│
-├── data/                            # Almacenamiento de datos
-│   ├── raw/                         # Datos originales
-│   ├── processed/                   # Datos listos para modelado
-│   └── external/                    # Datos externos (opcional)
-│
-├── database/                        # Base de datos
-│
-├── notebooks/                       # Jupyter notebooks para CRISP-DM
-│   ├── 01_business_understanding.ipynb
-│   ├── 02_data_understanding.ipynb
-│   ├── 03_data_preparation.ipynb
-│   ├── 04_modeling.ipynb
-│   ├── 05_evaluation.ipynb
-│   ├── 06_deployment.ipynb
-│   └── 06_powerbi_visualization.ipynb
-│
-├── src/                             # Código fuente
-│
-├── models/                          # Modelos entrenados
-│
-├── config/                          # Configuraciones
-│
-├── docs/                            # Documentación
-│
-├── visualizations/                  # Visualizaciones
-│
-├── tests/                           # Pruebas unitarias
-│
-├── requirements.txt                 # Dependencias del proyecto
-└── README.md                        # Documentación principal  
-</pre>
-
-####Jira Herramienta de Seguimiento SCRUM - Metodología Ágil  
+#### Jira Herramienta de Seguimiento SCRUM - Metodología Ágil
 
 ###### Fundamentación Estratégica
 
@@ -125,12 +108,14 @@ La implementación de Atlassian Jira como plataforma central de gestión ágil p
 __Product Backlog:__ Organización jerárquica de Epics, Stories, y Tasks con priorización dinámica  
 __Sprint Backlog:__ Planificación detallada con estimación en Story Points y capacidad de equipo  
 __Sprint Board:__ Visualización Kanban en tiempo real (To Do, In Progress, Code Review, Done)  
-__Burndown Charts:__ Monitoreo automático del progreso del sprint y velocity del equipo  
+__Burndown Charts:__ Monitoreo automático del progreso del sprint y velocity del equipo   
+
 2. __Roles y Responsabilidades Definidas:__  
 
 __Product Owner:__ Control total sobre backlog prioritization y acceptance criteria  
 __Scrum Master:__ Dashboards especializados para identificar impedimentos y métricas de rendimiento  
 __Development Team:__ Asignación transparente de tareas con tracking de tiempo y esfuerzo  
+
 3. __Ceremonias SCRUM Optimizadas:__  
 
 __Sprint Planning:__ Templates automatizados con estimación colaborativa y capacity planning  
@@ -186,49 +171,3 @@ __develop__        # Rama principal de desarrollo, integración continua
    __github/workflow-setup__    # Configuración de GitHub (templates, actions)  
    __jira/automation-rules__    # Integración y automatización con Jira  
    __privacy/gdpr-compliance__  # Cumplimiento de privacidad y regulaciones   
-
-#### Configuración de Entornos & Tools Env.
-
-###### IDE Visual Studio Code
-
-    August 2025 (version 1.104)
-
-Release date: September 11, 2025
-Update 1.104.1: The update addresses these issues.
-Update 1.104.2: The update addresses these issues.   
-
-###### IDE JETBRAINS
-
-###### DataSpell 2025.2
-
-    Build #DS-252.23892.514, built on August 11, 2025  
-
-###### WebStorm 2025.2.2
-
-    Build #WS-252.26199.162, built on September 18, 2025 
-
-##### Data Base
-
-##### PosgreSQL
-
-    pgAdmin 4 Version 9.8
-
-##### Abricotine
-
-    Abricotine - Markdown Editor
-    Copyright (c) 2020 Thomas Brouard
-
-> This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
-
-Empresa de distribución de energía
-Diagnóstico de Situación Actual y Recomendaciones
-Coordenadas geograficas
-historial de deudas
-emplazamiento (rural/urbano)
-Imágenes satelitales urbanas
-imágenes satelitales rurales
-
-# habitantes/ vivienda
-
-Mediciones inteligentes
-flujos de equipo

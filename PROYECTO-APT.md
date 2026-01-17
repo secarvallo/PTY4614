@@ -1,13 +1,6 @@
 PAGE 1:
 Proyecto APT  - Escuela  
 Fase 2  
- 
- 
- 
- 
- 
- 
- 
 1. Propuesta Proyecto APT  - Escuela  
  
 Cada unidad académica (Escuela) debe disponer de Proyectos APT para todas las áreas de desempeño de 
