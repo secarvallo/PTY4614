@@ -1,0 +1,80 @@
+<ion-content class="ion-padding" data-test="register-success-page">
+  <div class="welcome-container">
+    <div class="action-section success-section">
+
+      <!-- Success Icon -->
+      <div class="success-icon-wrapper">
+        <div class="success-icon-bg"></div>
+        <div class="success-icon">
+          <ion-icon name="checkmark-sharp"></ion-icon>
+        </div>
+      </div>
+
+      <!-- Success Message -->
+      <div class="success-message">
+        <h1>{{ roleTitle }}</h1>
+        <p>{{ roleSubtitle }}</p>
+      </div>
+
+      <!-- Profile Card -->
+      <div class="profile-card">
+        <div class="profile-header">
+          <div class="profile-avatar" [class.doctor]="isDoctor">
+            <ion-icon name="person-outline"></ion-icon>
+          </div>
+          <div class="profile-info">
+            <span class="profile-label">DETALLES DEL PERFIL</span>
+            <h3 class="profile-name">{{ registrationDetails().fullName }}</h3>
+            <div class="profile-role" [class.doctor]="isDoctor">
+              <ion-icon [name]="roleIcon"></ion-icon>
+              <span>{{ roleLabel }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="profile-divider"></div>
+
+        <div class="profile-details">
+          <div class="detail-item">
+            <span class="detail-label">UBICACIÓN</span>
+            <span class="detail-value">{{ registrationDetails().location }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">ID REGISTRO</span>
+            <span class="detail-value">{{ registrationDetails().registrationId }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="action-buttons">
+        <ion-button 
+          expand="block" 
+          class="primary-button"
+          (click)="goToLogin()"
+          data-test="go-to-login-button">
+          Volver a Usuarios
+        </ion-button>
+
+        <ion-button 
+          expand="block" 
+          class="email-button"
+          [disabled]="sendingEmail()"
+          (click)="sendCredentialsByEmail()"
+          data-test="send-email-button">
+          <ion-icon name="mail-outline" slot="start"></ion-icon>
+          {{ sendingEmail() ? 'Enviando...' : 'Enviar credenciales por Email' }}
+        </ion-button>
+
+        <button 
+          class="secondary-link"
+          (click)="createAnotherUser()"
+          data-test="create-another-button">
+          <ion-icon name="person-add-outline"></ion-icon>
+          <span>Crear otro usuario</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+</ion-content>
