@@ -1,0 +1,57 @@
+<ion-content class="ion-padding" data-test="role-selection-page">
+  <div class="welcome-container">
+    <div class="action-section role-selection-section">
+      
+      <!-- Logo -->
+      <div class="logo-container">
+        <img src="assets/icon/logo-lung-life@3x.png" alt="LungLife Logo" class="logo-img">
+      </div>
+
+      <!-- Header -->
+      <div class="auth-header">
+        <h1>Para comenzar, selecciona tu rol</h1>
+        <p>Personalizaremos tu experiencia según tu perfil</p>
+      </div>
+
+      <!-- Role Options -->
+      <div class="role-options">
+        @for (role of roles; track role.id) {
+          <div 
+            class="role-card" 
+            [class.selected]="isSelected(role.id)"
+            (click)="selectRole(role.id)"
+            [attr.data-test]="'role-' + role.id.toLowerCase()">
+            
+            <div class="role-icon">
+              <ion-icon [name]="role.icon"></ion-icon>
+            </div>
+            
+            <div class="role-info">
+              <h3>{{ role.title }}</h3>
+              <p>{{ role.description }}</p>
+            </div>
+            
+            <ion-icon name="chevron-forward-outline" class="arrow-icon"></ion-icon>
+          </div>
+        }
+      </div>
+
+      <!-- Continue Button -->
+      <ion-button 
+        expand="block" 
+        class="continue-button"
+        [disabled]="!canContinue()"
+        (click)="continueToRegister()"
+        data-test="continue-button">
+        Continuar
+      </ion-button>
+
+      <!-- Login Link -->
+      <div class="login-link">
+        <p>¿Ya tienes cuenta?</p>
+        <a routerLink="/auth/login">Inicia sesión</a>
+      </div>
+
+    </div>
+  </div>
+</ion-content>
