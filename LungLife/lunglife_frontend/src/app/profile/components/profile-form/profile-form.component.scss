@@ -1,655 +1,541 @@
-/* Profile Form - Login Reference */
-
-/* ========== VARIABLES CSS PARA CONSISTENCIA EXACTA ========== */
-:root {
-  --surface: var(--ion-background-color, #ffffff);
-  --border: var(--ion-color-step-300, #e1e5e9);
-  --primary: var(--ion-color-primary, #007aff);
-  --text: var(--ion-text-color, #1d1d1f);
-  --text-light: var(--ion-color-step-600, #8e8e93);
-}
-
-[data-theme="dark"] {
-  --surface: var(--ion-color-step-100);
-  --border: var(--ion-color-step-600);
-  --text: var(--ion-color-light);
-  --text-light: var(--ion-color-step-400);
-}
+/**
+ * Profile Form Styles
+ * 
+ * Uses global auth styles for consistency.
+ * This file only contains profile-specific overrides.
+ * 
+ * Note: Centering and responsive layout is handled by shared-layout.scss
+ */
 
 /* ========== ANIMACIONES ========== */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 @keyframes spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
 
-/* ========== ESTRUCTURA BASE ========== */
-.profile-content {
-  background: var(--ion-background-color);
-  min-height: 100vh;
+/* ========== HEADER CON BOTÓN DE EDICIÓN ========== */
+.auth-header {
+  .header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    width: 100%;
+
+    .header-text {
+      flex: 1;
+      
+      h1 {
+        margin: 0 0 0.5rem 0;
+      }
+      
+      p {
+        margin: 0;
+      }
+    }
+
+    .edit-button {
+      flex-shrink: 0;
+      --color: var(--ion-color-primary);
+      --padding-start: 8px;
+      --padding-end: 8px;
+      font-size: 1.5rem;
+      margin-top: 4px;
+      
+      ion-icon {
+        font-size: 1.5rem;
+      }
+
+      &:hover {
+        --background: var(--ion-color-primary-tint);
+      }
+    }
+  }
 }
 
-.content-wrapper {
-  min-height: 100vh;
-  padding: 6vh 20px 4vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  background: var(--ion-background-color);
+/* ========== ENSURE INPUTS USE AUTH STYLES ========== */
+// Force profile-form inputs to use auth-form styling
+.profile-form {
+  .form-group ion-item {
+    // Ensure all base auth styles are applied
+    --background: transparent;
+    --border-width: 0;
+    --padding-start: 0;
+    --padding-end: 0;
+    --min-height: 56px;
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: 16px;
+    margin-bottom: 8px;
+    padding: 0 20px;
+    transition: all 0.2s ease;
+    width: 100%;
+    max-width: 100%;
+    height: 56px;
+    font-size: 16px;
+
+    &:focus-within {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.1);
+    }
+
+    &:hover {
+      border-color: var(--border);
+    }
+
+    &.error {
+      border-color: #ff3b30;
+      background: rgba(255, 59, 48, 0.03);
+      box-shadow: 0 0 0 4px rgba(255, 59, 48, 0.1);
+    }
+
+    // Estilo para campos deshabilitados (modo visualización)
+    &.item-disabled {
+      opacity: 0.8;
+      background: var(--ion-color-step-50);
+      border-color: var(--ion-color-step-150);
+      cursor: not-allowed;
+      
+      ion-input,
+      ion-select {
+        --color: var(--ion-color-step-600);
+      }
+    }
+
+    ion-input,
+    ion-select {
+      --color: var(--text);
+      --placeholder-color: var(--text-light);
+      font-size: 16px;
+      font-weight: 500;
+      width: 100%;
+      height: 100%;
+      line-height: 1.4;
+    }
+  }
+
+  .error-message {
+    color: #ff3b30;
+    font-size: 14px;
+    margin-top: 4px;
+    font-weight: 500;
+  }
+
+  .view-field {
+    background: var(--ion-color-light);
+    border: 1px solid var(--ion-color-step-150);
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+
+    label {
+      font-size: 0.85rem;
+      color: var(--ion-color-medium);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin: 0;
+    }
+
+    p {
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--ion-text-color);
+    }
+  }
 }
 
-.centered-container {
-  width: 100%;
-  max-width: 800px;
-  display: flex;
-  justify-content: center;
-}
-
-.profile-container {
-  background: var(--surface);
-  border-radius: 20px;
-  padding: 32px;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
-  border: none;
-  width: 100%;
-  max-width: 600px;
-}
-
-[data-theme="dark"] .profile-container {
-  background: var(--ion-color-step-100);
-  box-shadow: 0 4px 24px rgba(0,0,0,0.4);
-}
-
-/* ========== HEADER ========== */
-.profile-header {
-  text-align: center;
-  margin-bottom: 32px;
-}
-
-.logo-placeholder {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  margin: 0 auto 20px;
-  background: linear-gradient(135deg, #007aff 0%, #005ce6 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 6px 20px rgba(0, 122, 255, 0.3);
-}
-
-[data-theme="dark"] .logo-placeholder {
-  box-shadow: 0 6px 20px rgba(0, 122, 255, 0.2);
-}
-
-.logo-placeholder::before {
-  content: '🫁';
-  font-size: 32px;
-  filter: brightness(0) invert(1);
-}
-
-.profile-header h1 {
-  font-size: 28px;
-  font-weight: 700;
-  color: var(--ion-color-primary);
-  margin: 0 0 8px 0;
-  letter-spacing: -0.02em;
-}
-
-.profile-header p {
-  color: var(--text-light);
-  font-size: 16px;
-  margin: 0;
-  font-weight: 400;
-}
-
-/* ========== INDICADORES ========== */
+/* ========== PROGRESS INDICATOR ========== */
 .progress-container {
-  background: var(--surface);
-  border-radius: 20px;
-  padding: 10px;
-  margin-bottom: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-  border: 1px solid rgba(var(--ion-color-primary-rgb), 0.1);
+  background: var(--ion-background-color);
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid var(--ion-color-step-150);
 }
 
 .progress-bar {
   height: 6px;
-  background: rgba(var(--ion-color-primary-rgb), 0.1);
+  background: var(--ion-color-step-150);
   border-radius: 3px;
   overflow: hidden;
-  margin-bottom: 8px;
+  margin-bottom: 0.75rem;
 }
 
 .progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, var(--ion-color-primary), var(--ion-color-primary-tint));
+  background: var(--ion-color-primary);
   border-radius: 3px;
-  transition: width 0.3s ease;
+  transition: width 0.4s ease;
 }
 
 .progress-text {
-  font-size: 13px;
-  color: var(--ion-color-primary);
-  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--ion-color-medium);
+  font-weight: 500;
   text-align: center;
   margin: 0;
 }
 
+/* ========== AUTO SAVE INDICATOR ========== */
 .auto-save-indicator {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 8px 16px;
-  background: rgba(var(--ion-color-success-rgb), 0.1);
-  font-size: 13px;
-  color: var(--ion-color-success);
-  transition: all 0.3s ease;
-}
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1.5rem;
+  background: var(--ion-color-light);
+  border-radius: 8px;
+  font-size: 0.875rem;
+  color: var(--ion-color-medium);
+  transition: all 0.2s ease;
 
-.auto-save-indicator.saving {
-  background: rgba(var(--ion-color-warning-rgb), 0.1);
-  color: var(--ion-color-warning);
-}
+  &.saving {
+    background: rgba(var(--ion-color-warning-rgb), 0.1);
+    color: var(--ion-color-warning);
+    
+    ion-icon {
+      animation: spin 1s linear infinite;
+    }
+  }
 
-.auto-save-indicator.saving ion-icon {
-  animation: spin 1s linear infinite;
-}
-
-.auto-save-indicator.saved {
-  background: rgba(var(--ion-color-success-rgb), 0.1);
-  color: var(--ion-color-success);
+  &.saved {
+    background: rgba(var(--ion-color-success-rgb), 0.1);
+    color: var(--ion-color-success);
+  }
 }
 
 /* ========== TABS ========== */
 .form-tabs {
-  margin-bottom: 32px;
+  margin-bottom: 2rem;
+
+  ion-segment {
+    --background: var(--ion-color-light);
+    border-radius: 12px;
+    padding: 4px;
+  }
+
+  ion-segment-button {
+    --color: var(--ion-color-medium);
+    --color-checked: var(--ion-color-primary);
+    --background-checked: var(--ion-background-color);
+    --border-radius: 8px;
+    min-height: 44px;
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+
+  .tab-indicator {
+    position: absolute;
+    bottom: 4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: transparent;
+    transition: background 0.2s ease;
+
+    &.complete {
+      background: var(--ion-color-success);
+    }
+  }
 }
 
-.form-tabs ion-segment {
-  --background: rgba(var(--ion-color-light-rgb), 0.5);
-  border-radius: 16px;
-  padding: 4px;
-}
-
-.form-tabs ion-segment-button {
-  --color: var(--text-light);
-  --color-checked: var(--primary);
-  --background-checked: white;
-  --border-radius: 12px;
-  min-height: 48px;
-  position: relative;
-  transition: all 0.2s ease;
-}
-
-/* ========== SECCIONES DE FORMULARIO ========== */
+/* ========== FORM SECTIONS ========== */
 .form-section {
-  margin-bottom: 32px;
+  margin-bottom: 2rem;
 }
 
 .form-section-header {
-  margin: 0 auto 24px;
-  max-width: 600px;
-  text-align: left;
-  padding: 16px;
-  background: rgba(var(--ion-color-primary-rgb), 0.05);
-  border-radius: 16px;
-  border: 1px solid rgba(var(--ion-color-primary-rgb), 0.1);
+  text-align: center;
+  margin-bottom: 2rem;
+  padding: 1.25rem;
+  background: var(--ion-color-light);
+  border-radius: 12px;
+
+  h3 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--ion-color-primary);
+    margin: 0 0 0.5rem 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+
+    ion-icon {
+      font-size: 1.25rem;
+    }
+  }
+
+  p {
+    font-size: 0.875rem;
+    color: var(--ion-color-medium);
+    margin: 0;
+  }
 }
 
-.form-section-header h3 {
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--primary);
-  margin: 0 0 6px 0;
-  display: flex;
-  align-items: center;
-  gap: 8px;
+.subsection {
+  margin: 2rem 0;
+
+  h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--ion-color-primary);
+    margin: 0 0 1rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    ion-icon {
+      font-size: 1.125rem;
+    }
+  }
 }
 
-.form-section-header p {
-  font-size: 14px;
-  color: var(--text-light);
-  margin: 0;
-}
-
-.subsection h4 {
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--primary);
-  margin: 24px auto 16px;
-  max-width: 600px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-/* ========== FORMULARIO - ESTILOS EXACTOS DEL LOGIN ========== */
-.profile-form {
-  width: 100%;
-}
-
-.profile-form .form-group {
-  width: 100%;
-  max-width: 600px;
-  margin: 0 auto 16px;
-}
-
-.profile-form .form-group ion-item {
-  --background: transparent;
-  --border-width: 0;
-  --padding-start: 0;
-  --padding-end: 0;
-  --min-height: 56px;
-  background: var(--surface);
-  border: 2px solid var(--border);
-  border-radius: 16px;
-  padding: 0 20px;
-  transition: all 0.2s ease;
-  animation: fadeIn 0.3s ease-out;
-  width: 100%;
-  max-width: 600px;
-  height: 56px;
-  font-size: 16px;
-}
-
-.profile-form .form-group ion-item:focus-within {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.1);
-}
-
-.profile-form .form-group ion-item:hover {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.1);
-}
-
-.profile-form .form-group ion-item.error {
-  border-color: #ff3b30;
-  background: rgba(255, 59, 48, 0.03);
-  box-shadow: 0 0 0 4px rgba(255, 59, 48, 0.1);
-}
-
-.profile-form .form-group ion-item ion-input,
-.profile-form .form-group ion-item ion-select {
-  --color: var(--text);
-  --placeholder-color: var(--text-light);
-  font-size: 16px;
-  font-weight: 500;
-  line-height: 1.4;
-  width: 100%;
-  height: 100%;
-}
-
-.profile-form .dynamic-item {
+/* ========== DYNAMIC FORM ARRAYS ========== */
+.dynamic-item {
   position: relative;
-  width: 100%;
-  max-width: 600px;
-  margin: 16px auto;
+  margin-bottom: 1rem;
+
+  ion-item {
+    --padding-end: 52px;
+    position: relative;
+  }
+
+  ion-button[slot="end"] {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    margin: 0;
+    width: 36px;
+    height: 36px;
+    --color: var(--ion-color-danger);
+    --background: transparent;
+
+    &:hover {
+      --background: rgba(var(--ion-color-danger-rgb), 0.1);
+    }
+  }
 }
 
-.profile-form .dynamic-item ion-item {
-  --background: transparent;
-  --border-width: 0;
-  --padding-start: 0;
-  --padding-end: 0;
-  --min-height: 56px;
-  background: var(--surface);
-  border: 2px solid var(--border);
-  border-radius: 16px;
-  margin-bottom: 8px;
-  padding: 0 52px 0 20px;
-  transition: all 0.2s ease;
-  animation: fadeIn 0.3s ease-out;
-  width: 100%;
-  max-width: 600px;
-  height: 56px;
-  font-size: 16px;
-  position: relative;
-}
-
-.profile-form .dynamic-item ion-item:focus-within {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.1);
-}
-
-.profile-form .dynamic-item ion-item:hover {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.1);
-}
-
-.profile-form .dynamic-item ion-item ion-input {
-  --color: var(--text);
-  --placeholder-color: var(--text-light);
-  font-size: 16px;
-  font-weight: 500;
-  line-height: 1.4;
-  width: 100%;
-  height: 100%;
-}
-
-.profile-form .dynamic-item ion-item ion-button[slot="end"] {
-  --color: var(--ion-color-danger);
-  --background: rgba(var(--ion-color-danger-rgb), 0.1);
-  --border-radius: 8px;
-  position: absolute;
-  right: 8px;
-  top: 50%;
-  transform: translateY(-50%) scale(0.9);
-  z-index: 10;
-  margin: 0;
-  width: 32px;
-  height: 32px;
-  opacity: 0.8;
-  transition: all 0.2s ease;
-}
-
-.profile-form .dynamic-item ion-item ion-button[slot="end"]:hover {
-  --background: var(--ion-color-danger);
-  --color: white;
-  transform: translateY(-50%) scale(1);
-  opacity: 1;
-}
-
-/* ========== MENSAJES DE ERROR - EXACTOS DEL LOGIN ========== */
-.error-message {
-  color: #ff3b30;
-  font-size: 14px;
-  margin-top: 4px;
-  font-weight: 500;
-}
-
-/* ========== ELEMENTOS ESPECÍFICOS DEL PROFILE ========== */
-.form-label {
-  display: block;
-  color: var(--text);
-  font-size: 14px;
-  font-weight: 600;
-  margin-bottom: 8px;
-  margin-left: 4px;
-}
-
+/* ========== PROFILE-SPECIFIC ELEMENTS ========== */
 .age-display {
-  padding: 8px 16px;
-  background: rgba(var(--ion-color-success-rgb), 0.08);
+  padding: 0.5rem 1rem;
+  background: var(--ion-color-light);
   border-radius: 8px;
-  margin-top: 8px;
-  font-size: 13px;
-  color: var(--ion-color-success);
-  font-weight: 600;
-  border: 1px solid rgba(var(--ion-color-success-rgb), 0.2);
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--ion-color-medium);
+  font-weight: 500;
+  text-align: center;
 }
 
-/* ========== BOTONES ========== */
+/* ========== ADD BUTTONS ========== */
 .add-button {
   --background: transparent;
-  --border-radius: 16px;
-  --border-width: 2px;
-  --border-color: var(--primary);
-  --color: var(--primary);
-  margin: 16px auto;
-  height: 48px;
-  width: 100%;
-  max-width: 600px;
-  font-weight: 600;
-  font-size: 15px;
+  --border-width: 1px;
+  --border-color: var(--ion-color-primary);
+  --color: var(--ion-color-primary);
+  margin: 1rem 0;
+  height: 44px;
+  font-weight: 500;
+  font-size: 0.875rem;
   text-transform: none;
-  transition: all 0.2s ease;
+
+  &:hover {
+    --background: var(--ion-color-light);
+  }
 }
 
-.add-button:hover {
-  --background: var(--primary);
-  --color: white;
-}
-
-/* ========== SECCIONES DE CONSENTIMIENTO ========== */
+/* ========== CONSENT SECTION ========== */
 .consent-section {
-  margin-top: 32px;
-}
+  margin-top: 2rem;
 
-.consent-section h4 {
-  color: var(--text);
-  font-size: 18px;
-  font-weight: 700;
-  margin-bottom: 20px;
+  h4 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    color: var(--ion-text-color);
+  }
 }
 
 .checkbox-group {
-  margin: 20px auto;
-  gap: 16px;
   display: flex;
   flex-direction: column;
-  max-width: 600px;
+  gap: 1rem;
 }
 
 .checkbox-item {
   display: flex;
   align-items: flex-start;
-  gap: 16px;
-  padding: 20px;
-  background: var(--surface);
-  border: 1px solid var(--border);
+  gap: 1rem;
+  padding: 1rem;
+  background: var(--ion-color-light);
   border-radius: 12px;
-  transition: all 0.2s ease;
-  cursor: pointer;
+  transition: background 0.2s ease;
+
+  &:hover {
+    background: var(--ion-color-step-100);
+  }
+
+  ion-label {
+    h3 {
+      font-size: 0.9375rem;
+      font-weight: 500;
+      margin: 0 0 0.25rem 0;
+      color: var(--ion-text-color);
+    }
+
+    p {
+      font-size: 0.8125rem;
+      margin: 0;
+      color: var(--ion-color-medium);
+      line-height: 1.4;
+    }
+  }
 }
 
-.checkbox-item:hover {
-  border-color: var(--primary);
-}
-
-.checkbox-item ion-label h3 {
-  font-size: 15px;
-  font-weight: 600;
-  margin: 0 0 4px 0;
-  line-height: 1.4;
-}
-
-.checkbox-item ion-label p {
-  font-size: 13px;
-  font-weight: 400;
-  margin: 0;
-  color: var(--text-light);
-  line-height: 1.4;
-}
-
-/* ========== BOTONES DE ACCIÓN ========== */
+/* ========== FORM ACTIONS ========== */
 .form-actions {
-  border-top: 1px solid var(--border);
-  padding-top: 32px;
-  margin-top: 32px;
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--ion-color-step-150);
 }
 
 .button-group {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  width: 100%;
-  max-width: 600px;
-  margin: 0 auto 24px;
+  gap: 0.75rem;
 }
 
 .secondary-button {
   --background: transparent;
-  --color: var(--text);
-  --border-radius: 16px;
-  --border-width: 2px;
-  --border-color: var(--border);
-  height: 56px;
-  font-weight: 600;
-  font-size: 16px;
+  --border-width: 1px;
+  --border-color: var(--ion-color-step-300);
+  --color: var(--ion-color-medium);
+  height: 48px;
+  font-weight: 500;
   text-transform: none;
-  transition: all 0.2s ease;
-}
 
-.secondary-button:hover {
-  --border-color: var(--primary);
-  --color: var(--primary);
+  &:hover {
+    --border-color: var(--ion-color-primary);
+    --color: var(--ion-color-primary);
+  }
 }
 
 .primary-button {
-  --background: var(--primary);
+  --background: var(--ion-color-primary);
   --color: white;
-  --border-radius: 28px;
-  --border-width: 0;
-  height: 56px;
-  font-size: 16px;
-  font-weight: 700;
+  height: 52px;
+  font-weight: 600;
+  font-size: 1rem;
   text-transform: none;
-  margin: 24px auto;
-  max-width: 280px;
-  box-shadow: 0 6px 20px rgba(0, 122, 255, 0.35);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
+  margin-top: 0.5rem;
 
-.primary-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 30px rgba(0, 122, 255, 0.45);
-  border-radius: 30px;
-}
+  &:hover {
+    --background: var(--ion-color-primary-shade);
+  }
 
-.primary-button:disabled {
-  opacity: 0.6;
-  transform: none;
-  box-shadow: 0 6px 20px rgba(0, 122, 255, 0.2);
-  cursor: not-allowed;
+  &:disabled {
+    opacity: 0.5;
+  }
 }
 
 /* ========== VALIDATION SUMMARY ========== */
 .validation-summary {
-  padding: 20px;
-  background: rgba(var(--ion-color-warning-rgb), 0.08);
-  border-radius: 12px;
-  border: 1px solid rgba(var(--ion-color-warning-rgb), 0.2);
-}
+  padding: 1rem;
+  margin-top: 1rem;
+  background: rgba(var(--ion-color-warning-rgb), 0.1);
+  border-radius: 8px;
 
-.validation-summary h4 {
-  color: var(--ion-color-warning-shade);
-  font-size: 15px;
-  font-weight: 700;
-  margin: 0 0 12px 0;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
+  h4 {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--ion-color-warning-shade);
+    margin: 0 0 0.75rem 0;
+  }
 
-.validation-summary h4::before {
-  content: '⚠️';
-  font-size: 16px;
-}
+  ul {
+    margin: 0;
+    padding-left: 1.25rem;
+    font-size: 0.875rem;
+    color: var(--ion-color-medium);
 
-/* ========== FOOTER ========== */
-.auth-footer {
-  text-align: center;
-  margin-top: 32px;
-  color: var(--text-light);
-  font-size: 15px;
-}
-
-.auth-footer p a {
-  color: var(--primary);
-  text-decoration: none;
-  font-weight: 600;
-}
-
-.auth-footer p a:hover {
-  text-decoration: underline;
+    li {
+      margin-bottom: 0.25rem;
+    }
+  }
 }
 
 /* ========== RESPONSIVE DESIGN ========== */
 @media (max-width: 768px) {
-  .content-wrapper {
-    padding: 4vh 15px 3vh;
+  .form-tabs ion-segment-button {
+    font-size: 0.8125rem;
+    min-height: 40px;
   }
-  .profile-container {
-    padding: 20px;
-    margin: 0 10px;
-    border-radius: 16px;
-  }
-  .profile-header h1 {
-    font-size: 24px;
-  }
-  .logo-placeholder {
-    width: 64px;
-    height: 64px;
-  }
-  .primary-button {
-    height: 48px !important;
-    font-size: 16px !important;
-    margin: 16px auto !important;
-  }
-  .secondary-button {
-    height: 48px !important;
-    font-size: 16px !important;
+
+  .form-section-header {
+    padding: 1rem;
+
+    h3 {
+      font-size: 1.0625rem;
+    }
+
+    p {
+      font-size: 0.8125rem;
+    }
   }
 }
 
 @media (max-width: 480px) {
-  .content-wrapper {
-    padding: 3vh 10px 2vh;
+  .progress-container {
+    padding: 0.75rem;
   }
-  .profile-container {
-    padding: 16px;
-    margin: 0 8px;
+
+  .auto-save-indicator {
+    padding: 0.625rem 0.75rem;
+    font-size: 0.8125rem;
   }
-  .profile-form .form-group ion-item,
-  .profile-form .dynamic-item ion-item {
-    height: 56px !important;
-    min-height: 56px !important;
-    font-size: 16px !important;
+
+  .form-tabs ion-segment-button {
+    font-size: 0.75rem;
+    min-height: 36px;
   }
-}
 
-/* ========== TEMA DARK ========== */
-[data-theme="dark"] .progress-container,
-[data-theme="dark"] .form-section-header {
-  background: rgba(var(--ion-color-primary-rgb), 0.1);
-  border-color: rgba(var(--ion-color-primary-rgb), 0.2);
-}
-
-[data-theme="dark"] .checkbox-item {
-  background: rgba(255, 255, 255, 0.05);
-}
-
-[data-theme="dark"] .primary-button {
-  box-shadow: 0 6px 20px rgba(0, 122, 255, 0.25) !important;
-}
-
-[data-theme="dark"] .primary-button:hover {
-  box-shadow: 0 10px 30px rgba(0, 122, 255, 0.35) !important;
-}
-
-/* ========== ACCESSIBILITY ========== */
-@media (prefers-reduced-motion: reduce) {
-  .progress-fill,
-  .auto-save-indicator,
-  .add-button,
-  .checkbox-item {
-    transition: none;
-    animation: none;
+  .button-group {
+    gap: 0.5rem;
   }
-  .primary-button:hover {
-    transform: none !important;
+
+  .primary-button,
+  .secondary-button {
+    height: 44px;
   }
 }
 
-@media (prefers-contrast: high) {
-  .profile-form .form-group ion-item,
-  .profile-form .dynamic-item ion-item {
-    border-width: 3px;
-  }
-  .add-button {
-    --border-width: 3px;
+/* ========== NAVIGATION SECTION ========== */
+.navigation-section {
+  margin-top: 24px;
+  padding-top: 16px;
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--primary, #007aff);
+  text-decoration: none;
+  margin-bottom: 16px;
+  
+  &:hover {
+    text-decoration: underline;
   }
 }

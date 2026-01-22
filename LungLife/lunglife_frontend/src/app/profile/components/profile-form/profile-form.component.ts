@@ -1,9 +1,13 @@
 import { Component, OnInit, OnDestroy, inject, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormsModule, FormBuilder, FormGroup, Validators, FormArray, AbstractControl } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule, FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
 import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 import { IonicModule, AlertController, ToastController, LoadingController } from '@ionic/angular';
 import { ProfileService } from '../../services/profile.service';
+import { MedicalHistoryService } from '../../services/medical-history.service';
+import { LifestyleService } from '../../services/lifestyle.service';
+import { AuthFacadeService } from '../../../auth/core/services/application/auth-facade.service';
+import { LogoutButtonComponent } from '../../../shared/components/logout-button/logout-button.component';
 import { 
   UserProfile, 
   CreateProfileRequest, 
@@ -16,21 +20,13 @@ import {
   ExerciseFrequency,
   CommunicationMethod
 } from '../../interfaces/profile.enums';
-import { 
-  FormValidationError,
-  FormTabConfig,
-  FormProgressInfo,
-  MedicalHistoryItem,
-  AllergyItem,
-  MedicationItem
-} from './profile-form.interface';
-import { Observable, of, Subject, BehaviorSubject, combineLatest } from 'rxjs';
-import { catchError, tap, takeUntil, debounceTime, distinctUntilChanged, startWith } from 'rxjs/operators';
+import { Subject, BehaviorSubject } from 'rxjs';
+import { takeUntil, debounceTime, distinctUntilChanged, startWith } from 'rxjs/operators';
 
 @Component({
   selector: 'app-profile-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, IonicModule, RouterModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, IonicModule, RouterModule, LogoutButtonComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './profile-form.component.html',
   styleUrls: [
@@ -44,16 +40,20 @@ export class ProfileFormComponent implements OnInit, OnDestroy {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private profileService = inject(ProfileService);
-  private alertCtrl = inject(AlertController);
+  private medicalHistoryService = inject(MedicalHistoryService);
+  private lifestyleService = inject(LifestyleService);
+  private authFacade = inject(AuthFacadeService);
   private toastCtrl = inject(ToastController);
   private loadingCtrl = inject(LoadingController);
 
   profileForm!: FormGroup;
   isEditMode = false;
+  isViewMode = true; // Modo visualización inicial
   isSubmitting = false;
   isAutoSaving = false;
   lastSaved = false;
   profileId: number | null = null;
+  currentUserId: number | null = null; // User ID for medical history
   maxDate = new Date().getFullYear() + '-12-31';
   currentYear = new Date().getFullYear();
   error: string | null = null;
@@ -89,6 +89,7 @@ export class ProfileFormComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.initForm();
     this.checkEditMode();
+    this.loadUserProfile(); // Cargar datos iniciales del usuario
     this.setupFormSubscriptions();
     this.setupAutoSave();
     this.calculateFormProgress();
@@ -103,8 +104,8 @@ export class ProfileFormComponent implements OnInit, OnDestroy {
     this.profileForm = this.fb.group({
       first_name: ['', [Validators.required, Validators.minLength(2)]],
       last_name: ['', [Validators.required, Validators.minLength(2)]],
-      birth_date: ['', Validators.required],
-      gender: ['', Validators.required],
+      birth_date: [''],
+      gender: [''],
       phone: [''],
       occupation: [''],
       emergency_contact_name: [''],
@@ -113,15 +114,15 @@ export class ProfileFormComponent implements OnInit, OnDestroy {
       allergies: this.fb.array([this.createAllergyItem()]),
       current_medications: this.fb.array([this.createMedicationItem()]),
       lifestyle_factors: this.fb.group({
-        smoking_status: ['', Validators.required],
+        smoking_status: ['NEVER'],
         smoking_pack_years: [0],
         alcohol_consumption: ['NONE'],
-        exercise_frequency: ['', Validators.required],
-        sleep_hours: [8, [Validators.required, Validators.min(4), Validators.max(12)]]
+        exercise_frequency: ['RARELY'],
+        sleep_hours: [8, [Validators.min(4), Validators.max(12)]]
       }),
-      preferred_language: ['es', Validators.required],
-      preferred_communication_method: ['', Validators.required],
-      consent_terms: [false, Validators.requiredTrue],
+      preferred_language: ['es'],
+      preferred_communication_method: ['EMAIL'],
+      consent_terms: [true],
       consent_data_sharing: [false],
       consent_marketing: [false]
     });
@@ -146,7 +147,8 @@ export class ProfileFormComponent implements OnInit, OnDestroy {
         takeUntil(this.destroy$)
       )
       .subscribe(() => {
-        if (this.isEditMode && this.profileForm.valid) {
+        // Solo auto-guardar si está en modo edición y no en modo visualización
+        if (!this.isViewMode && this.profileId && this.profileForm.valid) {
           this.autoSave();
         }
       });
@@ -174,54 +176,195 @@ export class ProfileFormComponent implements OnInit, OnDestroy {
     });
   }
 
-  private loadProfile(id: number) {
-    // Mock profile loading since getProfile might not exist
-    // In a real implementation, replace with actual service call
-    const mockProfile: UserProfile = {
-      id: id,
-      userId: id,
-      firstName: '',
-      lastName: '',
-      birthDate: '',
-      gender: Gender.MALE,
-      phone: undefined,
-      occupation: undefined,
-      emergencyContactName: undefined,
-      emergencyContactPhone: undefined,
-      medicalHistory: [],
-      allergies: [],
-      currentMedications: [],
-      lifestyleFactors: {
-        smokingStatus: SmokingStatus.NEVER,
-        smokingPackYears: 0,
-        alcoholConsumption: AlcoholConsumption.NONE,
-        exerciseFrequency: ExerciseFrequency.RARELY,
-        sleepHours: 8
-      },
-      preferredLanguage: 'es',
-      preferredCommunicationMethod: CommunicationMethod.EMAIL,
-      consentTerms: false,
-      consentDataSharing: false,
-      consentMarketing: false,
-      createdAt: '',
-      updatedAt: ''
-    };
+  /**
+   * Carga el perfil del usuario actual
+   * En modo inicial los datos se muestran en modo lectura
+   */
+  private loadUserProfile() {
+    // Obtener el ID del usuario desde el servicio de autenticación
+    const currentUser = this.authFacade.getCurrentUser();
+    
+    if (!currentUser || !currentUser.id) {
+      console.error('No hay usuario autenticado');
+      this.router.navigate(['/login']);
+      return;
+    }
+    
+    const userId = currentUser.id;
+    this.currentUserId = userId; // Store for medical history operations
+    
+    // Cargar perfil del usuario si existe
+    // loadMedicalHistory and loadLifestyleData are now called inside loadProfile
+    // after the profile is loaded to avoid race conditions
+    this.profileId = userId;
+    
+    // Inicialmente mostrar en modo visualización
+    this.isViewMode = true;
+    // Note: disableForm is called AFTER data is loaded in loadProfile callbacks
+    
+    this.loadProfile(userId);
+  }
 
-    try {
-      this.patchFormWithProfile(mockProfile);
-    } catch (error: any) {
-      console.error('Error loading profile:', error);
-      this.showToast('Error al cargar el perfil', 'danger');
+  /**
+   * Activa el modo edición
+   */
+  enableEditMode() {
+    this.isViewMode = false;
+    // Habilitar todos los campos del formulario
+    this.profileForm.enable();
+  }
+
+  /**
+   * Cancela la edición y vuelve al modo visualización
+   */
+  cancelEdit() {
+    this.isViewMode = true;
+    // Note: don't disable form here, loadProfile will do it after data loads
+    // Recargar datos originales
+    // loadProfile internally calls loadMedicalHistoryAndLifestyle and disables form when done
+    if (this.profileId) {
+      this.loadProfile(this.profileId);
+    } else {
+      this.disableForm();
+    }
+  }
+
+  /**
+   * Deshabilita todos los campos del formulario para modo visualización
+   */
+  private disableForm() {
+    this.profileForm.disable();
+  }
+
+  /**
+   * Habilita todos los campos del formulario para modo edición
+   */
+  private enableForm() {
+    this.profileForm.enable();
+  }
+
+  private loadProfile(id: number) {
+    this.profileService.getProfile(id).subscribe({
+      next: (profile: UserProfile) => {
+        this.profileId = profile.id;
+        this.patchFormWithProfile(profile);
+        
+        // Load medical history and lifestyle data AFTER profile is loaded
+        // to avoid race conditions with patchFormWithProfile
+        this.loadMedicalHistoryAndLifestyle();
+      },
+      error: (error) => {
+        console.error('Error loading profile:', error);
+        this.showToast('Error al cargar el perfil', 'danger');
+        // Si no hay perfil, habilitar edición para crear uno nuevo
+        this.isViewMode = false;
+        this.enableForm();
+        
+        // Still try to load medical history and lifestyle data
+        this.loadMedicalHistoryAndLifestyle();
+      }
+    });
+  }
+  
+  /**
+   * Load medical history and lifestyle data, then disable form if in view mode
+   */
+  private loadMedicalHistoryAndLifestyle(): void {
+    let completedLoads = 0;
+    const totalLoads = 2;
+    
+    const checkAndDisable = () => {
+      completedLoads++;
+      if (completedLoads >= totalLoads && this.isViewMode) {
+        this.disableForm();
+      }
+    };
+    
+    // Load medical history
+    if (this.currentUserId) {
+      this.medicalHistoryService.getMedicalHistory(this.currentUserId).subscribe({
+        next: (data) => {
+          this.populateMedicalHistoryFromData(data);
+          checkAndDisable();
+        },
+        error: (error) => {
+          console.error('Error loading medical history:', error);
+          checkAndDisable();
+        }
+      });
+    } else {
+      checkAndDisable();
+    }
+    
+    // Load lifestyle data
+    if (this.currentUserId) {
+      this.lifestyleService.getLifestyleData(this.currentUserId).subscribe({
+        next: (data) => {
+          const formValues = this.lifestyleService.formatForForm(data);
+          
+          // Patch the lifestyle_factors group
+          this.profileForm.get('lifestyle_factors')?.patchValue(formValues);
+          checkAndDisable();
+        },
+        error: (error) => {
+          console.error('Error loading lifestyle data:', error);
+          checkAndDisable();
+        }
+      });
+    } else {
+      checkAndDisable();
+    }
+  }
+  
+  /**
+   * Populate medical history arrays from loaded data
+   */
+  private populateMedicalHistoryFromData(data: any): void {
+    // Clear existing arrays
+    this.clearFormArray('medical_history');
+    this.clearFormArray('allergies');
+    this.clearFormArray('current_medications');
+    
+    // Populate conditions
+    if (data.medicalHistory && data.medicalHistory.length > 0) {
+      data.medicalHistory.forEach((item: any) => {
+        this.medicalHistoryArray.push(this.fb.group({
+          condition: [item.entryName, Validators.required]
+        }));
+      });
+    } else {
+      this.medicalHistoryArray.push(this.createMedicalHistoryItem());
+    }
+    
+    // Populate allergies
+    if (data.allergies && data.allergies.length > 0) {
+      data.allergies.forEach((item: any) => {
+        this.allergiesArray.push(this.fb.group({
+          allergen: [item.entryName, Validators.required]
+        }));
+      });
+    } else {
+      this.allergiesArray.push(this.createAllergyItem());
+    }
+    
+    // Populate medications
+    if (data.currentMedications && data.currentMedications.length > 0) {
+      data.currentMedications.forEach((item: any) => {
+        this.currentMedicationsArray.push(this.fb.group({
+          name: [item.entryName, Validators.required]
+        }));
+      });
+    } else {
+      this.currentMedicationsArray.push(this.createMedicationItem());
     }
   }
 
   private patchFormWithProfile(profile: UserProfile) {
-    // Clear existing arrays and populate with profile data
-    this.clearAndPopulateArray('medical_history', profile.medicalHistory || [], this.createMedicalHistoryItem);
-    this.clearAndPopulateArray('allergies', profile.allergies || [], this.createAllergyItem);
-    this.clearAndPopulateArray('current_medications', profile.currentMedications || [], this.createMedicationItem);
+    // Note: medical_history, allergies, and current_medications are loaded
+    // separately from the medical_history table, so we don't use profile data for these
+    // Also, lifestyle_factors are loaded from lifestyle_habits and smoking_history tables
 
-    // Patch the rest of the form
+    // Patch the basic profile data
     this.profileForm.patchValue({
       first_name: profile.firstName,
       last_name: profile.lastName,
@@ -231,7 +374,7 @@ export class ProfileFormComponent implements OnInit, OnDestroy {
       occupation: profile.occupation,
       emergency_contact_name: profile.emergencyContactName,
       emergency_contact_phone: profile.emergencyContactPhone,
-      lifestyle_factors: profile.lifestyleFactors || {},
+      // lifestyle_factors will be loaded by loadLifestyleData() from dedicated tables
       preferred_language: profile.preferredLanguage || 'es',
       preferred_communication_method: profile.preferredCommunicationMethod,
       consent_terms: profile.consentTerms ?? false,
@@ -370,6 +513,45 @@ export class ProfileFormComponent implements OnInit, OnDestroy {
     return displayNames[fieldName] || fieldName;
   }
 
+  // View Mode Helpers
+  getDisplayValue(controlPath: string): string {
+    const value = this.profileForm.get(controlPath)?.value;
+    if (value === null || value === undefined || value === '') {
+      return 'Sin registrar';
+    }
+
+    switch (controlPath) {
+      case 'birth_date':
+        return this.formatDateValue(value);
+      case 'gender':
+        return this.getGenderLabel(value);
+      default:
+        return value;
+    }
+  }
+
+  private formatDateValue(value: string): string {
+    const date = new Date(value);
+    if (isNaN(date.getTime())) {
+      return 'Sin registrar';
+    }
+    return date.toLocaleDateString('es-ES', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  }
+
+  private getGenderLabel(value: string): string {
+    const genderMap: Record<string, string> = {
+      MALE: 'Masculino',
+      FEMALE: 'Femenino',
+      OTHER: 'Otro',
+      PREFER_NOT_TO_SAY: 'Prefiero no decirlo'
+    };
+    return genderMap[value] || value;
+  }
+
   // Utility Functions
   formatPhone(event: any) {
     let value = event.detail.value.replace(/\D/g, '');
@@ -416,11 +598,17 @@ export class ProfileFormComponent implements OnInit, OnDestroy {
 
   // Page Content
   getPageTitle(): string {
-    return this.isEditMode ? 'Editor de Perfil' : 'Crear Perfil Médico';
+    if (this.isViewMode) {
+      return 'Mi Perfil Médico';
+    }
+    return this.profileId ? 'Editar Perfil' : 'Crear Perfil Médico';
   }
 
   getPageSubtitle(): string {
-    return this.isEditMode ? 
+    if (this.isViewMode) {
+      return 'Información personal y médica';
+    }
+    return this.profileId ? 
       'Actualiza tu información médica y preferencias' : 
       'Gestión completa de información médica personalizada';
   }
@@ -429,7 +617,7 @@ export class ProfileFormComponent implements OnInit, OnDestroy {
   getAutoSaveIcon(): string {
     if (this.isAutoSaving) return 'sync-outline';
     if (this.lastSaved) return 'checkmark-circle-outline';
-    return 'save-outline';
+    return 'cloud-upload-outline';
   }
 
   getAutoSaveText(): string {
@@ -439,12 +627,12 @@ export class ProfileFormComponent implements OnInit, OnDestroy {
   }
 
   async autoSave() {
-    if (!this.isEditMode || this.isAutoSaving) return;
+    if (!this.profileId || this.isAutoSaving || this.isViewMode) return;
 
     this.isAutoSaving = true;
     try {
       const updateData = this.createUpdateRequest();
-      await this.profileService.updateProfile(this.profileId!, updateData).toPromise();
+      await this.profileService.updateProfile(this.profileId!, updateData);
       this.lastSaved = true;
       setTimeout(() => { this.lastSaved = false; }, 3000);
     } catch (error) {
@@ -472,54 +660,126 @@ export class ProfileFormComponent implements OnInit, OnDestroy {
 
   // Form Submission
   async onSubmit() {
-    if (this.profileForm.valid) {
-      this.isSubmitting = true;
-      this.error = null;
+    this.isSubmitting = true;
+    this.error = null;
 
-      const loading = await this.loadingCtrl.create({
-        message: this.isEditMode ? 'Actualizando perfil...' : 'Creando perfil...'
-      });
-      await loading.present();
+    const loading = await this.loadingCtrl.create({
+      message: this.profileId ? 'Actualizando perfil...' : 'Creando perfil...'
+    });
+    await loading.present();
 
-      try {
-        if (this.isEditMode) {
-          await this.updateProfile();
-        } else {
-          await this.createProfile();
-        }
-        
-        await loading.dismiss();
-        await this.showSuccessMessage();
-        this.router.navigate(['/profile/dashboard']);
-      } catch (error: any) {
-        await loading.dismiss();
-        console.error('Form submission error:', error);
-        this.error = error.message || 'Error al procesar el perfil';
-      } finally {
-        this.isSubmitting = false;
+    try {
+      let updatedProfile: UserProfile;
+      if (this.profileId) {
+        updatedProfile = await this.updateProfile();
+      } else {
+        updatedProfile = await this.createProfile();
       }
-    } else {
-      this.markAllFieldsAsTouched();
-      this.showValidationErrors();
+      
+      await loading.dismiss();
+      await this.showSuccessMessage();
+      
+      // Actualizar el formulario con los datos guardados
+      this.patchFormWithProfile(updatedProfile);
+      
+      // Volver a modo visualización después de guardar
+      this.isViewMode = true;
+      this.disableForm();
+      
+      // Si es creación, navegar al dashboard
+      if (!this.profileId && updatedProfile.id) {
+        this.profileId = updatedProfile.id;
+      }
+    } catch (error: any) {
+      await loading.dismiss();
+      console.error('Form submission error:', error);
+      this.error = error.message || 'Error al procesar el perfil';
+      await this.showToast('Error al guardar los cambios', 'danger');
+    } finally {
+      this.isSubmitting = false;
     }
   }
 
-  private async createProfile() {
+  private async createProfile(): Promise<UserProfile> {
     const profileData = this.createProfileRequest();
     const serviceData = this.transformToServiceCreateRequest(profileData);
-    return this.profileService.createProfile(serviceData).toPromise();
+    const profile = await this.profileService.createProfile(serviceData);
+    
+    // Save medical history after profile creation
+    if (this.currentUserId) {
+      await this.saveMedicalHistory();
+      await this.saveLifestyleData();
+    }
+    
+    return profile;
   }
 
-  private async updateProfile() {
+  private async updateProfile(): Promise<UserProfile> {
     const updateData = this.createUpdateRequest();
     const serviceData = this.transformToServiceUpdateRequest(updateData);
-    return this.profileService.updateProfile(this.profileId!, serviceData).toPromise();
+    const profile = await this.profileService.updateProfile(this.profileId!, serviceData);
+    
+    // Save medical history and lifestyle data
+    if (this.currentUserId) {
+      await this.saveMedicalHistory();
+      await this.saveLifestyleData();
+    }
+    
+    return profile;
+  }
+
+  /**
+   * Save medical history, allergies and medications to the database
+   */
+  private async saveMedicalHistory(): Promise<void> {
+    if (!this.currentUserId) return;
+    
+    const formValue = this.profileForm.value;
+    
+    try {
+      await this.medicalHistoryService.saveBatch(this.currentUserId, {
+        medicalHistory: formValue.medical_history || [],
+        allergies: formValue.allergies || [],
+        currentMedications: formValue.current_medications || []
+      });
+      console.log('Medical history saved successfully');
+    } catch (error) {
+      console.error('Error saving medical history:', error);
+      // Don't throw - let profile save succeed even if medical history fails
+    }
+  }
+
+  private clearFormArray(arrayName: string): void {
+    const array = this.profileForm.get(arrayName) as FormArray;
+    while (array.length > 0) {
+      array.removeAt(0);
+    }
+  }
+
+  /**
+   * Save lifestyle and smoking data to the database
+   */
+  private async saveLifestyleData(): Promise<void> {
+    if (!this.currentUserId) return;
+    
+    const lifestyleFactors = this.profileForm.get('lifestyle_factors')?.value;
+    
+    if (!lifestyleFactors) return;
+    
+    try {
+      const formattedData = this.lifestyleService.formatForApi(lifestyleFactors);
+      await this.lifestyleService.saveLifestyleData(this.currentUserId, formattedData);
+      console.log('Lifestyle data saved successfully');
+    } catch (error) {
+      console.error('Error saving lifestyle data:', error);
+      // Don't throw - let profile save succeed even if lifestyle fails
+    }
   }
 
   private transformToServiceCreateRequest(componentData: CreateProfileRequest): CreateProfileRequest {
     return {
       ...componentData,
-      userId: 1 // This should come from auth service
+      userId: this.currentUserId || 1
     };
   }
 
