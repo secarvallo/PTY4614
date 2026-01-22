@@ -139,6 +139,7 @@ export interface User {
   isActive?: boolean; // -> is_active
   avatar?: string; // -> profile.avatar_url
   role?: string; // (si se agrega en backend futuro)
+  roleId?: number; // 1=PATIENT, 2=DOCTOR
 }
 
 export interface AuthCredentials {
