@@ -1,19 +1,4 @@
-/**
- * Profile Shared Interfaces - LungLife
- * Interfaces compartidas para servicios y estado global del módulo de perfil
- */
-
-import {
-  SmokingStatus,
-  Gender,
-  RiskCategory,
-  AlcoholConsumption,
-  ExerciseFrequency,
-  CommunicationMethod,
-  HealthMetricType
-} from './profile.enums';
-
-// ========== PERFIL BASE ==========
+import { Gender, SmokingStatus, AlcoholConsumption, ExerciseFrequency, CommunicationMethod } from './profile.enums';
 
 export interface LifestyleFactors {
   smokingStatus: SmokingStatus;
@@ -24,82 +9,67 @@ export interface LifestyleFactors {
 }
 
 export interface UserProfile {
-  id?: number;
+  id: number;
+  userId: number;
+  firstName: string;
+  lastName: string;
+  email?: string;
+  birthDate: string;
+  gender: Gender;
+  phone?: string;
+  occupation?: string;
+  emergencyContactName?: string;
+  emergencyContactPhone?: string;
+  medicalHistory: any[];
+  allergies: any[];
+  currentMedications: any[];
+  lifestyleFactors: LifestyleFactors;
+  preferredLanguage: string;
+  preferredCommunicationMethod: CommunicationMethod;
+  consentTerms: boolean;
+  consentDataSharing: boolean;
+  consentMarketing: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateProfileRequest {
   userId: number;
   firstName: string;
   lastName: string;
   birthDate: string;
   gender: Gender;
-  phone?: string;
-  emergencyContactName?: string;
-  emergencyContactPhone?: string;
-  
-  // Historial médico (arrays de strings para el servicio)
-  medicalHistory: string[];
-  allergies: string[];
-  currentMedications: string[];
-  
-  // Factores de estilo de vida
+  phone?: string | null;
+  occupation?: string | null;
+  emergencyContactName?: string | null;
+  emergencyContactPhone?: string | null;
+  medicalHistory: any[];
+  allergies: any[];
+  currentMedications: any[];
   lifestyleFactors: LifestyleFactors;
-  
-  // Información adicional
-  occupation?: string;
   preferredLanguage: string;
   preferredCommunicationMethod: CommunicationMethod;
-  
-  // Consentimientos
   consentTerms: boolean;
   consentDataSharing: boolean;
   consentMarketing: boolean;
-  
-  // Timestamps
-  createdAt?: string;
-  updatedAt?: string;
 }
 
-// ========== OPERACIONES CRUD ==========
-
-export interface CreateProfileRequest extends Omit<UserProfile, 'id' | 'created_at' | 'updated_at'> {}
-
-export interface UpdateProfileRequest extends Partial<Omit<UserProfile, 'id' | 'user_id' | 'created_at' | 'updated_at'>> {}
-
-// ========== EVALUACIÓN DE RIESGO ==========
-
-export interface RiskAssessment {
-  id?: number;
-  userId: number;
-  riskScore: number;
-  riskLevel: RiskCategory;
-  factors: {
-    ageRisk: number;
-    smokingRisk: number;
-    familyHistoryRisk: number;
-    environmentalRisk: number;
-    lifestyleRisk: number;
-  };
-  recommendations: string[];
-  assessmentDate: string;
-  createdAt?: string;
-}
-
-// ========== MÉTRICAS DE SALUD ==========
-
-export interface HealthMetric {
-  id?: number;
-  userId: number;
-  metricType: HealthMetricType;
-  value: number;
-  unit: string;
-  measuredAt: string;
-  notes?: string;
-  createdAt?: string;
-}
-
-// ========== ESTADO GLOBAL ==========
-
-export interface ProfileState {
-  currentProfile: UserProfile | null;
-  loading: boolean;
-  error: string | null;
-  lastUpdated: string | null;
+export interface UpdateProfileRequest {
+  firstName?: string;
+  lastName?: string;
+  birthDate?: string;
+  gender?: Gender;
+  phone?: string;
+  occupation?: string;
+  emergencyContactName?: string;
+  emergencyContactPhone?: string;
+  medicalHistory?: any[];
+  allergies?: any[];
+  currentMedications?: any[];
+  lifestyleFactors?: LifestyleFactors;
+  preferredLanguage?: string;
+  preferredCommunicationMethod?: CommunicationMethod;
+  consentTerms?: boolean;
+  consentDataSharing?: boolean;
+  consentMarketing?: boolean;
 }
