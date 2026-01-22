@@ -20,7 +20,7 @@ export interface User {
   login_count: number;
 
   // Relación con perfil
-  profile?: UserProfile;
+  profile?: AuthUserProfile;
 
   // Propiedades computadas para compatibilidad
   firstName?: string;
@@ -35,28 +35,23 @@ export interface User {
   isActive: boolean;
 }
 
-// ⚠️ NOTA: UserProfile específico de autenticación (NO confundir con el de profile module)
-// Este UserProfile es para datos básicos de auth, diferente del UserProfile médico completo
-export interface UserProfile {
-  userId: number; // Changed from user_id to userId for consistency
-  nombre: string;
-  apellido?: string;
-  telefono?: string;
-  fecha_nacimiento?: Date;
-  avatar_url?: string;
-  bio?: string;
-  language_preference: string;
-  timezone: string;
-  created_at: Date;
-  updated_at: Date;
-
-  // Propiedades computadas
+/**
+ * AuthUserProfile - Perfil básico de usuario para autenticación
+ * ⚠️ NO confundir con UserProfile del módulo médico (profile module)
+ * Este perfil contiene solo datos básicos necesarios para autenticación y sesiones
+ */
+export interface AuthUserProfile {
+  userId: number;
   firstName: string;
   lastName?: string;
   phone?: string;
   birthDate?: Date;
-  avatar?: string;
-  language: string;
+  avatarUrl?: string;
+  bio?: string;
+  languagePreference: string;
+  timezone: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface DeviceType {

@@ -3,48 +3,58 @@
  * Interfaces compartidas para servicios y estado global del módulo de perfil
  */
 
+import {
+  SmokingStatus,
+  Gender,
+  RiskCategory,
+  AlcoholConsumption,
+  ExerciseFrequency,
+  CommunicationMethod,
+  HealthMetricType
+} from './profile.enums';
+
 // ========== PERFIL BASE ==========
 
 export interface LifestyleFactors {
-  smoking_status: 'NEVER' | 'FORMER' | 'CURRENT';
-  smoking_pack_years?: number;
-  alcohol_consumption: 'NONE' | 'LIGHT' | 'MODERATE' | 'HEAVY';
-  exercise_frequency: 'NONE' | 'RARELY' | 'WEEKLY' | 'REGULARLY' | 'DAILY';
-  sleep_hours: number;
+  smokingStatus: SmokingStatus;
+  smokingPackYears?: number;
+  alcoholConsumption: AlcoholConsumption;
+  exerciseFrequency: ExerciseFrequency;
+  sleepHours: number;
 }
 
 export interface UserProfile {
   id?: number;
-  user_id: number;
-  first_name: string;
-  last_name: string;
-  birth_date: string;
-  gender: 'MALE' | 'FEMALE' | 'OTHER';
+  userId: number;
+  firstName: string;
+  lastName: string;
+  birthDate: string;
+  gender: Gender;
   phone?: string;
-  emergency_contact_name?: string;
-  emergency_contact_phone?: string;
+  emergencyContactName?: string;
+  emergencyContactPhone?: string;
   
   // Historial médico (arrays de strings para el servicio)
-  medical_history: string[];
+  medicalHistory: string[];
   allergies: string[];
-  current_medications: string[];
+  currentMedications: string[];
   
   // Factores de estilo de vida
-  lifestyle_factors: LifestyleFactors;
+  lifestyleFactors: LifestyleFactors;
   
   // Información adicional
   occupation?: string;
-  preferred_language: string;
-  preferred_communication_method: 'EMAIL' | 'SMS' | 'PHONE' | 'IN_APP';
+  preferredLanguage: string;
+  preferredCommunicationMethod: CommunicationMethod;
   
   // Consentimientos
-  consent_terms: boolean;
-  consent_data_sharing: boolean;
-  consent_marketing: boolean;
+  consentTerms: boolean;
+  consentDataSharing: boolean;
+  consentMarketing: boolean;
   
   // Timestamps
-  created_at?: string;
-  updated_at?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 // ========== OPERACIONES CRUD ==========
@@ -57,32 +67,32 @@ export interface UpdateProfileRequest extends Partial<Omit<UserProfile, 'id' | '
 
 export interface RiskAssessment {
   id?: number;
-  user_id: number;
-  risk_score: number;
-  risk_level: 'low' | 'medium' | 'high' | 'very_high';
+  userId: number;
+  riskScore: number;
+  riskLevel: RiskCategory;
   factors: {
-    age_risk: number;
-    smoking_risk: number;
-    family_history_risk: number;
-    environmental_risk: number;
-    lifestyle_risk: number;
+    ageRisk: number;
+    smokingRisk: number;
+    familyHistoryRisk: number;
+    environmentalRisk: number;
+    lifestyleRisk: number;
   };
   recommendations: string[];
-  assessment_date: string;
-  created_at?: string;
+  assessmentDate: string;
+  createdAt?: string;
 }
 
 // ========== MÉTRICAS DE SALUD ==========
 
 export interface HealthMetric {
   id?: number;
-  user_id: number;
-  metric_type: 'blood_pressure' | 'heart_rate' | 'weight' | 'height' | 'bmi' | 'oxygen_saturation';
+  userId: number;
+  metricType: HealthMetricType;
   value: number;
   unit: string;
-  measured_at: string;
+  measuredAt: string;
   notes?: string;
-  created_at?: string;
+  createdAt?: string;
 }
 
 // ========== ESTADO GLOBAL ==========

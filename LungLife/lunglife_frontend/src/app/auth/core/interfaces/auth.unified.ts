@@ -37,20 +37,23 @@ export interface OperatingSystem {
   created_at?: Date;
 }
 
-// ⚠️ NOTA: UserProfile específico de autenticación (NO confundir con el de profile module)
-// Este UserProfile es para datos básicos de auth, diferente del UserProfile médico completo
-export interface UserProfile {
-  user_id: number;
-  nombre: string;
-  apellido?: string;
-  telefono?: string;
-  fecha_nacimiento?: Date;
-  avatar_url?: string;
+/**
+ * AuthUserProfile - Perfil básico de usuario para autenticación
+ * ⚠️ NO confundir con UserProfile del módulo médico (profile module)
+ * Este perfil contiene solo datos básicos necesarios para autenticación y sesiones
+ */
+export interface AuthUserProfile {
+  userId: number;
+  firstName: string;
+  lastName?: string;
+  phone?: string;
+  birthDate?: Date;
+  avatarUrl?: string;
   bio?: string;
-  language_preference?: string;
+  languagePreference?: string;
   timezone?: string;
-  created_at?: Date;
-  updated_at?: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 // Configuración de seguridad
@@ -119,7 +122,7 @@ export interface User {
   last_login?: Date;
   last_login_ip?: string;
   login_count: number;
-  profile?: UserProfile;
+  profile?: AuthUserProfile;
   security_settings?: UserSecuritySettings;
   devices?: UserDevice[];
   sessions?: UserSession[];

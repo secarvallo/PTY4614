@@ -9,6 +9,13 @@ import {
   CreateProfileRequest, 
   UpdateProfileRequest
 } from '../../interfaces/profile.interface';
+import {
+  Gender,
+  SmokingStatus,
+  AlcoholConsumption,
+  ExerciseFrequency,
+  CommunicationMethod
+} from '../../interfaces/profile.enums';
 import { 
   FormValidationError,
   FormTabConfig,
@@ -172,32 +179,32 @@ export class ProfileFormComponent implements OnInit, OnDestroy {
     // In a real implementation, replace with actual service call
     const mockProfile: UserProfile = {
       id: id,
-      user_id: id,
-      first_name: '',
-      last_name: '',
-      birth_date: '',
-      gender: 'MALE',
+      userId: id,
+      firstName: '',
+      lastName: '',
+      birthDate: '',
+      gender: Gender.MALE,
       phone: undefined,
       occupation: undefined,
-      emergency_contact_name: undefined,
-      emergency_contact_phone: undefined,
-      medical_history: [],
+      emergencyContactName: undefined,
+      emergencyContactPhone: undefined,
+      medicalHistory: [],
       allergies: [],
-      current_medications: [],
-      lifestyle_factors: {
-        smoking_status: 'NEVER',
-        smoking_pack_years: 0,
-        alcohol_consumption: 'NONE',
-        exercise_frequency: 'RARELY',
-        sleep_hours: 8
+      currentMedications: [],
+      lifestyleFactors: {
+        smokingStatus: SmokingStatus.NEVER,
+        smokingPackYears: 0,
+        alcoholConsumption: AlcoholConsumption.NONE,
+        exerciseFrequency: ExerciseFrequency.RARELY,
+        sleepHours: 8
       },
-      preferred_language: 'es',
-      preferred_communication_method: 'EMAIL',
-      consent_terms: false,
-      consent_data_sharing: false,
-      consent_marketing: false,
-      created_at: '',
-      updated_at: ''
+      preferredLanguage: 'es',
+      preferredCommunicationMethod: CommunicationMethod.EMAIL,
+      consentTerms: false,
+      consentDataSharing: false,
+      consentMarketing: false,
+      createdAt: '',
+      updatedAt: ''
     };
 
     try {
@@ -210,26 +217,26 @@ export class ProfileFormComponent implements OnInit, OnDestroy {
 
   private patchFormWithProfile(profile: UserProfile) {
     // Clear existing arrays and populate with profile data
-    this.clearAndPopulateArray('medical_history', profile.medical_history || [], this.createMedicalHistoryItem);
+    this.clearAndPopulateArray('medical_history', profile.medicalHistory || [], this.createMedicalHistoryItem);
     this.clearAndPopulateArray('allergies', profile.allergies || [], this.createAllergyItem);
-    this.clearAndPopulateArray('current_medications', profile.current_medications || [], this.createMedicationItem);
+    this.clearAndPopulateArray('current_medications', profile.currentMedications || [], this.createMedicationItem);
 
     // Patch the rest of the form
     this.profileForm.patchValue({
-      first_name: profile.first_name,
-      last_name: profile.last_name,
-      birth_date: profile.birth_date,
+      first_name: profile.firstName,
+      last_name: profile.lastName,
+      birth_date: profile.birthDate,
       gender: profile.gender,
       phone: profile.phone,
       occupation: profile.occupation,
-      emergency_contact_name: profile.emergency_contact_name,
-      emergency_contact_phone: profile.emergency_contact_phone,
-      lifestyle_factors: profile.lifestyle_factors || {},
-      preferred_language: profile.preferred_language || 'es',
-      preferred_communication_method: profile.preferred_communication_method,
-      consent_terms: profile.consent_terms ?? false,
-      consent_data_sharing: profile.consent_data_sharing ?? false,
-      consent_marketing: profile.consent_marketing ?? false
+      emergency_contact_name: profile.emergencyContactName,
+      emergency_contact_phone: profile.emergencyContactPhone,
+      lifestyle_factors: profile.lifestyleFactors || {},
+      preferred_language: profile.preferredLanguage || 'es',
+      preferred_communication_method: profile.preferredCommunicationMethod,
+      consent_terms: profile.consentTerms ?? false,
+      consent_data_sharing: profile.consentDataSharing ?? false,
+      consent_marketing: profile.consentMarketing ?? false
     });
   }
 
@@ -512,7 +519,7 @@ export class ProfileFormComponent implements OnInit, OnDestroy {
   private transformToServiceCreateRequest(componentData: CreateProfileRequest): CreateProfileRequest {
     return {
       ...componentData,
-      user_id: 1 // This should come from auth service
+      userId: 1 // This should come from auth service
     };
   }
 
@@ -523,47 +530,47 @@ export class ProfileFormComponent implements OnInit, OnDestroy {
   private createProfileRequest(): CreateProfileRequest {
     const formValue = this.profileForm.value;
     return {
-      user_id: 1, // This should come from auth service
-      first_name: formValue.first_name,
-      last_name: formValue.last_name,
-      birth_date: formValue.birth_date,
+      userId: 1, // This should come from auth service
+      firstName: formValue.first_name,
+      lastName: formValue.last_name,
+      birthDate: formValue.birth_date,
       gender: formValue.gender,
       phone: formValue.phone || null,
       occupation: formValue.occupation || null,
-      emergency_contact_name: formValue.emergency_contact_name || null,
-      emergency_contact_phone: formValue.emergency_contact_phone || null,
-      medical_history: this.filterValidArrayItems(formValue.medical_history),
+      emergencyContactName: formValue.emergency_contact_name || null,
+      emergencyContactPhone: formValue.emergency_contact_phone || null,
+      medicalHistory: this.filterValidArrayItems(formValue.medical_history),
       allergies: this.filterValidArrayItems(formValue.allergies),
-      current_medications: this.filterValidArrayItems(formValue.current_medications),
-      lifestyle_factors: formValue.lifestyle_factors,
-      preferred_language: formValue.preferred_language,
-      preferred_communication_method: formValue.preferred_communication_method,
-      consent_terms: formValue.consent_terms,
-      consent_data_sharing: formValue.consent_data_sharing,
-      consent_marketing: formValue.consent_marketing
+      currentMedications: this.filterValidArrayItems(formValue.current_medications),
+      lifestyleFactors: formValue.lifestyle_factors,
+      preferredLanguage: formValue.preferred_language,
+      preferredCommunicationMethod: formValue.preferred_communication_method,
+      consentTerms: formValue.consent_terms,
+      consentDataSharing: formValue.consent_data_sharing,
+      consentMarketing: formValue.consent_marketing
     };
   }
 
   private createUpdateRequest(): UpdateProfileRequest {
     const formValue = this.profileForm.value;
     return {
-      first_name: formValue.first_name,
-      last_name: formValue.last_name,
-      birth_date: formValue.birth_date,
+      firstName: formValue.first_name,
+      lastName: formValue.last_name,
+      birthDate: formValue.birth_date,
       gender: formValue.gender,
       phone: formValue.phone,
       occupation: formValue.occupation,
-      emergency_contact_name: formValue.emergency_contact_name,
-      emergency_contact_phone: formValue.emergency_contact_phone,
-      medical_history: this.filterValidArrayItems(formValue.medical_history),
+      emergencyContactName: formValue.emergency_contact_name,
+      emergencyContactPhone: formValue.emergency_contact_phone,
+      medicalHistory: this.filterValidArrayItems(formValue.medical_history),
       allergies: this.filterValidArrayItems(formValue.allergies),
-      current_medications: this.filterValidArrayItems(formValue.current_medications),
-      lifestyle_factors: formValue.lifestyle_factors,
-      preferred_language: formValue.preferred_language,
-      preferred_communication_method: formValue.preferred_communication_method,
-      consent_terms: formValue.consent_terms,
-      consent_data_sharing: formValue.consent_data_sharing,
-      consent_marketing: formValue.consent_marketing
+      currentMedications: this.filterValidArrayItems(formValue.current_medications),
+      lifestyleFactors: formValue.lifestyle_factors,
+      preferredLanguage: formValue.preferred_language,
+      preferredCommunicationMethod: formValue.preferred_communication_method,
+      consentTerms: formValue.consent_terms,
+      consentDataSharing: formValue.consent_data_sharing,
+      consentMarketing: formValue.consent_marketing
     };
   }
 

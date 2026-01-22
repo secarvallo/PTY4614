@@ -17,8 +17,8 @@
               <ion-icon name="person-circle" size="large" color="primary"></ion-icon>
             </div>
             <div class="details">
-              <h2>{{ profile.first_name }} {{ profile.last_name }}</h2>
-              <p>{{ calculateAge(profile.birth_date) }} años</p>
+              <h2>{{ profile.firstName }} {{ profile.lastName }}</h2>
+              <p>{{ calculateAge(profile.birthDate) }} años</p>
               <ion-chip [color]="getGenderColor(profile.gender)" fill="outline">
                 {{ getGenderLabel(profile.gender) }}
               </ion-chip>
@@ -87,7 +87,7 @@
             <ion-icon name="medical-outline" color="primary"></ion-icon>
             <div class="health-content">
               <strong>Historia Médica</strong>
-              <p>{{ profile.medical_history.length || 0 }} condiciones registradas</p>
+              <p>{{ profile.medicalHistory.length || 0 }} condiciones registradas</p>
             </div>
           </div>
           
@@ -103,7 +103,7 @@
             <ion-icon name="medkit-outline" color="secondary"></ion-icon>
             <div class="health-content">
               <strong>Medicamentos</strong>
-              <p>{{ profile.current_medications.length || 0 }} medicamentos actuales</p>
+              <p>{{ profile.currentMedications.length || 0 }} medicamentos actuales</p>
             </div>
           </div>
         </div>
@@ -117,10 +117,10 @@
         
         <div class="lifestyle-summary">
           <div class="lifestyle-item">
-            <ion-icon name="ban-outline" [color]="getSmokingColor(profile.lifestyle_factors.smoking_status)"></ion-icon>
+            <ion-icon name="ban-outline" [color]="getSmokingColor(profile.lifestyleFactors.smokingStatus)"></ion-icon>
             <div class="lifestyle-content">
               <strong>Tabaco</strong>
-              <p>{{ getSmokingLabel(profile.lifestyle_factors.smoking_status) }}</p>
+              <p>{{ getSmokingLabel(profile.lifestyleFactors.smokingStatus) }}</p>
             </div>
           </div>
           
@@ -128,7 +128,7 @@
             <ion-icon name="barbell-outline" color="primary"></ion-icon>
             <div class="lifestyle-content">
               <strong>Ejercicio</strong>
-              <p>{{ getExerciseLabel(profile.lifestyle_factors.exercise_frequency) }}</p>
+              <p>{{ getExerciseLabel(profile.lifestyleFactors.exerciseFrequency) }}</p>
             </div>
           </div>
           
@@ -136,7 +136,7 @@
             <ion-icon name="moon-outline" color="secondary"></ion-icon>
             <div class="lifestyle-content">
               <strong>Sueño</strong>
-              <p>{{ profile.lifestyle_factors.sleep_hours }} horas/noche</p>
+              <p>{{ profile.lifestyleFactors.sleepHours }} horas/noche</p>
             </div>
           </div>
         </div>
@@ -157,12 +157,12 @@
             </div>
           </div>
           
-          <div class="contact-item" *ngIf="profile.emergency_contact_name">
+          <div class="contact-item" *ngIf="profile.emergencyContactName">
             <ion-icon name="people-outline" color="danger"></ion-icon>
             <div class="contact-content">
               <strong>Contacto de Emergencia</strong>
-              <p>{{ profile.emergency_contact_name }}</p>
-              <p *ngIf="profile.emergency_contact_phone">{{ profile.emergency_contact_phone }}</p>
+              <p>{{ profile.emergencyContactName }}</p>
+              <p *ngIf="profile.emergencyContactPhone">{{ profile.emergencyContactPhone }}</p>
             </div>
           </div>
         </div>

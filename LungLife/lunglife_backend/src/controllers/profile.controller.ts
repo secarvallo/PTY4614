@@ -47,16 +47,6 @@ export class ProfileController {
       }
 
       const profileData: CreateUserProfileDTO = req.body;
-      
-      // Validación básica
-      if (!profileData.fecha_nacimiento || !profileData.genero) {
-        res.status(400).json({
-          success: false,
-          message: 'Fecha de nacimiento y género son requeridos',
-          error: 'VALIDATION_ERROR'
-        });
-        return;
-      }
 
       const profile = await this.profileService.createProfile(
         userId,
@@ -80,6 +70,15 @@ export class ProfileController {
           success: false,
           message: 'El usuario ya tiene un perfil creado',
           error: 'PROFILE_EXISTS'
+        });
+        return;
+      }
+
+      if (error.message?.includes('VALIDATION_ERROR')) {
+        res.status(400).json({
+          success: false,
+          message: error.message,
+          error: 'VALIDATION_ERROR'
         });
         return;
       }

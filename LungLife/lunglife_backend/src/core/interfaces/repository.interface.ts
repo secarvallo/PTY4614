@@ -149,3 +149,58 @@ export interface IUserRepository extends IRepository<IUser> {
    */
   lockUser(userId: number, lockUntil: Date): Promise<void>;
 }
+
+/**
+ * 🔑 Refresh Token Entity Interface
+ */
+export interface IRefreshToken {
+  id: number;
+  user_id: number;
+  token_hash: string;
+  jti: string;
+  user_agent?: string;
+  ip_address?: string;
+  device_fingerprint?: string;
+  issued_at: Date;
+  expires_at: Date;
+  revoked_at?: Date;
+  is_revoked: boolean;
+  revocation_reason?: string;
+  created_at: Date;
+  updated_at: Date;
+}
+
+/**
+ * 🔑 Refresh Token Repository Interface
+ */
+export interface IRefreshTokenRepository extends IRepository<IRefreshToken> {
+  /**
+   * Find token by token hash
+   */
+  findByTokenHash(tokenHash: string): Promise<IRefreshToken | null>;
+  
+  /**
+   * Find token by JWT ID
+   */
+  findByJti(jti: string): Promise<IRefreshToken | null>;
+  
+  /**
+   * Find all active tokens for a user
+   */
+  findActiveTokensByUserId(userId: number): Promise<IRefreshToken[]>;
+  
+  /**
+   * Revoke a specific token
+   */
+  revokeToken(tokenHash: string, reason: string): Promise<boolean>;
+  
+  /**
+   * Revoke all tokens for a user
+   */
+  revokeAllUserTokens(userId: number, reason: string): Promise<number>;
+  
+  /**
+   * Delete expired tokens (cleanup)
+   */
+  deleteExpiredTokens(): Promise<number>;
+}
