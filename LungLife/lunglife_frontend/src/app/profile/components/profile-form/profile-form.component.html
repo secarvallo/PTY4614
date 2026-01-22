@@ -1,6 +1,146 @@
 <ion-content class="ion-padding" data-test="profile-form-page">
-  <!-- Welcome Content -->
-  <div class="welcome-container">
+  <!-- Loading State -->
+  <div *ngIf="isProfileLoading" class="loading-container">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>Cargando perfil...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="profileLoadError && !isProfileLoading" class="error-container">
+    <ion-icon name="alert-circle-outline" color="danger"></ion-icon>
+    <p>{{ profileLoadError }}</p>
+    <ion-button fill="outline" (click)="loadUserProfile()">Reintentar</ion-button>
+  </div>
+
+  <!-- Welcome Content - Only show when loaded -->
+  <div class="welcome-container" *ngIf="!isProfileLoading">
+
+    <!-- ========== PERFIL DE ADMINISTRADOR ========== -->
+    <div *ngIf="isAdmin && adminProfile" class="admin-profile-section">
+      <div class="action-section">
+        <div class="auth-header">
+          <div class="logo-placeholder admin-badge">
+            <ion-icon name="shield-checkmark"></ion-icon>
+          </div>
+          <div class="header-content">
+            <div class="header-text">
+              <h1>Panel de Administrador</h1>
+              <p>{{ userEmail }}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="admin-stats-grid">
+          <div class="stat-card">
+            <ion-icon name="people-outline" color="primary"></ion-icon>
+            <div class="stat-content">
+              <h3>{{ adminProfile.systemStats.totalUsers }}</h3>
+              <p>Usuarios Totales</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <ion-icon name="person-outline" color="success"></ion-icon>
+            <div class="stat-content">
+              <h3>{{ adminProfile.systemStats.totalPatients }}</h3>
+              <p>Pacientes</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <ion-icon name="medkit-outline" color="tertiary"></ion-icon>
+            <div class="stat-content">
+              <h3>{{ adminProfile.systemStats.totalDoctors }}</h3>
+              <p>Médicos</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <ion-icon name="link-outline" color="warning"></ion-icon>
+            <div class="stat-content">
+              <h3>{{ adminProfile.systemStats.activeAssignments }}</h3>
+              <p>Asignaciones Activas</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="admin-actions">
+          <ion-button expand="block" routerLink="/admin/users">
+            <ion-icon slot="start" name="people"></ion-icon>
+            Gestionar Usuarios
+          </ion-button>
+          <ion-button expand="block" fill="outline" routerLink="/dashboard">
+            <ion-icon slot="start" name="home"></ion-icon>
+            Ir al Dashboard
+          </ion-button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== PERFIL DE MÉDICO ========== -->
+    <div *ngIf="isDoctor && doctorProfile" class="doctor-profile-section">
+      <div class="action-section">
+        <div class="auth-header">
+          <div class="logo-placeholder doctor-badge">
+            <ion-icon name="medkit"></ion-icon>
+          </div>
+          <div class="header-content">
+            <div class="header-text">
+              <h1>Dr. {{ doctorProfile.fullName }}</h1>
+              <p>{{ doctorProfile.specialty || 'Especialidad no especificada' }}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="doctor-info-grid">
+          <div class="info-card">
+            <label>Licencia Médica</label>
+            <p>{{ doctorProfile.medicalLicense || 'No especificada' }}</p>
+          </div>
+          <div class="info-card">
+            <label>Institución</label>
+            <p>{{ doctorProfile.hospitalInstitution || 'No especificada' }}</p>
+          </div>
+          <div class="info-card">
+            <label>Teléfono</label>
+            <p>{{ doctorProfile.phone || 'No especificado' }}</p>
+          </div>
+          <div class="info-card">
+            <label>Email Institucional</label>
+            <p>{{ doctorProfile.emailInstitutional || userEmail }}</p>
+          </div>
+          <div class="info-card">
+            <label>Fecha de Nacimiento</label>
+            <p>{{ doctorProfile.dateOfBirth | date:'dd/MM/yyyy' }}</p>
+          </div>
+          <div class="info-card">
+            <label>Género</label>
+            <p>{{ doctorProfile.gender || 'No especificado' }}</p>
+          </div>
+        </div>
+
+        <div class="doctor-stats">
+          <div class="stat-highlight">
+            <ion-icon name="people" color="primary"></ion-icon>
+            <div>
+              <h2>{{ doctorProfile.patientCount }}</h2>
+              <p>Pacientes asignados</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="doctor-actions">
+          <ion-button expand="block" routerLink="/doctor/patients">
+            <ion-icon slot="start" name="list"></ion-icon>
+            Ver Mis Pacientes
+          </ion-button>
+          <ion-button expand="block" fill="outline" routerLink="/dashboard">
+            <ion-icon slot="start" name="home"></ion-icon>
+            Ir al Dashboard
+          </ion-button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== PERFIL DE PACIENTE (Formulario Original) ========== -->
+    <div *ngIf="isPatient || (!isDoctor && !isAdmin)" class="patient-profile-section">
     <!-- Profile Action Section - Envuelve todo el contenido -->
     <div class="action-section">
       <div class="auth-header">
@@ -259,111 +399,165 @@
             <div class="subsection">
               <h4><ion-icon name="document-text-outline"></ion-icon> Historial Médico</h4>
               
-              <div formArrayName="medical_history">
-                <div *ngFor="let condition of medicalHistoryArray.controls; let i = index" 
-                     class="dynamic-item" 
-                     [formGroupName]="i">
-                  <ion-item lines="none">
-                    <ion-input
-                      formControlName="condition"
-                      placeholder="Condición médica"
-                    ></ion-input>
-                    <ion-button 
-                      slot="end" 
-                      fill="clear" 
-                      color="danger" 
-                      (click)="removeMedicalHistory(i)"
-                      [disabled]="medicalHistoryArray.length === 1"
-                    >
-                      <ion-icon name="close-circle-outline"></ion-icon>
-                    </ion-button>
-                  </ion-item>
+              <!-- Modo Visualización -->
+              <ng-container *ngIf="isViewMode">
+                <div class="view-list" *ngIf="hasArrayData('medical_history')">
+                  <div class="view-list-item" *ngFor="let condition of medicalHistoryArray.controls; let i = index">
+                    <ng-container *ngIf="condition.get('condition')?.value">
+                      <ion-icon name="medical-outline" color="primary"></ion-icon>
+                      <span>{{ condition.get('condition')?.value }}</span>
+                    </ng-container>
+                  </div>
                 </div>
-              </div>
+                <p class="empty-message" *ngIf="!hasArrayData('medical_history')">
+                  No hay condiciones médicas registradas
+                </p>
+              </ng-container>
 
-              <ion-button 
-                expand="block" 
-                fill="outline" 
-                class="add-button" 
-                (click)="addMedicalHistory()"
-              >
-                <ion-icon name="add-outline" slot="start"></ion-icon>
-                Agregar Condición Médica
-              </ion-button>
+              <!-- Modo Edición -->
+              <ng-container *ngIf="!isViewMode">
+                <div formArrayName="medical_history">
+                  <div *ngFor="let condition of medicalHistoryArray.controls; let i = index" 
+                       class="dynamic-item" 
+                       [formGroupName]="i">
+                    <ion-item lines="none">
+                      <ion-input
+                        formControlName="condition"
+                        placeholder="Condición médica"
+                      ></ion-input>
+                      <ion-button 
+                        slot="end" 
+                        fill="clear" 
+                        color="danger" 
+                        (click)="removeMedicalHistory(i)"
+                        [disabled]="medicalHistoryArray.length === 1"
+                      >
+                        <ion-icon name="close-circle-outline"></ion-icon>
+                      </ion-button>
+                    </ion-item>
+                  </div>
+                </div>
+
+                <ion-button 
+                  expand="block" 
+                  fill="outline" 
+                  class="add-button" 
+                  (click)="addMedicalHistory()"
+                >
+                  <ion-icon name="add-outline" slot="start"></ion-icon>
+                  Agregar Condición Médica
+                </ion-button>
+              </ng-container>
             </div>
 
             <!-- Alergias -->
             <div class="subsection">
               <h4><ion-icon name="warning-outline"></ion-icon> Alergias</h4>
               
-              <div formArrayName="allergies">
-                <div *ngFor="let allergy of allergiesArray.controls; let i = index" 
-                     class="dynamic-item" 
-                     [formGroupName]="i">
-                  <ion-item lines="none">
-                    <ion-input
-                      formControlName="allergen"
-                      placeholder="Alérgeno"
-                    ></ion-input>
-                    <ion-button 
-                      slot="end" 
-                      fill="clear" 
-                      color="danger" 
-                      (click)="removeAllergy(i)"
-                      [disabled]="allergiesArray.length === 1"
-                    >
-                      <ion-icon name="close-circle-outline"></ion-icon>
-                    </ion-button>
-                  </ion-item>
+              <!-- Modo Visualización -->
+              <ng-container *ngIf="isViewMode">
+                <div class="view-list" *ngIf="hasArrayData('allergies')">
+                  <div class="view-list-item" *ngFor="let allergy of allergiesArray.controls; let i = index">
+                    <ng-container *ngIf="allergy.get('allergen')?.value">
+                      <ion-icon name="alert-circle-outline" color="warning"></ion-icon>
+                      <span>{{ allergy.get('allergen')?.value }}</span>
+                    </ng-container>
+                  </div>
                 </div>
-              </div>
+                <p class="empty-message" *ngIf="!hasArrayData('allergies')">
+                  No hay alergias registradas
+                </p>
+              </ng-container>
 
-              <ion-button 
-                expand="block" 
-                fill="outline" 
-                class="add-button" 
-                (click)="addAllergy()"
-              >
-                <ion-icon name="add-outline" slot="start"></ion-icon>
-                Agregar Alergia
-              </ion-button>
+              <!-- Modo Edición -->
+              <ng-container *ngIf="!isViewMode">
+                <div formArrayName="allergies">
+                  <div *ngFor="let allergy of allergiesArray.controls; let i = index" 
+                       class="dynamic-item" 
+                       [formGroupName]="i">
+                    <ion-item lines="none">
+                      <ion-input
+                        formControlName="allergen"
+                        placeholder="Alérgeno"
+                      ></ion-input>
+                      <ion-button 
+                        slot="end" 
+                        fill="clear" 
+                        color="danger" 
+                        (click)="removeAllergy(i)"
+                        [disabled]="allergiesArray.length === 1"
+                      >
+                        <ion-icon name="close-circle-outline"></ion-icon>
+                      </ion-button>
+                    </ion-item>
+                  </div>
+                </div>
+
+                <ion-button 
+                  expand="block" 
+                  fill="outline" 
+                  class="add-button" 
+                  (click)="addAllergy()"
+                >
+                  <ion-icon name="add-outline" slot="start"></ion-icon>
+                  Agregar Alergia
+                </ion-button>
+              </ng-container>
             </div>
 
             <!-- Medicamentos Actuales -->
             <div class="subsection">
               <h4><ion-icon name="medical-outline"></ion-icon> Medicamentos Actuales</h4>
               
-              <div formArrayName="current_medications">
-                <div *ngFor="let medication of currentMedicationsArray.controls; let i = index" 
-                     class="dynamic-item" 
-                     [formGroupName]="i">
-                  <ion-item lines="none">
-                    <ion-input
-                      formControlName="name"
-                      placeholder="Nombre del medicamento"
-                    ></ion-input>
-                    <ion-button 
-                      slot="end" 
-                      fill="clear" 
-                      color="danger" 
-                      (click)="removeMedication(i)"
-                      [disabled]="currentMedicationsArray.length === 1"
-                    >
-                      <ion-icon name="close-circle-outline"></ion-icon>
-                    </ion-button>
-                  </ion-item>
+              <!-- Modo Visualización -->
+              <ng-container *ngIf="isViewMode">
+                <div class="view-list" *ngIf="hasArrayData('current_medications')">
+                  <div class="view-list-item" *ngFor="let medication of currentMedicationsArray.controls; let i = index">
+                    <ng-container *ngIf="medication.get('name')?.value">
+                      <ion-icon name="bandage-outline" color="tertiary"></ion-icon>
+                      <span>{{ medication.get('name')?.value }}</span>
+                    </ng-container>
+                  </div>
                 </div>
-              </div>
+                <p class="empty-message" *ngIf="!hasArrayData('current_medications')">
+                  No hay medicamentos registrados
+                </p>
+              </ng-container>
 
-              <ion-button 
-                expand="block" 
-                fill="outline" 
-                class="add-button" 
-                (click)="addMedication()"
-              >
-                <ion-icon name="add-outline" slot="start"></ion-icon>
-                Agregar Medicamento
-              </ion-button>
+              <!-- Modo Edición -->
+              <ng-container *ngIf="!isViewMode">
+                <div formArrayName="current_medications">
+                  <div *ngFor="let medication of currentMedicationsArray.controls; let i = index" 
+                       class="dynamic-item" 
+                       [formGroupName]="i">
+                    <ion-item lines="none">
+                      <ion-input
+                        formControlName="name"
+                        placeholder="Nombre del medicamento"
+                      ></ion-input>
+                      <ion-button 
+                        slot="end" 
+                        fill="clear" 
+                        color="danger" 
+                        (click)="removeMedication(i)"
+                        [disabled]="currentMedicationsArray.length === 1"
+                      >
+                        <ion-icon name="close-circle-outline"></ion-icon>
+                      </ion-button>
+                    </ion-item>
+                  </div>
+                </div>
+
+                <ion-button 
+                  expand="block" 
+                  fill="outline" 
+                  class="add-button" 
+                  (click)="addMedication()"
+                >
+                  <ion-icon name="add-outline" slot="start"></ion-icon>
+                  Agregar Medicamento
+                </ion-button>
+              </ng-container>
             </div>
           </div>
         </div>
@@ -380,96 +574,144 @@
             <div class="subsection">
               <h4><ion-icon name="leaf-outline"></ion-icon> Historial de Tabaquismo</h4>
               
-              <!-- Smoking Status -->
-              <div class="form-group">
-                <ion-item lines="none">
-                  <ion-select
-                    formControlName="smoking_status"
-                    placeholder="Estado de Fumador *"
-                    interface="action-sheet"
-                  >
-                    <ion-select-option value="NEVER">Nunca he fumado</ion-select-option>
-                    <ion-select-option value="FORMER">Ex fumador</ion-select-option>
-                    <ion-select-option value="CURRENT">Fumador actual</ion-select-option>
-                    <ion-select-option value="OCCASIONAL">Fumador ocasional</ion-select-option>
-                  </ion-select>
-                </ion-item>
-              </div>
+              <!-- Modo Visualización -->
+              <ng-container *ngIf="isViewMode">
+                <div class="view-field">
+                  <label>Estado de Fumador</label>
+                  <p>{{ getLifestyleLabel('smoking_status', profileForm.get('lifestyle_factors.smoking_status')?.value) }}</p>
+                </div>
+                <div class="view-field" *ngIf="showPackYears">
+                  <label>Paquetes-año</label>
+                  <p>{{ profileForm.get('lifestyle_factors.smoking_pack_years')?.value || '0' }}</p>
+                </div>
+              </ng-container>
 
-              <!-- Pack Years (solo para fumadores/ex-fumadores) -->
-              <div class="form-group" *ngIf="showPackYears">
-                <label class="form-label">Paquetes-año</label>
-                <ion-item lines="none">
-                  <ion-input
-                    formControlName="smoking_pack_years"
-                    placeholder="Número de paquetes-año"
-                    type="number"
-                    min="0"
-                    step="0.1"
-                  ></ion-input>
-                </ion-item>
-              </div>
+              <!-- Modo Edición -->
+              <ng-container *ngIf="!isViewMode">
+                <!-- Smoking Status -->
+                <div class="form-group">
+                  <ion-item lines="none">
+                    <ion-select
+                      formControlName="smoking_status"
+                      placeholder="Estado de Fumador *"
+                      interface="action-sheet"
+                    >
+                      <ion-select-option value="NEVER">Nunca he fumado</ion-select-option>
+                      <ion-select-option value="FORMER">Ex fumador</ion-select-option>
+                      <ion-select-option value="CURRENT">Fumador actual</ion-select-option>
+                      <ion-select-option value="OCCASIONAL">Fumador ocasional</ion-select-option>
+                    </ion-select>
+                  </ion-item>
+                </div>
+
+                <!-- Pack Years (solo para fumadores/ex-fumadores) -->
+                <div class="form-group" *ngIf="showPackYears">
+                  <label class="form-label">Paquetes-año</label>
+                  <ion-item lines="none">
+                    <ion-input
+                      formControlName="smoking_pack_years"
+                      placeholder="Número de paquetes-año"
+                      type="number"
+                      min="0"
+                      step="0.1"
+                    ></ion-input>
+                  </ion-item>
+                </div>
+              </ng-container>
             </div>
 
             <!-- Consumo de Alcohol -->
             <div class="subsection">
               <h4><ion-icon name="water-outline"></ion-icon> Consumo de Alcohol</h4>
               
-              <div class="form-group">
-                <ion-item lines="none">
-                  <ion-select
-                    formControlName="alcohol_consumption"
-                    placeholder="Consumo de Alcohol"
-                    interface="action-sheet"
-                  >
-                    <ion-select-option value="NONE">No consume</ion-select-option>
-                    <ion-select-option value="OCCASIONAL">Ocasional</ion-select-option>
-                    <ion-select-option value="MODERATE">Moderado</ion-select-option>
-                    <ion-select-option value="FREQUENT">Frecuente</ion-select-option>
-                    <ion-select-option value="DAILY">Diario</ion-select-option>
-                  </ion-select>
-                </ion-item>
-              </div>
+              <!-- Modo Visualización -->
+              <ng-container *ngIf="isViewMode">
+                <div class="view-field">
+                  <label>Consumo de Alcohol</label>
+                  <p>{{ getLifestyleLabel('alcohol_consumption', profileForm.get('lifestyle_factors.alcohol_consumption')?.value) }}</p>
+                </div>
+              </ng-container>
+
+              <!-- Modo Edición -->
+              <ng-container *ngIf="!isViewMode">
+                <div class="form-group">
+                  <ion-item lines="none">
+                    <ion-select
+                      formControlName="alcohol_consumption"
+                      placeholder="Consumo de Alcohol"
+                      interface="action-sheet"
+                    >
+                      <ion-select-option value="NONE">No consume</ion-select-option>
+                      <ion-select-option value="OCCASIONAL">Ocasional</ion-select-option>
+                      <ion-select-option value="MODERATE">Moderado</ion-select-option>
+                      <ion-select-option value="FREQUENT">Frecuente</ion-select-option>
+                      <ion-select-option value="DAILY">Diario</ion-select-option>
+                    </ion-select>
+                  </ion-item>
+                </div>
+              </ng-container>
             </div>
 
             <!-- Actividad Física -->
             <div class="subsection">
               <h4><ion-icon name="fitness-outline"></ion-icon> Actividad Física</h4>
               
-              <div class="form-group">
-                <ion-item lines="none">
-                  <ion-select
-                    formControlName="exercise_frequency"
-                    placeholder="Frecuencia de Ejercicio *"
-                    interface="action-sheet"
-                  >
-                    <ion-select-option value="NEVER">Nunca</ion-select-option>
-                    <ion-select-option value="RARELY">Raramente</ion-select-option>
-                    <ion-select-option value="WEEKLY">Semanal</ion-select-option>
-                    <ion-select-option value="FREQUENT">Frecuente</ion-select-option>
-                    <ion-select-option value="DAILY">Diario</ion-select-option>
-                  </ion-select>
-                </ion-item>
-              </div>
+              <!-- Modo Visualización -->
+              <ng-container *ngIf="isViewMode">
+                <div class="view-field">
+                  <label>Frecuencia de Ejercicio</label>
+                  <p>{{ getLifestyleLabel('exercise_frequency', profileForm.get('lifestyle_factors.exercise_frequency')?.value) }}</p>
+                </div>
+              </ng-container>
+
+              <!-- Modo Edición -->
+              <ng-container *ngIf="!isViewMode">
+                <div class="form-group">
+                  <ion-item lines="none">
+                    <ion-select
+                      formControlName="exercise_frequency"
+                      placeholder="Frecuencia de Ejercicio *"
+                      interface="action-sheet"
+                    >
+                      <ion-select-option value="NEVER">Nunca</ion-select-option>
+                      <ion-select-option value="RARELY">Raramente</ion-select-option>
+                      <ion-select-option value="WEEKLY">Semanal</ion-select-option>
+                      <ion-select-option value="FREQUENT">Frecuente</ion-select-option>
+                      <ion-select-option value="DAILY">Diario</ion-select-option>
+                    </ion-select>
+                  </ion-item>
+                </div>
+              </ng-container>
             </div>
 
             <!-- Descanso y Sueño -->
             <div class="subsection">
               <h4><ion-icon name="moon-outline"></ion-icon> Descanso y Sueño</h4>
               
-              <div class="form-group">
-                <label class="form-label">Horas de Sueño por Noche *</label>
-                <ion-item lines="none">
-                  <ion-input
-                    formControlName="sleep_hours"
-                    placeholder="Horas promedio de sueño"
-                    type="number"
-                    min="4"
-                    max="12"
-                    step="0.5"
-                  ></ion-input>
-                </ion-item>
-              </div>
+              <!-- Modo Visualización -->
+              <ng-container *ngIf="isViewMode">
+                <div class="view-field">
+                  <label>Horas de Sueño por Noche</label>
+                  <p>{{ profileForm.get('lifestyle_factors.sleep_hours')?.value || '8' }} horas</p>
+                </div>
+              </ng-container>
+
+              <!-- Modo Edición -->
+              <ng-container *ngIf="!isViewMode">
+                <div class="form-group">
+                  <label class="form-label">Horas de Sueño por Noche *</label>
+                  <ion-item lines="none">
+                    <ion-input
+                      formControlName="sleep_hours"
+                      placeholder="Horas promedio de sueño"
+                      type="number"
+                      min="4"
+                      max="12"
+                      step="0.5"
+                    ></ion-input>
+                  </ion-item>
+                </div>
+              </ng-container>
             </div>
           </div>
         </div>
@@ -624,5 +866,9 @@
         <app-logout-button [buttonStyle]="'card'" [showConfirmation]="true"></app-logout-button>
       </div>
     </div>
+    </div>
+    <!-- End patient-profile-section -->
+
   </div>
+  <!-- End welcome-container -->
 </ion-content>

@@ -74,8 +74,8 @@ export class LogoutButtonComponent {
   }
 
   private performLogout(): void {
-    // Llamar al servicio de logout
-    this.authFacade.logout(this.logoutAll);
+    // Llamar al servicio de logout (no acepta parámetros)
+    this.authFacade.logout();
     
     // Navegar a la página de logout exitoso después de un pequeño delay
     // para asegurar que el estado se limpió

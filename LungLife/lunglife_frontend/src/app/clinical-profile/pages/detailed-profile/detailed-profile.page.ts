@@ -157,6 +157,14 @@ export class DetailedProfilePage implements OnInit {
   async ngOnInit() {
     // Get user role
     const user = this.authFacade.getCurrentUser();
+    
+    // Verify user is authenticated
+    if (!user || !user.id) {
+      console.warn('User not authenticated, redirecting to login');
+      await this.router.navigate(['/auth/login']);
+      return;
+    }
+    
     if (user?.roleId) {
       this.roleId.set(user.roleId);
     }

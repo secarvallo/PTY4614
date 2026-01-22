@@ -172,9 +172,24 @@ export class ClinicalProfileService {
         throw new Error(response.error || 'Error al cargar perfil');
       }
     } catch (err: any) {
-      const errorMessage = err.error?.error || err.message || 'Error al cargar perfil clínico';
-      this._error.set(errorMessage);
       console.error('Error loading clinical profile:', err);
+      
+      // Handle specific error cases
+      let errorMessage = 'Error al cargar perfil clínico';
+      
+      if (err.status === 401) {
+        errorMessage = 'Sesión expirada. Por favor, inicie sesión nuevamente.';
+      } else if (err.status === 403) {
+        errorMessage = 'No tiene permiso para ver este perfil.';
+      } else if (err.status === 404) {
+        errorMessage = 'Perfil no encontrado.';
+      } else if (err.error?.error) {
+        errorMessage = err.error.error;
+      } else if (err.message) {
+        errorMessage = err.message;
+      }
+      
+      this._error.set(errorMessage);
       return null;
     } finally {
       this._loading.set(false);
