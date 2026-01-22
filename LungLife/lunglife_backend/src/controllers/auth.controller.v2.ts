@@ -64,7 +64,7 @@ export class AuthController {
       const factory = DatabaseServiceFactory.getInstance();
       const userRepository = await factory.getUserRepository();
       const unitOfWork = await factory.getUnitOfWork();
-      
+
       this.authService = new AuthenticationService(
         userRepository,
         unitOfWork,
@@ -79,9 +79,9 @@ export class AuthController {
    */
   async register(req: Request, res: Response): Promise<void> {
     const startTime = Date.now();
-    
+
     try {
-      this.logger.info('Registration attempt started', { 
+      this.logger.info('Registration attempt started', {
         email: req.body.email,
         ip: req.ip,
         userAgent: req.get('User-Agent')
@@ -118,7 +118,7 @@ export class AuthController {
       if (result.success) {
         const duration = Date.now() - startTime;
         this.logger.info(`✅ Registration successful for ${registerRequest.email} in ${duration}ms`);
-        
+
         res.status(201).json({
           success: true,
           message: 'User registered successfully',
@@ -142,7 +142,7 @@ export class AuthController {
           validationErrors: result.validationErrors,
           debugInfo: result.debugInfo
         });
-        
+
         // Respuesta específica para errores de validación
         if (result.errorCode === 'VALIDATION_ERROR' && result.validationErrors) {
           res.status(400).json({
@@ -169,9 +169,9 @@ export class AuthController {
    */
   async login(req: Request, res: Response): Promise<void> {
     const startTime = Date.now();
-    
+
     try {
-      this.logger.info('Login attempt started', { 
+      this.logger.info('Login attempt started', {
         email: req.body.email,
         ip: req.ip,
         userAgent: req.get('User-Agent')
@@ -196,7 +196,7 @@ export class AuthController {
       if (result.success) {
         const duration = Date.now() - startTime;
         this.logger.info(`Login successful for ${loginRequest.email} in ${duration}ms`);
-        
+
         res.status(200).json({
           success: true,
           message: 'Login successful',
@@ -205,8 +205,11 @@ export class AuthController {
             email: result.user!.email,
             firstName: result.user!.nombre,
             lastName: result.user!.apellido,
+            role: result.user!.role,       // PATIENT, DOCTOR, ADMINISTRATOR
+            roleId: result.user!.role_id,  // 1, 2, 3
           },
           token: result.token,
+          refreshToken: result.refreshToken,
         });
       } else {
         this.logger.warn(`Login failed for ${loginRequest.email}: ${result.error}`);
@@ -259,8 +262,33 @@ export class AuthController {
     }
 
     // Validar contraseña
+    // Validar contraseña
     if (body.password && body.password.length < 8) {
       errors.push('Password must be at least 8 characters long');
+    }
+
+    // Validar Aceptación de Términos (permitir true booleano o string 'true')
+    const acceptTerms = body.acceptTerms === true || body.acceptTerms === 'true';
+    if (!acceptTerms) {
+      errors.push('Must accept terms and conditions');
+    }
+
+    // Validar Aceptación de Privacidad (permitir true booleano o string 'true')
+    const acceptPrivacy = body.acceptPrivacy === true || body.acceptPrivacy === 'true';
+    if (!acceptPrivacy) {
+      errors.push('Must accept privacy policy');
+    }
+
+    if (errors.length > 0) {
+      console.log('Register Validation Failed. Errors:', errors);
+      console.log('Register Body received:', {
+        ...body,
+        password: '***', // Ocultar password en logs
+        acceptTerms: body.acceptTerms,
+        typeTerms: typeof body.acceptTerms,
+        acceptPrivacy: body.acceptPrivacy,
+        typePrivacy: typeof body.acceptPrivacy
+      });
     }
 
     return {
@@ -295,9 +323,9 @@ export class AuthController {
    */
   async forgotPassword(req: Request, res: Response): Promise<void> {
     const startTime = Date.now();
-    
+
     try {
-      this.logger.info('Password reset requested', { 
+      this.logger.info('Password reset requested', {
         email: req.body.email,
         ip: req.ip,
         userAgent: req.get('User-Agent')
@@ -313,7 +341,7 @@ export class AuthController {
       const result = await authService.forgotPassword({ email: req.body.email });
 
       const duration = Date.now() - startTime;
-      
+
       if (result.success) {
         this.logger.info(`Password reset processed in ${duration}ms`);
         this.sendSuccessResponse(res, 200, {
@@ -338,9 +366,9 @@ export class AuthController {
    */
   async resetPassword(req: Request, res: Response): Promise<void> {
     const startTime = Date.now();
-    
+
     try {
-      this.logger.info('Password reset attempt', { 
+      this.logger.info('Password reset attempt', {
         tokenPrefix: req.body.token?.substring(0, 8),
         ip: req.ip,
         userAgent: req.get('User-Agent')
@@ -360,7 +388,7 @@ export class AuthController {
       });
 
       const duration = Date.now() - startTime;
-      
+
       if (result.success) {
         this.logger.info(`Password reset successful in ${duration}ms`);
         this.sendSuccessResponse(res, 200, {
@@ -383,7 +411,7 @@ export class AuthController {
 
     if (!body.token) errors.push('Reset token is required');
     if (!body.newPassword) errors.push('New password is required');
-    
+
     // Validar contraseña
     if (body.newPassword && body.newPassword.length < 8) {
       errors.push('Password must be at least 8 characters long');
@@ -393,6 +421,94 @@ export class AuthController {
       isValid: errors.length === 0,
       errors
     };
+  }
+
+  /**
+   * 👤 Get current user - GET /api/auth/me
+   * Returns the authenticated user's information
+   */
+  async getMe(req: Request, res: Response): Promise<void> {
+    try {
+      const userId = req.user?.id;
+      const roleId = req.user?.roleId;
+      const role = req.user?.role;
+
+      if (!userId) {
+        this.sendErrorResponse(res, 401, 'User not authenticated', 'UNAUTHORIZED');
+        return;
+      }
+
+      // Get user data from database
+      const factory = DatabaseServiceFactory.getInstance();
+      const connection = await factory.getConnection();
+
+      const userResult = await connection.query(
+        `SELECT 
+          u.user_id as id,
+          u.email,
+          u.email_verified,
+          u.is_active,
+          u.role_id,
+          u.created_at,
+          u.updated_at,
+          p.patient_id,
+          p.patient_name as nombre,
+          p.patient_last_name as apellido,
+          p.phone,
+          p.date_of_birth,
+          p.gender
+        FROM users u
+        LEFT JOIN patient p ON u.user_id = p.user_id
+        WHERE u.user_id = $1`,
+        [userId]
+      );
+
+      if (userResult.length === 0) {
+        this.sendErrorResponse(res, 404, 'User not found', 'USER_NOT_FOUND');
+        return;
+      }
+
+      let userData = userResult[0];
+
+      // Auto-create patient record if user is PATIENT role (1) and doesn't have one
+      if (userData.role_id === 1 && !userData.patient_id) {
+        this.logger.info(`Auto-creating patient record for user ${userId}`);
+        const createResult = await connection.query(
+          `INSERT INTO patient (user_id, patient_name, patient_last_name, country, created_at, updated_at)
+           VALUES ($1, '', '', 'Chile', $2, NOW())
+           RETURNING patient_id`,
+          [userId, userData.created_at || new Date()]
+        );
+        
+        if (createResult.length > 0) {
+          userData.patient_id = createResult[0].patient_id;
+          this.logger.info(`Patient record created with patient_id: ${userData.patient_id}`);
+        }
+      }
+
+      this.sendSuccessResponse(res, 200, {
+        user: {
+          id: userData.id,
+          email: userData.email,
+          nombre: userData.nombre || '',
+          apellido: userData.apellido || '',
+          phone: userData.phone || null,
+          dateOfBirth: userData.date_of_birth || null,
+          gender: userData.gender || null,
+          emailVerified: userData.email_verified,
+          isActive: userData.is_active,
+          roleId: userData.role_id,
+          role: role || 'PATIENT',
+          patientId: userData.patient_id || null,
+          createdAt: userData.created_at,
+          updatedAt: userData.updated_at
+        }
+      });
+
+    } catch (error) {
+      this.logger.error('GetMe endpoint error:', error);
+      this.sendErrorResponse(res, 500, 'Internal server error', 'INTERNAL_ERROR');
+    }
   }
 
   private sendErrorResponse(res: Response, statusCode: number, error: string, errorCode: string): void {

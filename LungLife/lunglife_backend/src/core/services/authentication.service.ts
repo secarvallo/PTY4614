@@ -23,7 +23,7 @@ export interface RegisterUserRequest {
 }
 
 export interface RegisterUserResponse extends AuthResult {
-  validationErrors?: {[key: string]: string};
+  validationErrors?: { [key: string]: string };
   debugInfo?: {
     step: string;
     timestamp: Date;
@@ -107,8 +107,8 @@ export class AuthenticationService {
       });
 
       // 1. VALIDACIÓN DE CAMPOS OBLIGATORIOS
-      const validationErrors: {[key: string]: string} = {};
-      
+      const validationErrors: { [key: string]: string } = {};
+
       // Validar email
       if (!request.email || !this.isValidEmail(request.email)) {
         validationErrors.email = 'Valid email is required';
@@ -214,7 +214,7 @@ export class AuthenticationService {
         // 5. INSERCIÓN EN BASE DE DATOS
         debugInfo.step = 'database_insert';
         const newUser = await this.userRepository.create(userData);
-        
+
         // 6. GENERACIÓN DE TOKENS
         debugInfo.step = 'token_generation';
         const tokens = await this.generateTokens(newUser);
@@ -251,7 +251,7 @@ export class AuthenticationService {
         } catch (rollbackError) {
           this.logger.error('Error during rollback:', rollbackError);
         }
-        
+
         // Manejar errores específicos de base de datos
         if (error.code === '23505') {
           // Unique constraint violation
@@ -269,7 +269,7 @@ export class AuthenticationService {
             };
           }
         }
-        
+
         // Manejar error de transacción (_bt_check_unique)
         if (error.message && error.message.includes('_bt_check_unique')) {
           this.logger.warn(`Unique constraint violation during registration: ${request.email}`, error);
@@ -280,14 +280,14 @@ export class AuthenticationService {
             debugInfo: { ...debugInfo, step: 'unique_constraint_error' }
           };
         }
-        
+
         this.logger.error('Unexpected database error during registration:', error);
         throw error;
       }
 
     } catch (error: any) {
       this.logger.error(`Registration failed for ${request.email}:`, error);
-      
+
       // Manejar errores específicos
       if (error.code === '23505') {
         return {
@@ -296,7 +296,7 @@ export class AuthenticationService {
           errorCode: 'EMAIL_EXISTS'
         };
       }
-      
+
       return {
         success: false,
         error: 'Registration failed',
@@ -333,7 +333,7 @@ export class AuthenticationService {
       if (!isPasswordValid) {
         // Incrementar intentos fallidos
         await this.userRepository.incrementFailedAttempts(user.id);
-        
+
         return {
           success: false,
           error: 'Invalid email or password',
@@ -378,12 +378,14 @@ export class AuthenticationService {
 
   private async generateTokens(user: IUser): Promise<{ accessToken: string; refreshToken: string }> {
     const jwtConfig = config.getJWTConfig();
-    
+
     const payload = {
       userId: user.id,
       email: user.email,
       isActive: user.is_active,
-      emailVerified: user.email_verified
+      emailVerified: user.email_verified,
+      roleId: user.role_id,    // 1=PATIENT, 2=DOCTOR, 3=ADMINISTRATOR
+      role: user.role          // PATIENT, DOCTOR, ADMINISTRATOR
     };
 
     const accessTokenOptions: SignOptions = {
@@ -456,8 +458,9 @@ export class AuthenticationService {
    * 🔍 Validate password strength
    */
   private isValidPassword(password: string): boolean {
-    // Al menos 8 caracteres, una mayúscula, una minúscula, un número
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$/;
+    // Al menos 8 caracteres, una mayúscula, una minúscula, un número. 
+    // Se permiten caracteres especiales (no se restringen).
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
     return passwordRegex.test(password);
   }
 
@@ -466,7 +469,7 @@ export class AuthenticationService {
    */
   async forgotPassword(request: ForgotPasswordRequest): Promise<ForgotPasswordResponse> {
     const startTime = Date.now();
-    
+
     try {
       this.logger.info(`🔐 Password reset requested for: ${request.email}`);
 
@@ -484,7 +487,7 @@ export class AuthenticationService {
 
       // Find user (don't reveal if user exists or not for security)
       const user = await this.userRepository.findByEmail(normalizedEmail);
-      
+
       if (!user) {
         // Return success even if user doesn't exist (security best practice)
         this.logger.warn(`Password reset attempted for non-existent email: ${normalizedEmail}`);
@@ -541,7 +544,7 @@ export class AuthenticationService {
     } catch (error: any) {
       const duration = Date.now() - startTime;
       this.logger.error(`Password reset failed after ${duration}ms:`, error);
-      
+
       return {
         success: false,
         error: 'Failed to process password reset request',
@@ -555,7 +558,7 @@ export class AuthenticationService {
    */
   async resetPassword(request: ResetPasswordRequest): Promise<ResetPasswordResponse> {
     const startTime = Date.now();
-    
+
     try {
       this.logger.info(`🔄 Password reset attempt with token: ${request.token.substring(0, 8)}...`);
 
@@ -638,7 +641,7 @@ export class AuthenticationService {
     } catch (error: any) {
       const duration = Date.now() - startTime;
       this.logger.error(`Password reset failed after ${duration}ms:`, error);
-      
+
       return {
         success: false,
         error: 'Failed to reset password',

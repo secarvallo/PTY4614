@@ -16,6 +16,8 @@ declare global {
         id: number;
         email: string;
         type?: string;
+        roleId?: number;  // 1=PATIENT, 2=DOCTOR, 3=ADMINISTRATOR
+        role?: string;    // PATIENT, DOCTOR, ADMINISTRATOR
       };
       deviceInfo?: {
         ipAddress: string;
@@ -60,6 +62,8 @@ export class AuthMiddleware {
         id: decoded.userId,
         email: decoded.email,
         type: decoded.type,
+        roleId: decoded.roleId,
+        role: decoded.role,
       };
 
       next();
@@ -109,6 +113,8 @@ export class AuthMiddleware {
           id: decoded.userId,
           email: decoded.email,
           type: decoded.type,
+          roleId: decoded.roleId,
+          role: decoded.role,
         };
       }
 
@@ -117,6 +123,110 @@ export class AuthMiddleware {
       // Ignore auth errors for optional auth
       next();
     }
+  }
+
+  /**
+   * Require specific role(s)
+   * @param allowedRoles - Array of role IDs or single role ID (1=PATIENT, 2=DOCTOR, 3=ADMIN)
+   */
+  static requireRole(...allowedRoles: number[]) {
+    return (req: Request, res: Response, next: NextFunction): void => {
+      if (!req.user) {
+        res.status(401).json({
+          success: false,
+          error: 'Authentication required',
+          errorCode: 'NOT_AUTHENTICATED'
+        });
+        return;
+      }
+
+      const userRoleId = req.user.roleId;
+      if (!userRoleId || !allowedRoles.includes(userRoleId)) {
+        res.status(403).json({
+          success: false,
+          error: 'Access denied - insufficient permissions',
+          errorCode: 'FORBIDDEN'
+        });
+        return;
+      }
+
+      next();
+    };
+  }
+
+  /**
+   * Require admin role (role_id = 3)
+   */
+  static requireAdmin(req: Request, res: Response, next: NextFunction): void {
+    if (!req.user) {
+      res.status(401).json({
+        success: false,
+        error: 'Authentication required',
+        errorCode: 'NOT_AUTHENTICATED'
+      });
+      return;
+    }
+
+    if (req.user.roleId !== 3) {
+      res.status(403).json({
+        success: false,
+        error: 'Access denied - admin only',
+        errorCode: 'ADMIN_REQUIRED'
+      });
+      return;
+    }
+
+    next();
+  }
+
+  /**
+   * Require patient role (role_id = 1)
+   */
+  static requirePatient(req: Request, res: Response, next: NextFunction): void {
+    if (!req.user) {
+      res.status(401).json({
+        success: false,
+        error: 'Authentication required',
+        errorCode: 'NOT_AUTHENTICATED'
+      });
+      return;
+    }
+
+    if (req.user.roleId !== 1) {
+      res.status(403).json({
+        success: false,
+        error: 'Access denied - patient only',
+        errorCode: 'PATIENT_REQUIRED'
+      });
+      return;
+    }
+
+    next();
+  }
+
+  /**
+   * Require doctor role (role_id = 2)
+   */
+  static requireDoctor(req: Request, res: Response, next: NextFunction): void {
+    if (!req.user) {
+      res.status(401).json({
+        success: false,
+        error: 'Authentication required',
+        errorCode: 'NOT_AUTHENTICATED'
+      });
+      return;
+    }
+
+    if (req.user.roleId !== 2) {
+      res.status(403).json({
+        success: false,
+        error: 'Access denied - doctor only',
+        errorCode: 'DOCTOR_REQUIRED'
+      });
+      return;
+    }
+
+    next();
   }
 }
 

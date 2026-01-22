@@ -9,8 +9,20 @@ import {
 } from '../core/interfaces/profile.interface';
 import { Logger } from '../core/services/logger.service';
 
+// Extend Express Request type to include user with role
+declare module 'express-serve-static-core' {
+  interface Request {
+    user?: {
+      id: number;
+      email: string;
+      type?: string;
+      role?: UserRole;
+    };
+  }
+}
+
 /**
- * 👤 Controlador de Perfil de Usuario
+ * Controlador de Perfil de Usuario
  * Gestiona los endpoints del módulo de perfiles y evaluación de riesgo
  * 
  * Endpoints incluidos:
@@ -48,7 +60,7 @@ export class ProfileController {
 
       const profileData: CreateUserProfileDTO = req.body;
 
-      const profile = await this.profileService.createProfile(
+      const profile = await this.profileService.createUserProfile(
         userId,
         profileData,
         userRole
@@ -113,7 +125,7 @@ export class ProfileController {
         return;
       }
 
-      const profile = await this.profileService.getProfile(
+      const profile = await this.profileService.getUserProfile(
         targetUserId,
         requestingUserId,
         requestingUserRole
@@ -176,7 +188,7 @@ export class ProfileController {
 
       const updateData: UpdateUserProfileDTO = req.body;
 
-      const updatedProfile = await this.profileService.updateProfile(
+      const updatedProfile = await this.profileService.updateUserProfile(
         targetUserId,
         updateData,
         requestingUserId,
@@ -246,7 +258,7 @@ export class ProfileController {
         assessed_by_user_id: requestingUserId
       };
 
-      const assessment = await this.profileService.createRiskAssessment(
+      const assessment = await this.profileService.calculateRiskAssessment(
         targetUserId,
         assessmentData,
         requestingUserId,
@@ -312,7 +324,7 @@ export class ProfileController {
         return;
       }
 
-      const stats = await this.profileService.getDashboardStats(userId, userRole);
+      const stats = await this.profileService.getDashboardStats(userRole);
 
       res.json({
         success: true,
@@ -349,7 +361,8 @@ export class ProfileController {
         return;
       }
 
-      const trends = await this.profileService.getRiskTrends(
+      // Implement getRiskTrends or use alternative method
+      const trends = await this.profileService.getRiskAssessmentHistory(
         targetUserId,
         requestingUserId,
         requestingUserRole
@@ -404,7 +417,7 @@ export class ProfileController {
         recorded_by_user_id: requestingUserId
       };
 
-      const metric = await this.profileService.createHealthMetric(
+      const metric = await this.profileService.addHealthMetric(
         targetUserId,
         metricData,
         requestingUserId,

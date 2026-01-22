@@ -60,7 +60,7 @@ const emailSchema = z.object({
 });
 
 const appSchema = z.object({
-  port: z.number().default(3002),
+  port: z.number().default(3000),
   environment: z.enum(['development', 'production', 'test']).default('development'),
   corsOrigins: z.array(z.string()).default(['http://localhost:8100', 'http://localhost:4200']),
   logLevel: z.enum(['error', 'warn', 'info', 'debug']).default('info'),

@@ -6,7 +6,7 @@
 
 import { Request, Response } from 'express';
 import { DatabaseServiceFactory } from '../core/factories/database.factory';
-import { ROLE_IDS, isPatient, isDoctor, isAdmin } from '../core/rbac';
+import { isPatient, isDoctor, isAdmin } from '../core/rbac';
 
 // Interfaces for response types
 interface PatientDemographics {
@@ -78,9 +78,11 @@ export class ClinicalProfileController {
    */
   async getClinicalProfile(req: Request, res: Response): Promise<void> {
     try {
-      const roleId = req.user?.roleId;
+      const roleId = Number(req.user?.roleId);
       const userId = req.user?.id;
       const requestedPatientId = req.params.patientId ? parseInt(req.params.patientId) : null;
+
+      console.log('[ClinicalProfile] User info:', { roleId, userId, requestedPatientId });
 
       if (!roleId || !userId) {
         res.status(401).json({ success: false, error: 'Usuario no autenticado' });
@@ -95,14 +97,41 @@ export class ClinicalProfileController {
 
       if (isPatient(roleId)) {
         // Patient can only view their own profile
-        const patientResult = await connection.query(
+        let patientResult = await connection.query(
           'SELECT patient_id FROM patient WHERE user_id = $1',
           [userId]
         );
         
+        // Auto-create patient record if missing
         if (patientResult.length === 0) {
-          res.status(404).json({ success: false, error: 'Perfil de paciente no encontrado' });
-          return;
+          console.log('[ClinicalProfile] Patient record missing, auto-creating for user_id:', userId);
+          
+          // Get user info for creating patient
+          const userInfo = await connection.query(
+            'SELECT email, created_at, updated_at FROM users WHERE user_id = $1',
+            [userId]
+          );
+          
+          if (userInfo.length > 0) {
+            // Create the patient record
+            const createResult = await connection.query(
+              `INSERT INTO patient (user_id, patient_name, patient_last_name, country, created_at, updated_at)
+               VALUES ($1, '', '', 'Chile', $2, $3)
+               RETURNING patient_id`,
+              [userId, userInfo[0].created_at || new Date(), new Date()]
+            );
+            
+            if (createResult.length > 0) {
+              console.log('[ClinicalProfile] Patient record created with patient_id:', createResult[0].patient_id);
+              patientResult = createResult;
+            }
+          }
+          
+          // Re-check if creation succeeded
+          if (patientResult.length === 0) {
+            res.status(404).json({ success: false, error: 'Perfil de paciente no encontrado' });
+            return;
+          }
         }
         
         targetPatientId = patientResult[0].patient_id;
@@ -613,7 +642,7 @@ export class ClinicalProfileController {
    */
   async getRiskHistory(req: Request, res: Response): Promise<void> {
     try {
-      const roleId = req.user?.roleId;
+      const roleId = Number(req.user?.roleId);
       const userId = req.user?.id;
       const patientId = parseInt(req.params.patientId);
 

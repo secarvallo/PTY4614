@@ -3,6 +3,10 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import authRoutes from './routes/auth.routes';
 import { healthRoutes } from './routes/health.routes';
+import directoryRoutes from './routes/directory.routes';
+import { doctorRoutes } from './routes/doctor.routes';
+import userProfileRoutes from './routes/user-profile.routes';
+import clinicalProfileRoutes from './routes/clinical-profile.routes';
 import { DatabaseServiceFactory } from './core/factories/database.factory';
 import { setupSwagger } from './core/config/swagger.config';
 
@@ -69,6 +73,18 @@ app.use('/api/auth', authRoutes);
 
 // Health check routes - Comprehensive monitoring endpoints
 app.use('/api/health', healthRoutes);
+
+// Directory routes - RBAC-based directory access
+app.use('/api/directory', directoryRoutes);
+
+// Doctor routes - Doctor management and specialties
+app.use('/api/doctors', doctorRoutes);
+
+// Profile routes - User profile management
+app.use('/api/profile', userProfileRoutes);
+
+// Clinical Profile routes - Detailed clinical data
+app.use('/api/clinical-profile', clinicalProfileRoutes);
 
 // ========== API DOCUMENTATION ==========
 // Setup Swagger API documentation

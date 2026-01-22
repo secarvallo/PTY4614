@@ -1,7 +1,7 @@
 /**
  * Refresh Token Repository Implementation
- * Implementación del repositorio de tokens de actualización
- * Sigue patrón Repository con Clean Architecture
+ * Implementation of the refresh tokens repository
+ * Follows Repository pattern with Clean Architecture
  */
 
 import { IDatabaseConnection } from '../../interfaces/database.interface';
@@ -17,15 +17,15 @@ export class RefreshTokenRepository implements IRefreshTokenRepository {
         this.logger = logger;
     }
 
-    async findById(id: number): Promise<IRefreshToken | null> {
+    async findById(tokenId: number): Promise<IRefreshToken | null> {
         try {
             const result = await this.db.query<IRefreshToken>(
-                'SELECT * FROM refresh_tokens WHERE id = $1',
-                [id]
+                'SELECT * FROM refresh_tokens WHERE token_id = $1',
+                [tokenId]
             );
             return result.length > 0 ? result[0] : null;
         } catch (error) {
-            this.logger.error(`Error finding refresh token by id ${id}:`, error);
+            this.logger.error(`Error finding refresh token by id ${tokenId}:`, error);
             throw error;
         }
     }
@@ -96,7 +96,7 @@ export class RefreshTokenRepository implements IRefreshTokenRepository {
         }
     }
 
-    async update(id: number, tokenData: Partial<IRefreshToken>): Promise<IRefreshToken | null> {
+    async update(tokenId: number, tokenData: Partial<IRefreshToken>): Promise<IRefreshToken | null> {
         try {
             const setClause: string[] = [];
             const values: any[] = [];
@@ -106,7 +106,7 @@ export class RefreshTokenRepository implements IRefreshTokenRepository {
             tokenData.updated_at = new Date();
 
             Object.entries(tokenData).forEach(([key, value]) => {
-                if (value !== undefined && key !== 'id') {
+                if (value !== undefined && key !== 'token_id') {
                     setClause.push(`${key} = $${paramIndex}`);
                     values.push(value);
                     paramIndex++;
@@ -114,54 +114,54 @@ export class RefreshTokenRepository implements IRefreshTokenRepository {
             });
 
             if (setClause.length === 0) {
-                return await this.findById(id);
+                return await this.findById(tokenId);
             }
 
-            values.push(id);
-            const query = `UPDATE refresh_tokens SET ${setClause.join(', ')} WHERE id = $${paramIndex} RETURNING *`;
+            values.push(tokenId);
+            const query = `UPDATE refresh_tokens SET ${setClause.join(', ')} WHERE token_id = $${paramIndex} RETURNING *`;
 
             const result = await this.db.query<IRefreshToken>(query, values);
 
             if (result.length > 0) {
-                this.logger.info(`Refresh token updated successfully with id: ${id}`);
+                this.logger.info(`Refresh token updated successfully with id: ${tokenId}`);
                 return result[0];
             }
 
             return null;
         } catch (error) {
-            this.logger.error(`Error updating refresh token with id ${id}:`, error);
+            this.logger.error(`Error updating refresh token with id ${tokenId}:`, error);
             throw error;
         }
     }
 
-    async delete(id: number): Promise<boolean> {
+    async delete(tokenId: number): Promise<boolean> {
         try {
             const result = await this.db.query(
-                'DELETE FROM refresh_tokens WHERE id = $1',
-                [id]
+                'DELETE FROM refresh_tokens WHERE token_id = $1',
+                [tokenId]
             );
 
             const deleted = result.length > 0;
             if (deleted) {
-                this.logger.info(`Refresh token deleted successfully with id: ${id}`);
+                this.logger.info(`Refresh token deleted successfully with id: ${tokenId}`);
             }
 
             return deleted;
         } catch (error) {
-            this.logger.error(`Error deleting refresh token with id ${id}:`, error);
+            this.logger.error(`Error deleting refresh token with id ${tokenId}:`, error);
             throw error;
         }
     }
 
-    async exists(id: number): Promise<boolean> {
+    async exists(tokenId: number): Promise<boolean> {
         try {
             const result = await this.db.query(
-                'SELECT 1 FROM refresh_tokens WHERE id = $1',
-                [id]
+                'SELECT 1 FROM refresh_tokens WHERE token_id = $1',
+                [tokenId]
             );
             return result.length > 0;
         } catch (error) {
-            this.logger.error(`Error checking if refresh token exists with id ${id}:`, error);
+            this.logger.error(`Error checking if refresh token exists with id ${tokenId}:`, error);
             throw error;
         }
     }
@@ -211,16 +211,15 @@ export class RefreshTokenRepository implements IRefreshTokenRepository {
 
     async revokeToken(tokenHash: string, reason: string): Promise<boolean> {
         try {
+            this.logger.info(`Revoking refresh token: ${reason}`);
             const result = await this.db.query(
                 `UPDATE refresh_tokens 
          SET is_revoked = TRUE, 
-             revoked_at = NOW(),
-             revocation_reason = $2,
              updated_at = NOW()
          WHERE token_hash = $1 
          AND is_revoked = FALSE
-         RETURNING id`,
-                [tokenHash, reason]
+         RETURNING token_id`,
+                [tokenHash]
             );
 
             const revoked = result.length > 0;
@@ -237,16 +236,15 @@ export class RefreshTokenRepository implements IRefreshTokenRepository {
 
     async revokeAllUserTokens(userId: number, reason: string): Promise<number> {
         try {
+            this.logger.info(`Revoking all tokens for user ${userId}: ${reason}`);
             const result = await this.db.query(
                 `UPDATE refresh_tokens 
          SET is_revoked = TRUE, 
-             revoked_at = NOW(),
-             revocation_reason = $2,
              updated_at = NOW()
          WHERE user_id = $1 
          AND is_revoked = FALSE
-         RETURNING id`,
-                [userId, reason]
+         RETURNING token_id`,
+                [userId]
             );
 
             const count = result.length;
@@ -255,6 +253,51 @@ export class RefreshTokenRepository implements IRefreshTokenRepository {
             return count;
         } catch (error) {
             this.logger.error(`Error revoking all tokens for user ${userId}:`, error);
+            throw error;
+        }
+    }
+
+    async findByJti(jti: string): Promise<IRefreshToken | null> {
+        try {
+            const result = await this.db.query<IRefreshToken>(
+                'SELECT * FROM refresh_tokens WHERE jti = $1',
+                [jti]
+            );
+            return result.length > 0 ? result[0] : null;
+        } catch (error) {
+            this.logger.error(`Error finding refresh token by jti ${jti}:`, error);
+            throw error;
+        }
+    }
+
+    async findActiveTokensByUserId(userId: number): Promise<IRefreshToken[]> {
+        try {
+            return await this.db.query<IRefreshToken>(
+                `SELECT * FROM refresh_tokens 
+                 WHERE user_id = $1 
+                 AND is_revoked = FALSE 
+                 AND expires_at > NOW()
+                 ORDER BY created_at DESC`,
+                [userId]
+            );
+        } catch (error) {
+            this.logger.error(`Error finding active tokens for user ${userId}:`, error);
+            throw error;
+        }
+    }
+
+    async deleteExpiredTokens(): Promise<number> {
+        try {
+            const result = await this.db.query(
+                `DELETE FROM refresh_tokens 
+                 WHERE expires_at < NOW() OR is_revoked = TRUE
+                 RETURNING token_id`
+            );
+            const count = result.length;
+            this.logger.info(`Deleted ${count} expired/revoked tokens`);
+            return count;
+        } catch (error) {
+            this.logger.error('Error deleting expired tokens:', error);
             throw error;
         }
     }

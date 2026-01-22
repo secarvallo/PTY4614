@@ -78,6 +78,11 @@ export interface IUnitOfWork {
 }
 
 /**
+ * 🎭 User Role Type
+ */
+export type UserRole = 'PATIENT' | 'DOCTOR' | 'ADMINISTRATOR';
+
+/**
  * 👤 User Entity Interface
  */
 export interface IUser {
@@ -94,6 +99,10 @@ export interface IUser {
   is_active: boolean;
   failed_login_attempts: number;
   locked_until?: Date;
+  
+  // Role fields - Para navegación post-login (opcionales, se obtienen de la BD)
+  role_id?: number;           // 1=PATIENT, 2=DOCTOR, 3=ADMINISTRATOR
+  role?: UserRole;            // Nombre del rol para uso en frontend
   
   // Password reset fields
   password_reset_token?: string;
@@ -148,6 +157,16 @@ export interface IUserRepository extends IRepository<IUser> {
    * Bloquear usuario hasta una fecha específica
    */
   lockUser(userId: number, lockUntil: Date): Promise<void>;
+
+  /**
+   * Obtener el rol de un usuario
+   */
+  getUserRole(userId: number): Promise<string | null>;
+
+  /**
+   * Actualizar el rol de un usuario
+   */
+  updateUserRole(userId: number, roleName: string): Promise<void>;
 }
 
 /**

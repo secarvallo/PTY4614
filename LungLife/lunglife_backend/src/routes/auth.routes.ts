@@ -5,11 +5,32 @@
 
 import express from 'express';
 import { AuthController } from '../controllers/auth.controller.v2';
+import { AuthMiddleware } from '../core/middleware';
 
 const router = express.Router();
 
 // Instantiate v2 controller (Clean Architecture)
 const authController = new AuthController();
+
+// ========== CURRENT USER ROUTE ==========
+
+/**
+ * @swagger
+ * /auth/me:
+ *   get:
+ *     tags:
+ *       - Auth
+ *     summary: Obtener usuario actual
+ *     description: Devuelve la información del usuario autenticado
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Usuario obtenido exitosamente
+ *       401:
+ *         description: No autenticado
+ */
+router.get('/me', AuthMiddleware.authenticateToken, authController.getMe.bind(authController));
 
 // ========== AUTHENTICATION ROUTES ==========
 

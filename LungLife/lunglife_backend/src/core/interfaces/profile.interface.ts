@@ -128,7 +128,7 @@ export interface IRolePermission {
 // ===== EXTENDED USER INTERFACE =====
 
 export interface IExtendedUser extends IUser {
-  role: UserRole;
+  // role ya heredado de IUser como opcional
   profileCompleted: boolean;
   specialty?: string; // For health professionals
   licenseNumber?: string; // For health professionals
