@@ -8,9 +8,22 @@ import { Subject, takeUntil } from 'rxjs';
 import { AuthFacadeService } from '../../../core/services';
 import { AuthValidators } from '../../../core/validators/auth-validators';
 import { DEFAULT_AUTH_REDIRECT, resolvePostAuthRedirect } from '../../../core/utils/auth-navigation';
-
 import { LoggerService } from '../../../../core/services/logger.service';
 import { LoginRequest } from '../../../core/services/infrastructure/auth-api.service';
+import {
+  LoginFormData,
+  TwoFactorFormData,
+  TwoFactorVerificationRequest,
+  AuthResponse,
+  LoginComponentState,
+  LoginRateLimitState,
+  RateLimitConfig,
+  LoginComputedState,
+  AlertConfig,
+  LoadingConfig,
+  SanitizedLoginInput,
+  SecurityAuditEvent
+} from './login.interface';
 
 @Component({
   selector: 'app-login',
@@ -45,9 +58,13 @@ export class LoginPage implements OnInit, OnDestroy {
   private loginAttempts = signal(0);
   private lastLoginAttempt = signal(0);
   isLoginRateLimited = signal(false);
-  private readonly MAX_LOGIN_ATTEMPTS = 5;
-  private readonly LOGIN_COOLDOWN_MS = 900000; // 15 minutos
-  private readonly LOGIN_ATTEMPT_WINDOW_MS = 1800000; // 30 minutos
+  
+  // Rate limiting configuration
+  private readonly rateLimitConfig: RateLimitConfig = {
+    maxLoginAttempts: 5,
+    loginCooldownMs: 900000, // 15 minutos
+    loginAttemptWindowMs: 1800000 // 30 minutos
+  };
   
   // Computed signals for derived state
   isFormValid = computed(() => this.loginForm?.valid ?? false);
@@ -93,7 +110,7 @@ export class LoginPage implements OnInit, OnDestroy {
     });
   }
 
-  onLogin() {
+  onLogin(): void {
     if (!this.loginForm.valid) return;
 
     // Verificar rate limiting
@@ -104,14 +121,14 @@ export class LoginPage implements OnInit, OnDestroy {
     const rawEmail = this.loginForm.get('email')?.value || '';
     const sanitizedEmail = this.sanitizeLoginEmail(rawEmail);
     
-    const loginData = {
+    const loginData: LoginFormData = {
       email: sanitizedEmail,
       password: this.loginForm.get('password')?.value,
       rememberMe: this.loginForm.get('rememberMe')?.value
     };
 
     this.authFacade.login(loginData).subscribe({
-      next: (response: any) => {
+      next: (response: AuthResponse) => {
         if (response.success && !response.requiresTwoFactor) {
           // Limpiar rate limiting en caso de éxito
           this.loginAttempts.set(0);
@@ -130,13 +147,17 @@ export class LoginPage implements OnInit, OnDestroy {
     });
   }
 
-  onVerify2FA() {
+  onVerify2FA(): void {
     if (!this.twoFactorForm.valid) return;
 
     const code = this.twoFactorForm.get('code')?.value;
 
-    this.authFacade.verify2FA({ code }).subscribe({
-      next: (response: any) => {
+    const verificationData: TwoFactorVerificationRequest = {
+      code: code
+    };
+
+    this.authFacade.verify2FA(verificationData).subscribe({
+      next: (response: AuthResponse) => {
         if (response.success) {
           this.performDeferredRedirect();
         }
@@ -147,14 +168,16 @@ export class LoginPage implements OnInit, OnDestroy {
     });
   }
 
-  verifyBackupCode() {
+  verifyBackupCode(): void {
     if (!this.backupCode()) return;
 
-    this.authFacade.verify2FA({
+    const verificationData: TwoFactorVerificationRequest = {
       code: this.backupCode(),
       isBackupCode: true
-    }).subscribe({
-      next: (response: any) => {
+    };
+
+    this.authFacade.verify2FA(verificationData).subscribe({
+      next: (response: AuthResponse) => {
         if (response.success) {
           this.performDeferredRedirect();
         }
@@ -165,7 +188,7 @@ export class LoginPage implements OnInit, OnDestroy {
     });
   }
 
-  cancelTwoFactor() {
+  cancelTwoFactor(): void {
     this.requiresTwoFactor.set(false);
     this.twoFactorForm.reset();
     this.showBackupCodeInput.set(false);
@@ -173,19 +196,19 @@ export class LoginPage implements OnInit, OnDestroy {
     this.error.set(null);
   }
 
-  togglePassword() {
+  togglePassword(): void {
     this.showPassword.update(current => !current);
   }
 
-  toggleBackupCodeInput() {
+  toggleBackupCodeInput(): void {
     this.showBackupCodeInput.update(current => !current);
   }
 
-  loginWithGoogle() {
+  loginWithGoogle(): void {
     this.showInfoAlert('Google Login', 'Google authentication will be implemented soon.');
   }
 
-  loginWithApple() {
+  loginWithApple(): void {
     this.showInfoAlert('Apple Login', 'Apple authentication will be implemented soon.');
   }
 
@@ -226,10 +249,12 @@ export class LoginPage implements OnInit, OnDestroy {
       return;
     }
 
-    const loading = await this.loadingController.create({
+    const loadingConfig: LoadingConfig = {
       message: 'Signing in...',
       spinner: 'crescent'
-    });
+    };
+    
+    const loading = await this.loadingController.create(loadingConfig);
     await loading.present();
 
     try {
@@ -237,7 +262,7 @@ export class LoginPage implements OnInit, OnDestroy {
       console.log('Attempting enhanced login', { email: credentials.email });
       
       this.authFacade.login(credentials).subscribe({
-        next: async (result) => {
+        next: async (result: AuthResponse) => {
           await loading.dismiss();
           console.log('Login result received', { 
             success: result.success, 
@@ -281,12 +306,14 @@ export class LoginPage implements OnInit, OnDestroy {
    * Show error alert
    */
   private async showErrorAlert(message: string): Promise<void> {
-    const alert = await this.alertController.create({
+    const alertConfig: AlertConfig = {
       header: 'Login Failed',
       message,
       buttons: ['OK'],
       cssClass: 'error-alert'
-    });
+    };
+    
+    const alert = await this.alertController.create(alertConfig);
     await alert.present();
   }
 
@@ -294,12 +321,14 @@ export class LoginPage implements OnInit, OnDestroy {
    * Show info alert
    */
   private async showInfoAlert(header: string, message: string): Promise<void> {
-    const alert = await this.alertController.create({
+    const alertConfig: AlertConfig = {
       header,
       message,
       buttons: ['OK'],
       cssClass: 'info-alert'
-    });
+    };
+    
+    const alert = await this.alertController.create(alertConfig);
     await alert.present();
   }
 
@@ -312,15 +341,15 @@ export class LoginPage implements OnInit, OnDestroy {
     const attempts = this.loginAttempts();
     
     // Resetear contador si ha pasado la ventana de tiempo
-    if (now - lastAttempt > this.LOGIN_ATTEMPT_WINDOW_MS) {
+    if (now - lastAttempt > this.rateLimitConfig.loginAttemptWindowMs) {
       this.loginAttempts.set(0);
       this.isLoginRateLimited.set(false);
       return true;
     }
     
     // Verificar si está en cooldown
-    if (attempts >= this.MAX_LOGIN_ATTEMPTS) {
-      const timeRemaining = this.LOGIN_COOLDOWN_MS - (now - lastAttempt);
+    if (attempts >= this.rateLimitConfig.maxLoginAttempts) {
+      const timeRemaining = this.rateLimitConfig.loginCooldownMs - (now - lastAttempt);
       if (timeRemaining > 0) {
         const minutesRemaining = Math.ceil(timeRemaining / 60000);
         this.error.set(`Demasiados intentos de inicio de sesión. Intenta nuevamente en ${minutesRemaining} minuto(s).`);
@@ -355,7 +384,7 @@ export class LoginPage implements OnInit, OnDestroy {
       const now = Date.now();
       
       // Solo cargar si está dentro de la ventana de tiempo
-      if (now - lastAttempt <= this.LOGIN_ATTEMPT_WINDOW_MS) {
+      if (now - lastAttempt <= this.rateLimitConfig.loginAttemptWindowMs) {
         this.loginAttempts.set(attempts);
         this.lastLoginAttempt.set(lastAttempt);
       }
@@ -366,6 +395,11 @@ export class LoginPage implements OnInit, OnDestroy {
    * Sanitizar email de login
    */
   private sanitizeLoginEmail(email: string): string {
-    return email.toLowerCase().trim().replace(/[<>'"&]/g, '');
+    const sanitizedInput: SanitizedLoginInput = {
+      email: email.toLowerCase().trim().replace(/[<>'"&]/g, ''),
+      password: '',
+      rememberMe: false
+    };
+    return sanitizedInput.email;
   }
 }

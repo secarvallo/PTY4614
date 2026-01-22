@@ -1,0 +1,637 @@
+/**
+ * Directory Page Styles
+ * Unified styles for RBAC multi-role directory
+ * Matches role-selection page design language
+ */
+
+@import '../../../theme/shared-layout.scss';
+@import '../../../auth/auth.styles.scss';
+
+.directory-section {
+  max-width: 520px;
+  min-height: 85vh;
+  padding: 32px 32px 40px;
+  display: flex;
+  flex-direction: column;
+}
+
+// Logo Container
+.logo-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 24px;
+  
+  .logo-img {
+    width: 200px;
+    height: auto;
+    object-fit: contain;
+  }
+}
+
+.directory-section .auth-header {
+  margin-bottom: 20px;
+  
+  h1 {
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1.3;
+    margin-bottom: 8px;
+  }
+  
+  p {
+    font-size: 14px;
+    color: var(--text-light);
+  }
+}
+
+// ===== Statistics Banner (Admin) =====
+.stats-banner {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  width: 100%;
+  padding: 16px;
+  background: var(--surface);
+  border: 2px solid var(--border, #e5e7eb);
+  border-radius: 16px;
+  margin-bottom: 20px;
+  
+  .stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    
+    .stat-value {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--primary, #007aff);
+    }
+    
+    .stat-label {
+      font-size: 11px;
+      color: var(--text-light);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    &.warning .stat-value {
+      color: #F59E0B;
+    }
+  }
+}
+
+// ===== Current Doctor/Patient Banners =====
+.current-doctor-banner,
+.patient-count-banner {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  background: rgba(16, 185, 129, 0.08);
+  border: 2px solid rgba(16, 185, 129, 0.3);
+  border-radius: 16px;
+  margin-bottom: 20px;
+
+  .banner-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    background: rgba(16, 185, 129, 0.15);
+    border-radius: 12px;
+
+    ion-icon {
+      font-size: 24px;
+      color: #10B981;
+    }
+  }
+
+  .banner-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+
+    .label {
+      font-size: 12px;
+      font-weight: 500;
+      color: #10B981;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .doctor-name,
+    .count {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .specialty {
+      font-size: 14px;
+      color: var(--text-light);
+    }
+  }
+}
+
+.patient-count-banner {
+  background: rgba(0, 122, 255, 0.08);
+  border-color: rgba(0, 122, 255, 0.3);
+  
+  .banner-icon {
+    background: rgba(0, 122, 255, 0.15);
+    
+    ion-icon {
+      color: var(--primary, #007aff);
+    }
+  }
+  
+  .banner-info .label {
+    color: var(--primary, #007aff);
+  }
+}
+
+// ===== Directory Tabs =====
+.directory-tabs {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+  margin-bottom: 20px;
+  padding: 4px;
+  background: var(--surface);
+  border: 2px solid var(--border, #e5e7eb);
+  border-radius: 12px;
+  
+  .tab-button {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px 12px;
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-light);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    
+    ion-icon {
+      font-size: 18px;
+    }
+    
+    &:hover {
+      background: rgba(0, 122, 255, 0.05);
+      color: var(--primary, #007aff);
+    }
+    
+    &.active {
+      background: var(--primary, #007aff);
+      color: white;
+    }
+  }
+}
+
+// ===== Search Section =====
+.search-section {
+  width: 100%;
+  margin-bottom: 16px;
+
+  .custom-searchbar {
+    width: 100%;
+    --background: var(--surface);
+    --border-radius: 12px;
+    --box-shadow: none;
+    --placeholder-color: var(--text-light);
+    border: 2px solid var(--border, #e5e7eb);
+    border-radius: 12px;
+    padding: 0;
+    margin-bottom: 8px;
+
+    &.searchbar-has-focus {
+      border-color: var(--primary, #007aff);
+    }
+  }
+
+  .filter-buttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+
+    .filter-toggle {
+      --color: var(--text-light);
+      font-size: 13px;
+
+      ion-badge {
+        margin-left: 6px;
+        --padding-start: 6px;
+        --padding-end: 6px;
+      }
+    }
+
+    .refresh-btn {
+      --color: var(--text-light);
+    }
+  }
+}
+
+// ===== Filters Panel =====
+.filters-panel {
+  width: 100%;
+  background: var(--surface);
+  border: 2px solid var(--border, #e5e7eb);
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 16px;
+
+  ion-item {
+    --background: transparent;
+    --border-color: transparent;
+    --padding-start: 0;
+    --inner-padding-end: 0;
+    margin-bottom: 8px;
+
+    ion-label {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-light);
+    }
+  }
+
+  .clear-filters-btn {
+    --color: var(--primary, #007aff);
+    font-size: 12px;
+    margin-top: 8px;
+  }
+}
+
+// ===== Results Info =====
+.results-info {
+  width: 100%;
+  margin-bottom: 12px;
+  padding: 0 4px;
+
+  .count {
+    font-size: 13px;
+    color: var(--text-light);
+  }
+}
+
+// ===== State Containers =====
+.state-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px;
+  text-align: center;
+  background: var(--surface);
+  border: 2px solid var(--border, #e5e7eb);
+  border-radius: 16px;
+  width: 100%;
+
+  .state-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 64px;
+    height: 64px;
+    background: rgba(0, 122, 255, 0.1);
+    border-radius: 16px;
+    margin-bottom: 16px;
+
+    ion-icon {
+      font-size: 32px;
+      color: var(--primary, #007aff);
+    }
+
+    &.error {
+      background: rgba(239, 68, 68, 0.1);
+      
+      ion-icon {
+        color: #EF4444;
+      }
+    }
+  }
+
+  p {
+    font-size: 14px;
+    color: var(--text-light);
+    margin: 0 0 16px;
+    max-width: 280px;
+  }
+
+  ion-spinner {
+    width: 40px;
+    height: 40px;
+    margin-bottom: 16px;
+  }
+}
+
+// ===== Directory Options Container =====
+.directory-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  margin-bottom: 24px;
+  max-height: 380px;
+  overflow-y: auto;
+  padding-right: 4px;
+
+  &::-webkit-scrollbar {
+    width: 5px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--border, #e5e7eb);
+    border-radius: 3px;
+  }
+}
+
+// ===== Directory Card =====
+.directory-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  background: var(--surface);
+  border: 2px solid var(--border, #e5e7eb);
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    border-color: var(--primary, #007aff);
+    background: rgba(0, 122, 255, 0.02);
+  }
+  
+  &.selected {
+    border-color: #10B981;
+    background: rgba(16, 185, 129, 0.05);
+    
+    .entity-icon.doctor {
+      background: #10B981;
+      
+      .initials {
+        color: white;
+      }
+    }
+  }
+  
+  &.inactive {
+    opacity: 0.6;
+    
+    .entity-icon {
+      background: var(--border, #e5e7eb);
+    }
+  }
+}
+
+// ===== Entity Icon =====
+.entity-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  min-width: 50px;
+  background: rgba(0, 122, 255, 0.1);
+  border-radius: 12px;
+  transition: all 0.2s ease;
+  
+  &.doctor {
+    background: rgba(0, 122, 255, 0.1);
+    
+    .initials {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--primary, #007aff);
+      text-transform: uppercase;
+    }
+  }
+  
+  &.patient {
+    background: rgba(139, 92, 246, 0.1);
+    
+    ion-icon {
+      font-size: 24px;
+      color: #8B5CF6;
+    }
+  }
+}
+
+// ===== Entry Info =====
+.entry-info {
+  flex: 1;
+  min-width: 0;
+  
+  h3 {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    margin: 0 0 4px 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .specialty,
+  .institution,
+  .assigned-doctor {
+    font-size: 13px;
+    color: var(--text-light);
+    margin: 0 0 2px 0;
+    line-height: 1.3;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    
+    ion-icon {
+      font-size: 14px;
+    }
+  }
+  
+  .institution {
+    opacity: 0.8;
+    font-size: 12px;
+  }
+  
+  .role-badge {
+    margin: 4px 0 0 0;
+    
+    ion-badge {
+      font-size: 10px;
+      padding: 4px 8px;
+    }
+  }
+}
+
+// ===== Action Icons =====
+.arrow-icon {
+  font-size: 18px;
+  color: var(--text-light);
+  opacity: 0.5;
+}
+
+.check-icon {
+  font-size: 22px;
+  color: #10B981;
+}
+
+// ===== Navigation Section =====
+.navigation-section {
+  margin-top: auto;
+  padding-top: 20px;
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--primary, #007aff);
+  text-decoration: none;
+  margin-bottom: 16px;
+  
+  ion-icon {
+    font-size: 16px;
+  }
+  
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+// ===== Dark Mode =====
+[data-theme="dark"] {
+  .directory-card {
+    border-color: var(--border-dark, #374151);
+    
+    &:hover {
+      background: rgba(0, 122, 255, 0.08);
+    }
+    
+    &.selected {
+      background: rgba(16, 185, 129, 0.12);
+    }
+  }
+  
+  .entity-icon.doctor {
+    background: rgba(0, 122, 255, 0.15);
+  }
+  
+  .entity-icon.patient {
+    background: rgba(139, 92, 246, 0.15);
+  }
+
+  .current-doctor-banner,
+  .patient-count-banner {
+    background: rgba(16, 185, 129, 0.12);
+  }
+  
+  .patient-count-banner {
+    background: rgba(0, 122, 255, 0.12);
+  }
+
+  .filters-panel,
+  .state-container,
+  .directory-tabs,
+  .stats-banner {
+    border-color: var(--border-dark, #374151);
+  }
+
+  .custom-searchbar {
+    border-color: var(--border-dark, #374151);
+  }
+  
+  .directory-tabs .tab-button:hover {
+    background: rgba(0, 122, 255, 0.1);
+  }
+}
+
+// ===== Responsive =====
+@media (max-width: 480px) {
+  .directory-section {
+    padding: 20px 16px 28px;
+  }
+
+  .logo-container .logo-img {
+    width: 160px;
+  }
+
+  .directory-section .auth-header h1 {
+    font-size: 20px;
+  }
+  
+  .stats-banner {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    
+    .stat-item .stat-value {
+      font-size: 20px;
+    }
+  }
+
+  .directory-tabs .tab-button {
+    padding: 8px 10px;
+    font-size: 12px;
+    
+    ion-icon {
+      font-size: 16px;
+    }
+    
+    span {
+      display: none;
+    }
+  }
+
+  .directory-options {
+    max-height: 320px;
+  }
+
+  .directory-card {
+    padding: 12px 14px;
+    gap: 12px;
+  }
+
+  .entity-icon {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+
+    &.doctor .initials {
+      font-size: 14px;
+    }
+  }
+
+  .entry-info h3 {
+    font-size: 14px;
+  }
+
+  .current-doctor-banner,
+  .patient-count-banner {
+    flex-direction: column;
+    text-align: center;
+    padding: 14px;
+
+    .banner-icon {
+      margin-bottom: 8px;
+    }
+
+    .banner-info {
+      align-items: center;
+    }
+  }
+}

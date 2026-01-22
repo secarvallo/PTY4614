@@ -1,28 +1,42 @@
-<ion-content data-test="forgot-page">
-  <div class="content-wrapper">
-    <div class="centered-container">
+<ion-content class="ion-padding" data-test="forgot-page">
+  <!-- Welcome Content -->
+  <div class="welcome-container">
+    <!-- Forgot Action Section - Envuelve todo el contenido -->
+    <div class="action-section">
+      <!-- Header Section -->
+      <div class="auth-header">
+        <div class="logo-placeholder"></div>
+        <h1>Recuperar Contraseña</h1>
+        <p>Ingresa tu correo para restablecerla</p>
+      </div>
 
-    <!-- Header Section -->
-    <div class="auth-header">
-      <div class="logo-placeholder"></div>
-      <h1>Recuperar Contraseña</h1>
-      <p>Ingresa tu correo para restablecerla</p>
-    </div>
-
-    <!-- Forgot Password Form -->
-    <form (ngSubmit)="onSubmit()" class="auth-form refresh" data-test="forgot-form">
+      <!-- Forgot Password Form -->
+      <form (ngSubmit)="onSubmit()" class="auth-form refresh" data-test="forgot-form">
 
       <!-- Email Field -->
       <div class="form-group">
-        <ion-item lines="none">
-          <ion-input type="email" placeholder="Correo electrónico" [(ngModel)]="email" name="email"
-                     required data-test="forgot-email"></ion-input>
+        <ion-item lines="none" [class.error]="state.validationErrors.email">
+          <ion-input 
+            type="email" 
+            placeholder="Correo electrónico" 
+            [(ngModel)]="email" 
+            name="email"
+            required 
+            data-test="forgot-email"
+            aria-label="Correo electrónico"
+            [attr.aria-describedby]="state.validationErrors.email ? 'email-error' : null"
+          ></ion-input>
         </ion-item>
+        
+        <!-- Email Validation Error -->
+        @if (state.validationErrors.email) {
+          <div class="field-error" id="email-error">{{ state.validationErrors.email }}</div>
+        }
       </div>
 
       <!-- Message Display -->
       @if (message) {
-        <div class="message" [class.success]="isSuccess" [class.error]="!isSuccess">{{ message }}</div>
+        <div class="message" [class.success]="isSuccess" [class.error]="!isSuccess" role="alert">{{ message }}</div>
       }
 
       <!-- Submit Button -->
@@ -35,6 +49,7 @@
         size="large"
         [disabled]="isLoading || !email" 
         data-test="forgot-submit"
+        aria-label="Enviar enlace de recuperación"
       >
         @if (isLoading) {
           <ion-spinner name="crescent"></ion-spinner>
@@ -42,22 +57,21 @@
           <span>Enviar Enlace</span>
         }
       </ion-button>
-    </form>
+      </form>
 
-    <!-- Footer Actions -->
-    <div class="auth-footer">
-      <p>¿Recordaste tu contraseña?</p>
-      <ion-button
-        fill="clear"
-        type="button"
-        routerLink="/auth/login"
-        routerDirection="back"
-        class="link-button"
-      >
-        <strong>Volver al inicio</strong>
-      </ion-button>
-    </div>
-
+      <!-- Footer Actions -->
+      <div class="auth-footer">
+        <p>¿Recordaste tu contraseña?</p>
+        <ion-button
+          fill="clear"
+          type="button"
+          routerLink="/auth/login"
+          routerDirection="back"
+          class="link-button"
+        >
+          <strong>Volver al inicio</strong>
+        </ion-button>
+      </div>
     </div>
   </div>
 </ion-content>

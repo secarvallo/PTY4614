@@ -1,0 +1,50 @@
+<!-- Card Style (para dashboard) -->
+@if (buttonStyle === 'card') {
+  <div class="logout-action-card" (click)="handleLogout()" [attr.data-test]="'logout-button'">
+    <div class="logout-card-icon">
+      <ion-icon name="log-out-outline"></ion-icon>
+    </div>
+    <div class="logout-card-info">
+      <h3>Cerrar Sesión</h3>
+      <p>Salir de tu cuenta</p>
+    </div>
+    <ion-icon name="chevron-forward-outline" class="logout-arrow-icon"></ion-icon>
+  </div>
+}
+
+<!-- Button Style (para headers/toolbars) -->
+@if (buttonStyle === 'button') {
+  <ion-button 
+    [fill]="fill" 
+    [color]="color" 
+    [size]="size"
+    (click)="handleLogout()"
+    [attr.data-test]="'logout-button'">
+    <ion-icon slot="start" name="log-out-outline"></ion-icon>
+    {{ showText ? 'Cerrar Sesión' : '' }}
+  </ion-button>
+}
+
+<!-- Icon Only Style (para toolbars compactos) -->
+@if (buttonStyle === 'icon') {
+  <ion-button 
+    fill="clear" 
+    (click)="handleLogout()"
+    [attr.data-test]="'logout-button'"
+    class="logout-icon-btn">
+    <ion-icon slot="icon-only" name="log-out-outline" [color]="color"></ion-icon>
+  </ion-button>
+}
+
+<!-- Menu Item Style (para menús laterales) -->
+@if (buttonStyle === 'menu-item') {
+  <ion-item 
+    button 
+    (click)="handleLogout()"
+    [attr.data-test]="'logout-button'"
+    class="logout-menu-item"
+    lines="none">
+    <ion-icon slot="start" name="log-out-outline" color="danger"></ion-icon>
+    <ion-label color="danger">Cerrar Sesión</ion-label>
+  </ion-item>
+}

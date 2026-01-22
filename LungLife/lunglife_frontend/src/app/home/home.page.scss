@@ -96,6 +96,19 @@
 .action-section {
   text-align: center;
   margin-bottom: 3rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  
+  // Centrado específico para el botón de home
+  .main-action-button {
+    margin: 0 auto !important; // Centrado horizontal perfecto
+    display: block !important;
+  }
+  
+  // Nota: Los demás estilos del botón se manejan globalmente en auth.styles.scss
+  // con la clase .main-action-button para mantener consistencia en toda la app
 }
 
 // Features Section

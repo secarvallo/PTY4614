@@ -51,15 +51,37 @@
 
       <!-- Action Buttons -->
       <div class="profile-actions">
-        <ion-button expand="block" class="action-button primary" (click)="goBack()">
+        <ion-button 
+          expand="block" 
+          shape="round" 
+          size="large" 
+          color="primary" 
+          class="main-action-button"
+          (click)="goBack()"
+        >
           <ion-icon name="analytics-outline" slot="start"></ion-icon>
           Ir al Dashboard
         </ion-button>
-        <ion-button expand="block" class="action-button" fill="outline" (click)="showUserInfo()">
+        <ion-button 
+          expand="block" 
+          shape="round" 
+          size="large" 
+          fill="outline" 
+          class="main-action-button"
+          (click)="showUserInfo()"
+        >
           <ion-icon name="information-circle-outline" slot="start"></ion-icon>
           Ver Detalles Completos
         </ion-button>
-        <ion-button expand="block" class="action-button" color="danger" fill="clear" (click)="logout()">
+        <ion-button 
+          expand="block" 
+          shape="round" 
+          size="large" 
+          color="danger" 
+          fill="outline" 
+          class="main-action-button"
+          (click)="logout()"
+        >
           <ion-icon name="log-out-outline" slot="start"></ion-icon>
           Cerrar Sesión
         </ion-button>
@@ -76,7 +98,16 @@
       <div class="loading-state" data-test="profile-missing">
         <ion-icon name="alert-circle-outline" color="warning"></ion-icon>
         <p>No se pudo cargar la información del perfil.</p>
-        <ion-button fill="clear" (click)="logout()">Volver a Intentar</ion-button>
+        <ion-button 
+          expand="block" 
+          shape="round" 
+          size="large" 
+          fill="outline" 
+          class="main-action-button"
+          (click)="logout()"
+        >
+          Volver a Intentar
+        </ion-button>
       </div>
     }
 

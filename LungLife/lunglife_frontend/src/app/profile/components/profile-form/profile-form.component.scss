@@ -1,0 +1,541 @@
+/**
+ * Profile Form Styles
+ * 
+ * Uses global auth styles for consistency.
+ * This file only contains profile-specific overrides.
+ * 
+ * Note: Centering and responsive layout is handled by shared-layout.scss
+ */
+
+/* ========== ANIMACIONES ========== */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* ========== HEADER CON BOTÓN DE EDICIÓN ========== */
+.auth-header {
+  .header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    width: 100%;
+
+    .header-text {
+      flex: 1;
+      
+      h1 {
+        margin: 0 0 0.5rem 0;
+      }
+      
+      p {
+        margin: 0;
+      }
+    }
+
+    .edit-button {
+      flex-shrink: 0;
+      --color: var(--ion-color-primary);
+      --padding-start: 8px;
+      --padding-end: 8px;
+      font-size: 1.5rem;
+      margin-top: 4px;
+      
+      ion-icon {
+        font-size: 1.5rem;
+      }
+
+      &:hover {
+        --background: var(--ion-color-primary-tint);
+      }
+    }
+  }
+}
+
+/* ========== ENSURE INPUTS USE AUTH STYLES ========== */
+// Force profile-form inputs to use auth-form styling
+.profile-form {
+  .form-group ion-item {
+    // Ensure all base auth styles are applied
+    --background: transparent;
+    --border-width: 0;
+    --padding-start: 0;
+    --padding-end: 0;
+    --min-height: 56px;
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: 16px;
+    margin-bottom: 8px;
+    padding: 0 20px;
+    transition: all 0.2s ease;
+    width: 100%;
+    max-width: 100%;
+    height: 56px;
+    font-size: 16px;
+
+    &:focus-within {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.1);
+    }
+
+    &:hover {
+      border-color: var(--border);
+    }
+
+    &.error {
+      border-color: #ff3b30;
+      background: rgba(255, 59, 48, 0.03);
+      box-shadow: 0 0 0 4px rgba(255, 59, 48, 0.1);
+    }
+
+    // Estilo para campos deshabilitados (modo visualización)
+    &.item-disabled {
+      opacity: 0.8;
+      background: var(--ion-color-step-50);
+      border-color: var(--ion-color-step-150);
+      cursor: not-allowed;
+      
+      ion-input,
+      ion-select {
+        --color: var(--ion-color-step-600);
+      }
+    }
+
+    ion-input,
+    ion-select {
+      --color: var(--text);
+      --placeholder-color: var(--text-light);
+      font-size: 16px;
+      font-weight: 500;
+      width: 100%;
+      height: 100%;
+      line-height: 1.4;
+    }
+  }
+
+  .error-message {
+    color: #ff3b30;
+    font-size: 14px;
+    margin-top: 4px;
+    font-weight: 500;
+  }
+
+  .view-field {
+    background: var(--ion-color-light);
+    border: 1px solid var(--ion-color-step-150);
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+
+    label {
+      font-size: 0.85rem;
+      color: var(--ion-color-medium);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin: 0;
+    }
+
+    p {
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--ion-text-color);
+    }
+  }
+}
+
+/* ========== PROGRESS INDICATOR ========== */
+.progress-container {
+  background: var(--ion-background-color);
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid var(--ion-color-step-150);
+}
+
+.progress-bar {
+  height: 6px;
+  background: var(--ion-color-step-150);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 0.75rem;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--ion-color-primary);
+  border-radius: 3px;
+  transition: width 0.4s ease;
+}
+
+.progress-text {
+  font-size: 0.875rem;
+  color: var(--ion-color-medium);
+  font-weight: 500;
+  text-align: center;
+  margin: 0;
+}
+
+/* ========== AUTO SAVE INDICATOR ========== */
+.auto-save-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1.5rem;
+  background: var(--ion-color-light);
+  border-radius: 8px;
+  font-size: 0.875rem;
+  color: var(--ion-color-medium);
+  transition: all 0.2s ease;
+
+  &.saving {
+    background: rgba(var(--ion-color-warning-rgb), 0.1);
+    color: var(--ion-color-warning);
+    
+    ion-icon {
+      animation: spin 1s linear infinite;
+    }
+  }
+
+  &.saved {
+    background: rgba(var(--ion-color-success-rgb), 0.1);
+    color: var(--ion-color-success);
+  }
+}
+
+/* ========== TABS ========== */
+.form-tabs {
+  margin-bottom: 2rem;
+
+  ion-segment {
+    --background: var(--ion-color-light);
+    border-radius: 12px;
+    padding: 4px;
+  }
+
+  ion-segment-button {
+    --color: var(--ion-color-medium);
+    --color-checked: var(--ion-color-primary);
+    --background-checked: var(--ion-background-color);
+    --border-radius: 8px;
+    min-height: 44px;
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+
+  .tab-indicator {
+    position: absolute;
+    bottom: 4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: transparent;
+    transition: background 0.2s ease;
+
+    &.complete {
+      background: var(--ion-color-success);
+    }
+  }
+}
+
+/* ========== FORM SECTIONS ========== */
+.form-section {
+  margin-bottom: 2rem;
+}
+
+.form-section-header {
+  text-align: center;
+  margin-bottom: 2rem;
+  padding: 1.25rem;
+  background: var(--ion-color-light);
+  border-radius: 12px;
+
+  h3 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--ion-color-primary);
+    margin: 0 0 0.5rem 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+
+    ion-icon {
+      font-size: 1.25rem;
+    }
+  }
+
+  p {
+    font-size: 0.875rem;
+    color: var(--ion-color-medium);
+    margin: 0;
+  }
+}
+
+.subsection {
+  margin: 2rem 0;
+
+  h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--ion-color-primary);
+    margin: 0 0 1rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    ion-icon {
+      font-size: 1.125rem;
+    }
+  }
+}
+
+/* ========== DYNAMIC FORM ARRAYS ========== */
+.dynamic-item {
+  position: relative;
+  margin-bottom: 1rem;
+
+  ion-item {
+    --padding-end: 52px;
+    position: relative;
+  }
+
+  ion-button[slot="end"] {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    margin: 0;
+    width: 36px;
+    height: 36px;
+    --color: var(--ion-color-danger);
+    --background: transparent;
+
+    &:hover {
+      --background: rgba(var(--ion-color-danger-rgb), 0.1);
+    }
+  }
+}
+
+/* ========== PROFILE-SPECIFIC ELEMENTS ========== */
+.age-display {
+  padding: 0.5rem 1rem;
+  background: var(--ion-color-light);
+  border-radius: 8px;
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--ion-color-medium);
+  font-weight: 500;
+  text-align: center;
+}
+
+/* ========== ADD BUTTONS ========== */
+.add-button {
+  --background: transparent;
+  --border-width: 1px;
+  --border-color: var(--ion-color-primary);
+  --color: var(--ion-color-primary);
+  margin: 1rem 0;
+  height: 44px;
+  font-weight: 500;
+  font-size: 0.875rem;
+  text-transform: none;
+
+  &:hover {
+    --background: var(--ion-color-light);
+  }
+}
+
+/* ========== CONSENT SECTION ========== */
+.consent-section {
+  margin-top: 2rem;
+
+  h4 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    color: var(--ion-text-color);
+  }
+}
+
+.checkbox-group {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.checkbox-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem;
+  background: var(--ion-color-light);
+  border-radius: 12px;
+  transition: background 0.2s ease;
+
+  &:hover {
+    background: var(--ion-color-step-100);
+  }
+
+  ion-label {
+    h3 {
+      font-size: 0.9375rem;
+      font-weight: 500;
+      margin: 0 0 0.25rem 0;
+      color: var(--ion-text-color);
+    }
+
+    p {
+      font-size: 0.8125rem;
+      margin: 0;
+      color: var(--ion-color-medium);
+      line-height: 1.4;
+    }
+  }
+}
+
+/* ========== FORM ACTIONS ========== */
+.form-actions {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--ion-color-step-150);
+}
+
+.button-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.secondary-button {
+  --background: transparent;
+  --border-width: 1px;
+  --border-color: var(--ion-color-step-300);
+  --color: var(--ion-color-medium);
+  height: 48px;
+  font-weight: 500;
+  text-transform: none;
+
+  &:hover {
+    --border-color: var(--ion-color-primary);
+    --color: var(--ion-color-primary);
+  }
+}
+
+.primary-button {
+  --background: var(--ion-color-primary);
+  --color: white;
+  height: 52px;
+  font-weight: 600;
+  font-size: 1rem;
+  text-transform: none;
+  margin-top: 0.5rem;
+
+  &:hover {
+    --background: var(--ion-color-primary-shade);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+  }
+}
+
+/* ========== VALIDATION SUMMARY ========== */
+.validation-summary {
+  padding: 1rem;
+  margin-top: 1rem;
+  background: rgba(var(--ion-color-warning-rgb), 0.1);
+  border-radius: 8px;
+
+  h4 {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--ion-color-warning-shade);
+    margin: 0 0 0.75rem 0;
+  }
+
+  ul {
+    margin: 0;
+    padding-left: 1.25rem;
+    font-size: 0.875rem;
+    color: var(--ion-color-medium);
+
+    li {
+      margin-bottom: 0.25rem;
+    }
+  }
+}
+
+/* ========== RESPONSIVE DESIGN ========== */
+@media (max-width: 768px) {
+  .form-tabs ion-segment-button {
+    font-size: 0.8125rem;
+    min-height: 40px;
+  }
+
+  .form-section-header {
+    padding: 1rem;
+
+    h3 {
+      font-size: 1.0625rem;
+    }
+
+    p {
+      font-size: 0.8125rem;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .progress-container {
+    padding: 0.75rem;
+  }
+
+  .auto-save-indicator {
+    padding: 0.625rem 0.75rem;
+    font-size: 0.8125rem;
+  }
+
+  .form-tabs ion-segment-button {
+    font-size: 0.75rem;
+    min-height: 36px;
+  }
+
+  .button-group {
+    gap: 0.5rem;
+  }
+
+  .primary-button,
+  .secondary-button {
+    height: 44px;
+  }
+}
+
+/* ========== NAVIGATION SECTION ========== */
+.navigation-section {
+  margin-top: 24px;
+  padding-top: 16px;
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--primary, #007aff);
+  text-decoration: none;
+  margin-bottom: 16px;
+  
+  &:hover {
+    text-decoration: underline;
+  }
+}

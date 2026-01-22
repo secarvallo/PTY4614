@@ -1,0 +1,284 @@
+/**
+ * ✨ Profile Dashboard Component - Following Auth Design System
+ * Styles extending auth.styles.scss and shared-layout.scss
+ */
+
+/* Profile header section */
+.profile-info {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 16px;
+
+  .avatar ion-icon {
+    font-size: 80px;
+  }
+
+  .details {
+    h2 {
+      margin: 0 0 8px 0;
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    p {
+      margin: 0 0 8px 0;
+      color: var(--text-muted);
+      font-size: 16px;
+    }
+  }
+}
+
+/* Section headers */
+.form-header h2 {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 16px 0;
+  text-align: center;
+}
+
+/* Summary containers */
+.health-summary,
+.lifestyle-summary,
+.contact-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Item styling with auth design system */
+.health-item,
+.lifestyle-item,
+.contact-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  background: rgba(var(--ion-color-light-rgb), 0.3);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+    border-color: var(--primary);
+    background: rgba(var(--ion-color-primary-rgb), 0.05);
+  }
+
+  ion-icon {
+    font-size: 28px;
+    flex-shrink: 0;
+  }
+}
+
+/* Content styling */
+.health-content,
+.lifestyle-content,
+.contact-content {
+  flex: 1;
+
+  strong {
+    display: block;
+    color: var(--text);
+    font-weight: 600;
+    margin-bottom: 4px;
+    font-size: 15px;
+  }
+
+  p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 14px;
+    line-height: 1.4;
+  }
+}
+
+/* Secondary buttons matching auth style */
+.auth-button.secondary {
+  --background: transparent;
+  --color: var(--primary);
+  --border-color: var(--primary);
+  --border-width: 2px;
+  height: 52px;
+  font-size: 15px;
+  font-weight: 600;
+  margin: 8px 0;
+  border-radius: 16px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    --background: var(--primary);
+    --color: white;
+    transform: translateY(-1px);
+  }
+}
+
+/* Loading state */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 40px 16px;
+
+  p {
+    color: var(--text-muted);
+    font-size: 16px;
+  }
+}
+
+/* Mobile responsive design */
+@media (max-width: 480px) {
+  .profile-info {
+    flex-direction: column;
+    text-align: center;
+    gap: 16px;
+    
+    .details h2 {
+      font-size: 20px;
+    }
+  }
+
+  .health-item,
+  .lifestyle-item,
+  .contact-item {
+    padding: 12px;
+    gap: 12px;
+
+    ion-icon {
+      font-size: 24px;
+    }
+  }
+
+  .health-content,
+  .lifestyle-content,
+  .contact-content {
+    strong {
+      font-size: 14px;
+    }
+
+    p {
+      font-size: 13px;
+    }
+  }
+
+  .form-header h2 {
+    font-size: 16px;
+    margin-bottom: 12px;
+  }
+
+  .auth-button.secondary {
+    height: 48px;
+    font-size: 14px;
+  }
+
+  .loading-state {
+    padding: 30px 16px;
+    
+    p {
+      font-size: 14px;
+    }
+  }
+}
+
+/* Animation and interaction enhancements */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.auth-form {
+  animation: fadeInUp 0.4s ease-out;
+}
+
+.health-item,
+.lifestyle-item,
+.contact-item {
+  animation: fadeInUp 0.3s ease-out;
+}
+
+/* Dark theme specific adjustments */
+[data-theme="dark"] {
+  .health-item,
+  .lifestyle-item,
+  .contact-item {
+    background: rgba(255, 255, 255, 0.05);
+    
+    &:hover {
+      background: rgba(var(--ion-color-primary-rgb), 0.2);
+    }
+  }
+
+  .loading-state {
+    p {
+      color: var(--ion-color-medium-tint);
+    }
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .health-item,
+  .lifestyle-item,
+  .contact-item {
+    border-width: 3px;
+  }
+
+  .health-content,
+  .lifestyle-content,
+  .contact-content {
+    strong {
+      font-weight: 700;
+      text-decoration: underline;
+    }
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .auth-form,
+  .health-item,
+  .lifestyle-item,
+  .contact-item {
+    animation: none;
+  }
+
+  .health-item,
+  .lifestyle-item,
+  .contact-item,
+  .auth-button.secondary {
+    transition: none;
+  }
+
+  .health-item:hover,
+  .lifestyle-item:hover,
+  .contact-item:hover,
+  .auth-button.secondary:hover {
+    transform: none;
+  }
+}
+
+/* Tablet responsive adjustments */
+@media (max-width: 768px) and (min-width: 481px) {
+  .health-summary,
+  .lifestyle-summary {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  .contact-summary {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+}

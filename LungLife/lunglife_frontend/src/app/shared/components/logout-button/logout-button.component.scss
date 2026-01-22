@@ -1,0 +1,110 @@
+/**
+ * Logout Button Component Styles
+ * Estilos para el componente de cierre de sesión reutilizable
+ * Mantiene consistencia visual con las action-cards del dashboard
+ */
+
+/* Card Style - Exactamente igual a las action-cards del dashboard */
+.logout-action-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  background: var(--surface, #ffffff);
+  border: 2px solid var(--border, #e5e7eb);
+  border-radius: 16px;
+  margin-bottom: 10px;
+  width: 100%;
+  box-sizing: border-box;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: #EF4444;
+    background: rgba(239, 68, 68, 0.02);
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+/* Icon container - Mismo tamaño que card-icon del dashboard */
+.logout-card-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  border-radius: 12px;
+  background: rgba(239, 68, 68, 0.1);
+
+  ion-icon {
+    font-size: 24px;
+    color: #EF4444;
+  }
+}
+
+/* Info section - Mismo estilo que card-info del dashboard */
+.logout-card-info {
+  flex: 1;
+  min-width: 0;
+
+  h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text, #1f2937);
+    margin: 0 0 4px 0;
+  }
+
+  p {
+    font-size: 13px;
+    color: var(--text-light, #6b7280);
+    margin: 0;
+    line-height: 1.4;
+  }
+}
+
+/* Arrow icon - Mismo estilo que arrow-icon del dashboard */
+.logout-arrow-icon {
+  font-size: 20px;
+  color: var(--text-light, #6b7280);
+  opacity: 0.5;
+}
+
+/* Icon Button Style */
+.logout-icon-btn {
+  --padding-start: 8px;
+  --padding-end: 8px;
+}
+
+/* Menu Item Style */
+.logout-menu-item {
+  --background: transparent;
+  --background-hover: rgba(239, 68, 68, 0.1);
+  cursor: pointer;
+}
+
+/* Dark Mode - Consistente con el dashboard */
+:host-context([data-theme="dark"]) {
+  .logout-action-card {
+    background: var(--surface-dark, #1f2937);
+    border-color: var(--border-dark, #374151);
+
+    &:hover {
+      background: rgba(239, 68, 68, 0.08);
+      border-color: #EF4444;
+    }
+  }
+
+  .logout-card-info {
+    h3 {
+      color: var(--text-dark, #f9fafb);
+    }
+
+    p {
+      color: var(--text-light-dark, #9ca3af);
+    }
+  }
+}

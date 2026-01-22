@@ -1,34 +1,51 @@
 <!-- 🚫 Not Found Page Template -->
 <ion-content [fullscreen]="true">
-  <div class="not-found-container">
+  <div class="content-wrapper">
+    <div class="centered-container">
 
-    <div class="error-content">
-      <!-- Error Icon -->
-      <div class="error-icon">
-        <ion-icon name="alert-circle-outline" color="warning"></ion-icon>
+      <div class="error-content">
+        <!-- Error Icon -->
+        <div class="error-icon">
+          <ion-icon name="alert-circle-outline" color="warning"></ion-icon>
+        </div>
+
+        <!-- Error Message -->
+        <div class="error-message">
+          <h1>404</h1>
+          <h2>Page Not Found</h2>
+          <p>The page you're looking for doesn't exist or has been moved.</p>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="error-actions">
+          <ion-button 
+            expand="block" 
+            type="button"
+            color="primary"
+            shape="round" 
+            size="large"
+            class="main-action-button"
+            (click)="goHome()"
+          >
+            <ion-icon name="home-outline" slot="start"></ion-icon>
+            Go to Dashboard
+          </ion-button>
+
+          <ion-button 
+            expand="block" 
+            type="button"
+            fill="outline" 
+            shape="round" 
+            size="large"
+            class="main-action-button"
+            (click)="goBack()"
+          >
+            <ion-icon name="arrow-back-outline" slot="start"></ion-icon>
+            Go Back
+          </ion-button>
+        </div>
       </div>
 
-      <!-- Error Message -->
-      <div class="error-message">
-        <h1>404</h1>
-        <h2>Page Not Found</h2>
-        <p>The page you're looking for doesn't exist or has been moved.</p>
-      </div>
-
-      <!-- Action Buttons -->
-      <div class="error-actions">
-        <ion-button expand="block" color="primary" (click)="goHome()">
-          <ion-icon name="home-outline" slot="start"></ion-icon>
-          Go to Dashboard
-        </ion-button>
-
-        <ion-button expand="block" fill="outline" (click)="goBack()">
-          <ion-icon name="arrow-back-outline" slot="start"></ion-icon>
-          Go Back
-        </ion-button>
-      </div>
     </div>
-
   </div>
 </ion-content>
-

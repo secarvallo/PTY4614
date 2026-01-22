@@ -4,7 +4,13 @@ import { AuthFacadeService } from './auth/core/services';
 import { AppInitService } from './core/services/app-init.service';
 import { SplashComponent } from './core/components/splash/splash.component';
 // Legacy simple-auth guards replaced by unified versions
-import { unifiedAuthGuard, unifiedGuestGuard, unifiedTwoFAGuard } from './auth/core/guards/unified-auth.guards';
+import { 
+  unifiedAuthGuard, 
+  unifiedGuestGuard, 
+  unifiedTwoFAGuard, 
+  patientOnlyGuard,
+  allRolesGuard 
+} from './auth/core/guards/unified-auth.guards';
 import { DEFAULT_AUTH_REDIRECT, resolvePostAuthRedirect } from './auth/core/utils/auth-navigation';
 
 // Root redirect -> redirige a home como página principal
@@ -32,10 +38,27 @@ export const routes: Routes = [
         canActivate: [unifiedGuestGuard]
       },
       {
+        path: 'role-selection',
+        loadComponent: () => import('./auth/login/pages/role-selection/role-selection.page').then(m => m.RoleSelectionPage),
+        title: 'Seleccionar Rol - LungLife',
+        canActivate: [unifiedGuestGuard]
+      },
+      {
         path: 'register',
         loadComponent: () => import('./auth/login/pages/register/register.page').then(m => m.RegisterPage),
         title: 'Crear Cuenta - LungLife',
         canActivate: [unifiedGuestGuard]
+      },
+      {
+        path: 'register-success',
+        loadComponent: () => import('./auth/login/pages/register-success/register-success.page').then(m => m.RegisterSuccessPage),
+        title: 'Registro Exitoso - LungLife',
+        canActivate: [unifiedGuestGuard]
+      },
+      {
+        path: 'logout-success',
+        loadComponent: () => import('./auth/login/pages/logout-success/logout-success.page').then(m => m.LogoutSuccessPage),
+        title: 'Sesión Cerrada - LungLife'
       },
       {
         path: 'verify-2fa',
@@ -69,9 +92,25 @@ export const routes: Routes = [
   },
   {
     path: 'profile',
-    loadComponent: () => import('./profile/profile.page').then(m => m.ProfilePage),
     canActivate: [unifiedAuthGuard],
-    title: 'Profile - LungLife'
+    children: [
+      { path: '', redirectTo: 'form', pathMatch: 'full' },
+      {
+        path: 'form',
+        loadComponent: () => import('./profile/components/profile-form/profile-form.component').then(m => m.ProfileFormComponent),
+        title: 'Mi Perfil - LungLife'
+      },
+      {
+        path: 'create',
+        loadComponent: () => import('./profile/components/profile-form/profile-form.component').then(m => m.ProfileFormComponent),
+        title: 'Crear Perfil - LungLife'
+      },
+      {
+        path: 'edit/:id',
+        loadComponent: () => import('./profile/components/profile-form/profile-form.component').then(m => m.ProfileFormComponent),
+        title: 'Editar Perfil - LungLife'
+      }
+    ]
   },
   {
     path: 'security',
@@ -95,6 +134,26 @@ export const routes: Routes = [
       }
     ]
   },
+  {
+    path: 'directory',
+    loadComponent: () => import('./directory/pages/directory/directory.page').then(m => m.DirectoryPage),
+    canActivate: [allRolesGuard],
+    title: 'Directorio - LungLife'
+  },
+  {
+    path: 'clinical-profile',
+    loadComponent: () => import('./clinical-profile/pages/detailed-profile/detailed-profile.page').then(m => m.DetailedProfilePage),
+    canActivate: [allRolesGuard],
+    title: 'Perfil Clínico - LungLife'
+  },
+  {
+    path: 'clinical-profile/:patientId',
+    loadComponent: () => import('./clinical-profile/pages/detailed-profile/detailed-profile.page').then(m => m.DetailedProfilePage),
+    canActivate: [allRolesGuard],
+    title: 'Perfil Clínico - LungLife'
+  },
+  // Redirect legacy route
+  { path: 'doctors-directory', redirectTo: '/directory', pathMatch: 'full' },
   { path: 'login', redirectTo: '/auth/login', pathMatch: 'full' },
   { path: 'register', redirectTo: '/auth/register', pathMatch: 'full' },
   { path: 'forgot-password', redirectTo: '/auth/forgot-password', pathMatch: 'full' },

@@ -1,55 +1,169 @@
-<ion-content [fullscreen]="true" data-test="dashboard-page">
-  <div class="content-wrapper">
-    <div class="centered-container-wide">
+<ion-content class="ion-padding" data-test="dashboard-page">
+  <div class="welcome-container">
+    <div class="action-section dashboard-section">
 
     @if (user) {
-      <div class="welcome-header">
-        <h1>Bienvenido de nuevo, {{ user.firstName }}</h1>
-        <p>Aquí tienes un resumen de tu progreso. ¡Sigue así!</p>
-      </div>
-
-      <div class="dashboard-card">
-
-        <div class="metrics-grid">
-          <div class="metric-item smoke-free">
-            <ion-icon name="leaf-outline"></ion-icon>
-            <span class="value">{{ smokeFreeDays }}</span>
-            <span class="label">Días sin fumar</span>
-          </div>
-
-          <div class="metric-item money-saved">
-            <ion-icon name="cash-outline"></ion-icon>
-            <span class="value">{{ moneySaved | currency:'USD':'symbol':'1.0-0' }}</span>
-            <span class="label">Dinero Ahorrado</span>
-          </div>
-
-          <div class="metric-item cigarettes-avoided">
-            <ion-icon name="medical-outline"></ion-icon>
-            <span class="value">{{ cigarettesAvoided }}</span>
-            <span class="label">Cigarrillos Evitados</span>
-          </div>
-
-          <div class="metric-item lung-health">
-            <ion-icon name="fitness-outline"></ion-icon>
-            <span class="value">{{ lungHealthPercentage }}%</span>
-            <span class="label">Salud Pulmonar</span>
-          </div>
+      <!-- User Avatar -->
+      <div class="user-avatar-container">
+        <div class="avatar-circle">
+          @if (user.avatar || user.profile?.avatarUrl) {
+            <img [src]="user.avatar || user.profile?.avatarUrl" alt="Foto de perfil" class="avatar-img">
+          } @else {
+            <ion-icon name="person-outline"></ion-icon>
+          }
         </div>
       </div>
 
-      <div class="dashboard-actions">
-        <ion-button expand="block" class="action-button primary" (click)="logHabit()">
-          <ion-icon name="add-circle-outline" slot="start"></ion-icon>
-          Registrar Hábito de Hoy
-        </ion-button>
-        <ion-button expand="block" class="action-button" fill="outline" (click)="viewProgress()">
-          <ion-icon name="bar-chart-outline" slot="start"></ion-icon>
-          Ver Progreso Detallado
-        </ion-button>
+      <!-- Welcome Header -->
+      <div class="auth-header">
+        @if (isDoctor()) {
+          <h1>¡Hola, Dr(a). {{ user.firstName }} {{ user.lastName }}!</h1>
+          <p>Bienvenido de vuelta a LungLife</p>
+        } @else {
+          <h1>¡Hola, {{ user.firstName }}!</h1>
+          <p>Bienvenido de vuelta a LungLife</p>
+        }
       </div>
+
+      <!-- Quick Stats Cards - Solo para pacientes -->
+      @if (isPatient()) {
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-icon smoke-free">
+              <ion-icon name="leaf-outline"></ion-icon>
+            </div>
+            <div class="stat-info">
+              <span class="stat-value">{{ smokeFreeDays }}</span>
+              <span class="stat-label">Días sin fumar</span>
+            </div>
+          </div>
+          
+          <div class="stat-card">
+            <div class="stat-icon health">
+              <ion-icon name="fitness-outline"></ion-icon>
+            </div>
+            <div class="stat-info">
+              <span class="stat-value">{{ lungHealthPercentage }}%</span>
+              <span class="stat-label">Salud Pulmonar</span>
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- Action Cards -->
+      <div class="section-header">
+        <h2>Acciones Rápidas</h2>
+      </div>
+
+      <!-- ===== PATIENT ACTIONS (Order: 1.Hábito, 2.Clínico, 3.Médico, 4.Progreso, 5.Perfil) ===== -->
+      @if (isPatient()) {
+        <div class="action-card" (click)="logHabit()">
+          <div class="card-icon primary">
+            <ion-icon name="add-circle-outline"></ion-icon>
+          </div>
+          <div class="card-info">
+            <h3>Registrar Hábito</h3>
+            <p>Registra tu progreso de hoy</p>
+          </div>
+          <ion-icon name="chevron-forward-outline" class="arrow-icon"></ion-icon>
+        </div>
+
+        <div class="action-card" routerLink="/clinical-profile">
+          <div class="card-icon clinical">
+            <ion-icon name="pulse-outline"></ion-icon>
+          </div>
+          <div class="card-info">
+            <h3>Mi Perfil Clínico</h3>
+            <p>Información clínica y riesgo</p>
+          </div>
+          <ion-icon name="chevron-forward-outline" class="arrow-icon"></ion-icon>
+        </div>
+
+        <div class="action-card" routerLink="/directory">
+          <div class="card-icon doctor">
+            <ion-icon name="medkit-outline"></ion-icon>
+          </div>
+          <div class="card-info">
+            <h3>Buscar Médico</h3>
+            <p>Encuentra un especialista</p>
+          </div>
+          <ion-icon name="chevron-forward-outline" class="arrow-icon"></ion-icon>
+        </div>
+
+        <div class="action-card" (click)="viewProgress()">
+          <div class="card-icon">
+            <ion-icon name="bar-chart-outline"></ion-icon>
+          </div>
+          <div class="card-info">
+            <h3>Ver Progreso</h3>
+            <p>Revisa tu avance detallado</p>
+          </div>
+          <ion-icon name="chevron-forward-outline" class="arrow-icon"></ion-icon>
+        </div>
+
+        <div class="action-card" routerLink="/profile">
+          <div class="card-icon settings">
+            <ion-icon name="person-outline"></ion-icon>
+          </div>
+          <div class="card-info">
+            <h3>Gestión de Perfil</h3>
+            <p>Edita tu información personal</p>
+          </div>
+          <ion-icon name="chevron-forward-outline" class="arrow-icon"></ion-icon>
+        </div>
+
+        <!-- Logout Button for Patients -->
+        <app-logout-button [buttonStyle]="'card'" [showConfirmation]="true"></app-logout-button>
+      }
+
+      <!-- ===== DOCTOR ACTIONS (Order: 1.Pacientes, 2.Progreso, 3.Perfil) ===== -->
+      @if (isDoctor()) {
+        <div class="action-card" routerLink="/directory">
+          <div class="card-icon doctor">
+            <ion-icon name="people-outline"></ion-icon>
+          </div>
+          <div class="card-info">
+            <h3>Ver Mis Pacientes</h3>
+            <p>Gestiona tus pacientes asignados</p>
+          </div>
+          <ion-icon name="chevron-forward-outline" class="arrow-icon"></ion-icon>
+        </div>
+
+        <div class="action-card" (click)="viewProgress()">
+          <div class="card-icon">
+            <ion-icon name="bar-chart-outline"></ion-icon>
+          </div>
+          <div class="card-info">
+            <h3>Ver Progreso</h3>
+            <p>Revisa estadísticas de pacientes</p>
+          </div>
+          <ion-icon name="chevron-forward-outline" class="arrow-icon"></ion-icon>
+        </div>
+
+        <div class="action-card" routerLink="/profile">
+          <div class="card-icon settings">
+            <ion-icon name="person-outline"></ion-icon>
+          </div>
+          <div class="card-info">
+            <h3>Gestión de Perfil</h3>
+            <p>Edita tu información profesional</p>
+          </div>
+          <ion-icon name="chevron-forward-outline" class="arrow-icon"></ion-icon>
+        </div>
+
+        <!-- Logout Button for Doctors -->
+        <app-logout-button [buttonStyle]="'card'" [showConfirmation]="true"></app-logout-button>
+      }
+
+      <!-- Bottom Link -->
+      <div class="bottom-link">
+        <p>¿Necesitas ayuda?</p>
+        <a href="#">Centro de soporte</a>
+      </div>
+
     } @else {
       <div class="loading-state">
-        <ion-spinner name="crescent"></ion-spinner>
+        <ion-spinner name="crescent" color="primary"></ion-spinner>
         <p>Cargando tu dashboard...</p>
       </div>
     }

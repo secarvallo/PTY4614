@@ -7,34 +7,21 @@ import { Subject, takeUntil, debounceTime, distinctUntilChanged } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { addIcons } from 'ionicons';
 import { shieldCheckmarkOutline } from 'ionicons/icons';
-
-// Environment configuration
 import { environment } from '../../../../../environments/environment';
-
-// Servicios de seguridad avanzados - LISTOS PARA PRODUCCIÓN
-// TODO: Descomentar estas líneas cuando los servicios estén disponibles:
-// import { PasswordBreachValidatorService, PasswordSecurityResult } from '../../../../core/services/password-breach-validator.service';
-// import { SecurityAuditService, SecurityValidationResult } from '../../../../core/services/security-audit.service';
-
-// Validador personalizado
 import { passwordConfirmationValidator } from '../../../validators/password-confirmation.validator';
-
-// TODO: ELIMINAR estas interfaces cuando se importen los servicios reales
-// Interfaces temporales para compilación (SOLO PARA DESARROLLO)
-interface PasswordSecurityResult {
-  isSecure: boolean;
-  securityLevel: string;
-  breachStatus: { isBreached: boolean; count?: number };
-  recommendations?: { message: string }[];
-  entropyScore?: number;
-}
-
-interface SecurityValidationResult {
-  allowed: boolean;
-  requiresAdditionalVerification?: boolean;
-  riskLevel: string;
-  riskFactors: string[];
-}
+import {
+  PasswordSecurityResult,
+  SecurityValidationResult,
+  RegisterFormData,
+  RegisterRequestData,
+  PasswordChecks,
+  PasswordStrengthResult,
+  PasswordSecurityStatus,
+  RegisterComponentState,
+  RegisterApiResponse,
+  SecurityEvent,
+  RegisterComponentConfig
+} from './register.interface';
 
 @Component({
   selector: 'app-register',
@@ -58,23 +45,22 @@ export class RegisterPage implements OnInit, OnDestroy {
   private alertController = inject(AlertController);
   private http = inject(HttpClient);
   
-  // TODO: ACTIVAR PARA PRODUCCIÓN - Reemplazar mocks por servicios reales
-  // Servicios de seguridad avanzados (LISTOS PARA ACTIVAR)
-  // private passwordValidator = inject(PasswordBreachValidatorService);
-  // private securityAudit = inject(SecurityAuditService);
-  
-  // TODO: ELIMINAR EN PRODUCCIÓN - Mock services temporales para desarrollo
+  // Security services - Mock implementations for development
+  // TODO: Replace with actual services when available
   private passwordValidator = {
     validatePasswordSecurity: async (password: string): Promise<PasswordSecurityResult> => ({
-      isSecure: true,
-      securityLevel: 'medium',
+      isSecure: password.length >= 8,
+      securityLevel: password.length >= 12 ? 'high' : password.length >= 8 ? 'medium' : 'low',
       breachStatus: { isBreached: false },
-      recommendations: []
+      recommendations: password.length < 12 ? [{ message: 'Considera usar una contraseña más larga para mayor seguridad' }] : []
     })
   };
   
   private securityAudit = {
-    logSecurityEvent: (event: any) => console.log('Security event:', event),
+    logSecurityEvent: (event: SecurityEvent) => {
+      console.log('Security event logged:', event);
+      // In production, this would send to security audit service
+    },
     validateRegistrationAttempt: (data: any): SecurityValidationResult => ({
       allowed: true,
       requiresAdditionalVerification: false,
@@ -259,8 +245,8 @@ export class RegisterPage implements OnInit, OnDestroy {
   }
 
   // Password strength calculation
-  private calculatePasswordStrength(password: string) {
-    const checks = {
+  private calculatePasswordStrength(password: string): PasswordStrengthResult {
+    const checks: PasswordChecks = {
       minLength: password.length >= 8 && password.length <= 128,
       maxLength: password.length <= 128,
       uppercase: /[A-Z]/.test(password),
@@ -314,7 +300,7 @@ export class RegisterPage implements OnInit, OnDestroy {
 
   // Advanced registration method with comprehensive security
   private async performRegistration(): Promise<void> {
-    const formData = this.registerForm.value;
+    const formData = this.registerForm.value as RegisterFormData;
     
     // STEP 1: Security validation of attempt
     const validationResult = this.securityAudit.validateRegistrationAttempt({
@@ -352,7 +338,7 @@ export class RegisterPage implements OnInit, OnDestroy {
 
     try {
       // STEP 2: Advanced sanitization
-      const sanitizedData = {
+      const sanitizedData: RegisterRequestData = {
         nombre: this.advancedSanitizeInput(formData.nombre),
         apellido: this.advancedSanitizeInput(formData.apellido),
         email: this.advancedSanitizeInput(formData.email),
@@ -370,7 +356,7 @@ export class RegisterPage implements OnInit, OnDestroy {
       }
 
       // STEP 4: Make API call
-      const result = await this.http.post<any>(`${environment.apiUrl}/auth/register`, sanitizedData).toPromise();
+      const result = await this.http.post<RegisterApiResponse>(`${environment.apiUrl}/auth/register`, sanitizedData).toPromise();
       
       await loading.dismiss();
       this.loading.set(false);

@@ -1,0 +1,212 @@
+<ion-content class="ion-padding" data-test="clinical-profile-page">
+  <div class="welcome-container">
+    <div class="action-section clinical-profile-section">
+      
+      <!-- Back Button (for mobile) -->
+      <div class="back-nav">
+        <ion-button fill="clear" class="back-btn" (click)="goBack()">
+          <ion-icon name="arrow-back-outline" slot="start"></ion-icon>
+          {{ backLabel() }}
+        </ion-button>
+      </div>
+
+      <!-- Header -->
+      <div class="auth-header">
+        <h1>Perfil Clínico Detallado</h1>
+        <p>Información clínica y evaluación de riesgo</p>
+      </div>
+
+      <!-- Loading State -->
+      @if (loading()) {
+        <div class="loading-state">
+          <ion-spinner name="crescent" color="primary"></ion-spinner>
+          <p>Cargando perfil clínico...</p>
+        </div>
+      }
+
+      <!-- Error State -->
+      @if (error() && !loading()) {
+        <div class="error-state">
+          <div class="error-icon-wrapper">
+            <ion-icon name="alert-circle-outline"></ion-icon>
+          </div>
+          <h3>Error al cargar perfil</h3>
+          <p>{{ error() }}</p>
+          <ion-button expand="block" class="continue-button" (click)="loadProfile()">
+            <ion-icon name="refresh-outline" slot="start"></ion-icon>
+            Reintentar
+          </ion-button>
+        </div>
+      }
+
+      <!-- Profile Content -->
+      @if (profile() && !loading()) {
+        
+        <!-- Patient Card -->
+        <div class="profile-card patient-card" [class.has-risk]="hasRiskAssessment()">
+          <div class="card-icon patient-avatar">
+            <ion-icon name="person-outline"></ion-icon>
+            @if (hasRiskAssessment()) {
+              <span class="status-dot" [class]="riskLevelClass()"></span>
+            }
+          </div>
+          
+          <div class="card-info">
+            <h3>{{ demographics()?.fullName || 'Paciente' }}</h3>
+            <p>
+              @if (patientAge()) {
+                {{ patientAge() }} años • 
+              }
+              {{ demographics()?.gender === 'MALE' ? 'Masculino' : demographics()?.gender === 'FEMALE' ? 'Femenino' : '' }}
+            </p>
+          </div>
+
+          @if (hasRiskAssessment()) {
+            <div class="risk-pill" [class]="riskLevelClass()">
+              {{ riskLevelLabel() }}
+            </div>
+          }
+        </div>
+
+        <!-- Risk Score Card -->
+        <div class="profile-card risk-card">
+          <div class="card-header-inline">
+            <div class="card-icon">
+              <ion-icon name="analytics-outline"></ion-icon>
+            </div>
+            <div class="card-info">
+              <h3>Score de Riesgo ML</h3>
+              <p>Evaluación basada en IA</p>
+            </div>
+          </div>
+          
+          @if (hasRiskAssessment()) {
+            <div class="score-display">
+              <div class="circular-progress" [style.--progress]="riskScore()" [class]="riskLevelClass()">
+                <svg viewBox="0 0 100 100">
+                  <circle class="bg" cx="50" cy="50" r="42"></circle>
+                  <circle class="progress" cx="50" cy="50" r="42" 
+                    [style.stroke-dasharray]="getCircleProgress()"></circle>
+                </svg>
+                <div class="score-inner">
+                  <span class="value">{{ riskScore() | number:'1.0-0' }}%</span>
+                  <span class="label" [class]="riskLevelClass()">{{ riskLevelLabel() }}</span>
+                </div>
+              </div>
+              
+              <div class="score-meta">
+                @if (lastUpdated()) {
+                  <span class="update-info">
+                    <ion-icon name="time-outline"></ion-icon>
+                    {{ lastUpdated() }}
+                  </span>
+                }
+                <span class="confidence-info">
+                  <ion-icon name="checkmark-circle-outline"></ion-icon>
+                  Confianza: {{ (riskAssessment()?.confidence || 0) * 100 | number:'1.0-0' }}%
+                </span>
+              </div>
+            </div>
+          } @else {
+            <div class="no-data-state">
+              <ion-icon name="hourglass-outline"></ion-icon>
+              <p>Evaluación pendiente</p>
+            </div>
+          }
+        </div>
+
+        <!-- Risk Factors -->
+        @if (riskFactors().length > 0) {
+          <div class="section-header">
+            <h2>Factores de Riesgo</h2>
+            <p>{{ riskFactors().length }} factor(es) identificado(s)</p>
+          </div>
+          
+          <div class="factors-list">
+            @for (factor of riskFactors(); track factor.id) {
+              <div class="profile-card factor-card" [class]="'severity-' + factor.severity.toLowerCase()">
+                <div class="card-icon" [class]="'severity-' + factor.severity.toLowerCase()">
+                  <ion-icon [name]="getRiskFactorIcon(factor)"></ion-icon>
+                </div>
+                
+                <div class="card-info">
+                  <h3>{{ factor.title }}</h3>
+                  <p>{{ factor.description }}</p>
+                </div>
+                
+                <div class="severity-indicator" [class]="'severity-' + factor.severity.toLowerCase()">
+                  <ion-icon name="alert-circle"></ion-icon>
+                </div>
+              </div>
+            }
+          </div>
+        }
+
+        <!-- Assigned Doctor -->
+        <div class="section-header">
+          <h2>Médico Asignado</h2>
+          <p>Tu profesional de salud a cargo</p>
+        </div>
+
+        @if (hasAssignedDoctor()) {
+          <div class="profile-card doctor-card">
+            <div class="card-icon doctor-avatar">
+              <ion-icon name="medkit-outline"></ion-icon>
+            </div>
+            
+            <div class="card-info">
+              <h3>Dr. {{ assignedDoctor()?.fullName }}</h3>
+              <p>{{ assignedDoctor()?.specialty }}</p>
+            </div>
+            
+            <ion-icon name="chevron-forward-outline" class="arrow-icon"></ion-icon>
+          </div>
+        } @else {
+          <div class="profile-card no-doctor-card">
+            <div class="card-icon">
+              <ion-icon name="person-add-outline"></ion-icon>
+            </div>
+            
+            <div class="card-info">
+              <h3>Sin médico asignado</h3>
+              <p>Busca un especialista en el directorio</p>
+            </div>
+            
+            @if (isPatientRole()) {
+              <ion-icon name="chevron-forward-outline" class="arrow-icon" routerLink="/directory"></ion-icon>
+            }
+          </div>
+        }
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+          <ion-button 
+            expand="block" 
+            class="continue-button"
+            [disabled]="!hasAssignedDoctor()"
+            (click)="contactDoctor()">
+            <ion-icon name="chatbubble-outline" slot="start"></ion-icon>
+            Contactar Médico
+          </ion-button>
+          
+          <ion-button 
+            expand="block" 
+            class="secondary-button"
+            fill="outline"
+            (click)="downloadReport()">
+            <ion-icon name="download-outline" slot="start"></ion-icon>
+            Descargar Informe
+          </ion-button>
+        </div>
+
+        <!-- Navigation Section -->
+        <div class="navigation-section">
+          <a routerLink="/dashboard" class="back-link">← Volver al Dashboard</a>
+          <app-logout-button [buttonStyle]="'card'" [showConfirmation]="true"></app-logout-button>
+        </div>
+
+      }
+
+    </div>
+  </div>
+</ion-content>
