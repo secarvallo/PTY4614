@@ -1,0 +1,77 @@
+<ion-content class="ion-padding" data-test="logout-success-page">
+  <div class="welcome-container">
+    <div class="action-section logout-section">
+
+      <!-- Success Icon -->
+      <div class="success-icon-wrapper">
+        <div class="success-icon-bg"></div>
+        <div class="success-icon">
+          <ion-icon name="checkmark-circle-outline"></ion-icon>
+        </div>
+      </div>
+
+      <!-- Success Message -->
+      <div class="success-message">
+        <h1>¡Sesión Cerrada!</h1>
+        <p>Has cerrado sesión exitosamente. Tu información está segura.</p>
+      </div>
+
+      <!-- Security Card -->
+      <div class="security-card">
+        <div class="security-header">
+          <div class="security-icon">
+            <ion-icon name="shield-checkmark-outline"></ion-icon>
+          </div>
+          <div class="security-info">
+            <span class="security-label">ESTADO DE SEGURIDAD</span>
+            <h3 class="security-title">Sesión Finalizada</h3>
+            <p class="security-status">
+              <ion-icon name="lock-closed-outline"></ion-icon>
+              <span>Datos protegidos</span>
+            </p>
+          </div>
+        </div>
+
+        <div class="security-divider"></div>
+
+        <div class="security-details">
+          <div class="detail-item">
+            <span class="detail-label">HORA DE CIERRE</span>
+            <span class="detail-value">{{ logoutTime() }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">ESTADO</span>
+            <span class="detail-value status-secure">Seguro</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="action-buttons">
+        <ion-button 
+          expand="block" 
+          class="primary-button"
+          (click)="goToLogin()"
+          data-test="go-to-login-button">
+          <ion-icon name="log-in-outline" slot="start"></ion-icon>
+          Iniciar Sesión
+        </ion-button>
+
+        <button 
+          class="secondary-link"
+          (click)="goToHome()"
+          data-test="go-home-button">
+          <ion-icon name="home-outline"></ion-icon>
+          <span>Ir al Inicio</span>
+        </button>
+      </div>
+
+      <!-- Footer Message -->
+      <div class="footer-message">
+        <p>Gracias por usar <strong>LungLife</strong></p>
+        <p class="subtitle">Tu salud respiratoria, nuestra prioridad</p>
+      </div>
+
+    </div>
+  </div>
+</ion-content>
