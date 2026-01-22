@@ -15,6 +15,34 @@
  */
 
 /* ========== SECURITY VALIDATION STYLES ========== */
+.selected-role-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  margin-bottom: 20px;
+  background: rgba(var(--ion-color-primary-rgb), 0.12);
+  border: 1px solid rgba(var(--ion-color-primary-rgb), 0.25);
+  border-radius: 14px;
+  color: var(--ion-color-primary);
+
+  .role-chip {
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: rgba(var(--ion-color-primary-rgb), 0.18);
+    color: inherit;
+  }
+
+  .role-description {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--ion-color-medium);
+    flex: 1;
+  }
+}
+
 .security-validation {
   margin-top: 15px;
   padding: 15px;

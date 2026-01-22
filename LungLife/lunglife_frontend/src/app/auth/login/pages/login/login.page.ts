@@ -7,7 +7,7 @@ import { IonicModule, AlertController, LoadingController } from '@ionic/angular'
 import { Subject, takeUntil } from 'rxjs';
 import { AuthFacadeService } from '../../../core/services';
 import { AuthValidators } from '../../../core/validators/auth-validators';
-import { DEFAULT_AUTH_REDIRECT, resolvePostAuthRedirect } from '../../../core/utils/auth-navigation';
+import { DEFAULT_AUTH_REDIRECT, resolvePostAuthRedirect, getRoleDashboardUrl } from '../../../core/utils/auth-navigation';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { LoginRequest } from '../../../core/services/infrastructure/auth-api.service';
 import {
@@ -96,16 +96,29 @@ export class LoginPage implements OnInit, OnDestroy {
     // Cargar estado de rate limiting para login
     this.loadLoginRateLimitState();
     
-    // Obtener URL de retorno de los parámetros de consulta
-    this.returnUrl = resolvePostAuthRedirect(this.route.snapshot.queryParams['returnUrl']);
+    // Obtener URL de retorno de los parámetros de consulta (si existe)
+    const queryReturnUrl = this.route.snapshot.queryParams['returnUrl'];
+    if (queryReturnUrl) {
+      this.returnUrl = resolvePostAuthRedirect(queryReturnUrl);
+    }
 
     // Suscribirse a cambios en el estado de 2FA usando signals
     this.authFacade.requiresTwoFA$.pipe(takeUntil(this.destroy$)).subscribe(r => this.requiresTwoFactor.set(r));
     this.authFacade.error$.pipe(takeUntil(this.destroy$)).subscribe(e => this.error.set(e));
     this.authFacade.loading$.pipe(takeUntil(this.destroy$)).subscribe(l => this.loading.set(l));
+    
+    // Suscribirse a cambios de autenticación y redirigir según rol
     this.authFacade.isAuthenticated$.pipe(takeUntil(this.destroy$)).subscribe(isAuth => {
-      if (isAuth && !this.requiresTwoFactor() && this.router.url !== this.returnUrl) {
-        this.router.navigateByUrl(this.returnUrl, { replaceUrl: true });
+      if (isAuth && !this.requiresTwoFactor()) {
+        const user = this.authFacade.getCurrentUser();
+        // Si no hay returnUrl específico, usar dashboard según rol
+        const targetUrl = this.route.snapshot.queryParams['returnUrl']
+          ? this.returnUrl
+          : getRoleDashboardUrl(user?.role);
+        
+        if (this.router.url !== targetUrl) {
+          this.router.navigateByUrl(targetUrl, { replaceUrl: true });
+        }
       }
     });
   }
@@ -214,10 +227,17 @@ export class LoginPage implements OnInit, OnDestroy {
 
   /**
    * Redirección diferida con reintentos para evitar condiciones de carrera al propagar estado auth.
+   * Redirige al dashboard según el rol del usuario si no hay returnUrl específico.
    */
   private performDeferredRedirect(attempt = 0) {
     if (this.requiresTwoFactor()) return;
-    if (this.router.url === this.returnUrl) return;
+    
+    // Determinar URL de destino según rol
+    const user = this.authFacade.getCurrentUser();
+    const queryReturnUrl = this.route.snapshot.queryParams['returnUrl'];
+    const targetUrl = queryReturnUrl ? this.returnUrl : getRoleDashboardUrl(user?.role);
+    
+    if (this.router.url === targetUrl) return;
     const maxAttempts = 6;
     if (attempt === 0) {
       setTimeout(() => this.performDeferredRedirect(attempt + 1), 0);
@@ -225,7 +245,7 @@ export class LoginPage implements OnInit, OnDestroy {
     }
     if (attempt > maxAttempts) return;
     try {
-      this.router.navigateByUrl(this.returnUrl, { replaceUrl: true }).then(success => {
+      this.router.navigateByUrl(targetUrl, { replaceUrl: true }).then(success => {
         if (!success) {
           setTimeout(() => this.performDeferredRedirect(attempt + 1), 40 * attempt);
         }

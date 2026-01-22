@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, inject, ChangeDetectionStrategy, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormGroup, ReactiveFormsModule, Validators, NonNullableFormBuilder } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { IonicModule, LoadingController, ToastController, AlertController } from '@ionic/angular';
 import { Subject, takeUntil, debounceTime, distinctUntilChanged } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
@@ -23,6 +23,19 @@ import {
   RegisterComponentConfig
 } from './register.interface';
 
+type UserRole = 'PATIENT' | 'DOCTOR';
+
+const ROLE_DISPLAY: Record<UserRole, { label: string; description: string }> = {
+  PATIENT: {
+    label: 'Paciente',
+    description: 'Accede a evaluaciones respiratorias y seguimiento personalizado de tu salud.'
+  },
+  DOCTOR: {
+    label: 'Médico',
+    description: 'Gestiona a tus pacientes, revisa estudios respiratorios y comparte recomendaciones.'
+  }
+};
+
 @Component({
   selector: 'app-register',
   standalone: true,
@@ -36,15 +49,16 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class RegisterPage implements OnInit, OnDestroy {
-  
+
   // Servicios inyectados
   private fb = inject(NonNullableFormBuilder);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
   private loadingController = inject(LoadingController);
   private toastController = inject(ToastController);
   private alertController = inject(AlertController);
   private http = inject(HttpClient);
-  
+
   // Security services - Mock implementations for development
   // TODO: Replace with actual services when available
   private passwordValidator = {
@@ -55,7 +69,7 @@ export class RegisterPage implements OnInit, OnDestroy {
       recommendations: password.length < 12 ? [{ message: 'Considera usar una contraseña más larga para mayor seguridad' }] : []
     })
   };
-  
+
   private securityAudit = {
     logSecurityEvent: (event: SecurityEvent) => {
       console.log('Security event logged:', event);
@@ -79,39 +93,39 @@ export class RegisterPage implements OnInit, OnDestroy {
   showConfirmPassword = signal(false);
   loading = signal(false);
   error = signal<string | null>(null);
-  
+
   // Security validation signals
   passwordSecurityResult = signal<PasswordSecurityResult | null>(null);
   securityValidationResult = signal<SecurityValidationResult | null>(null);
   breachCheckInProgress = signal(false);
   securityWarnings = signal<string[]>([]);
-  
+
   // Form validation signals - enhanced with security
   isFormValid = computed(() => {
     if (!this.registerForm) return false;
-    
+
     // El FormGroup ya incluye la validación de confirmación de contraseña
     const isFormValidBasic = this.registerForm.valid;
-    
+
     // Security validation
     const securityResult = this.passwordSecurityResult();
     const isSecure = securityResult ? securityResult.isSecure : true;
-    
+
     return isFormValidBasic && isSecure;
   });
-  
+
   canSubmit = computed(() => {
     const validationResult = this.securityValidationResult();
     const isSecurityValid = validationResult ? validationResult.allowed : true;
-    
-    return this.isFormValid() && 
-           !this.loading() && 
-           !this.breachCheckInProgress() &&
-           isSecurityValid;
+
+    return this.isFormValid() &&
+      !this.loading() &&
+      !this.breachCheckInProgress() &&
+      isSecurityValid;
   });
 
   isRateLimited = signal(false);
-  
+
   // Password strength
   passwordStrength = computed(() => {
     const password = this.registerForm?.get('password')?.value || '';
@@ -122,7 +136,7 @@ export class RegisterPage implements OnInit, OnDestroy {
   passwordSecurityStatus = computed(() => {
     const strength = this.passwordStrength();
     const password = this.registerForm?.get('password')?.value || '';
-    
+
     // No mostrar indicador si no hay contraseña
     if (!password || password.length < 3) {
       return { show: false, color: '', level: '', cssClass: '' };
@@ -130,23 +144,23 @@ export class RegisterPage implements OnInit, OnDestroy {
 
     // Mapear strength a los colores y animaciones de Ionic
     const statusMap = {
-      weak: { 
-        color: 'warning', 
-        level: 'weak', 
+      weak: {
+        color: 'warning',
+        level: 'weak',
         cssClass: 'pulse-warning',
-        show: true 
+        show: true
       },
-      medium: { 
-        color: 'tertiary', 
-        level: 'medium', 
+      medium: {
+        color: 'tertiary',
+        level: 'medium',
         cssClass: 'pulse-tertiary',
-        show: true 
+        show: true
       },
-      strong: { 
-        color: 'success', 
-        level: 'strong', 
+      strong: {
+        color: 'success',
+        level: 'strong',
         cssClass: 'pulse-success',
-        show: true 
+        show: true
       }
     };
 
@@ -159,6 +173,13 @@ export class RegisterPage implements OnInit, OnDestroy {
     return strength.checks;
   }
 
+  // Role selection coming from role-selection page
+  selectedRole = signal<UserRole | null>(null);
+  roleDisplayInfo = computed(() => {
+    const role = this.selectedRole();
+    return role ? ROLE_DISPLAY[role] : null;
+  });
+
   // Form con validador personalizado para confirmación de contraseña
   registerForm: FormGroup = this.fb.group({
     nombre: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]],
@@ -170,13 +191,24 @@ export class RegisterPage implements OnInit, OnDestroy {
     acceptTerms: [false, [Validators.requiredTrue]],
     acceptPrivacy: [false, [Validators.requiredTrue]],
     acceptMarketing: [false]
-  }, { 
+  }, {
     validators: [passwordConfirmationValidator()] // Validador a nivel de FormGroup
   });
 
   private destroy$ = new Subject<void>();
 
   ngOnInit() {
+    this.route.queryParamMap
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(params => {
+        const roleParam = (params.get('role') || '').toUpperCase();
+        if (roleParam === 'PATIENT' || roleParam === 'DOCTOR') {
+          this.selectedRole.set(roleParam as UserRole);
+        } else {
+          this.selectedRole.set(null);
+        }
+      });
+
     // Validación de seguridad optimizada con debounce para mejor rendimiento
     this.registerForm.get('password')?.valueChanges
       .pipe(
@@ -192,7 +224,7 @@ export class RegisterPage implements OnInit, OnDestroy {
           this.passwordSecurityResult.set(null);
         }
       });
-      
+
     // Auditar el inicio de sesión de registro
     this.securityAudit.logSecurityEvent({
       type: 'info',
@@ -214,15 +246,15 @@ export class RegisterPage implements OnInit, OnDestroy {
     }
 
     this.breachCheckInProgress.set(true);
-    
+
     try {
       const securityResult = await this.passwordValidator.validatePasswordSecurity(password);
       this.passwordSecurityResult.set(securityResult);
-      
+
       // Update security warnings
       const warnings = securityResult.recommendations?.map((r: any) => r.message) || [];
       this.securityWarnings.set(warnings);
-      
+
       // Log security check
       this.securityAudit.logSecurityEvent({
         type: 'password_breach',
@@ -235,7 +267,7 @@ export class RegisterPage implements OnInit, OnDestroy {
         },
         riskLevel: securityResult.breachStatus.isBreached ? 'high' : 'low'
       });
-      
+
     } catch (error) {
       console.error('Error validating password security:', error);
       this.securityWarnings.set(['No se pudo verificar la seguridad de la contraseña']);
@@ -256,7 +288,7 @@ export class RegisterPage implements OnInit, OnDestroy {
     };
 
     const score = Object.values(checks).filter(check => check).length;
-    
+
     let strength: 'weak' | 'medium' | 'strong' = 'weak';
     if (score >= 6) strength = 'strong';
     else if (score >= 4) strength = 'medium';
@@ -265,18 +297,18 @@ export class RegisterPage implements OnInit, OnDestroy {
       score,
       strength,
       checks,
-      isValid: checks.minLength && checks.uppercase && checks.lowercase && 
-               checks.number && checks.special
+      isValid: checks.minLength && checks.uppercase && checks.lowercase &&
+        checks.number && checks.special
     };
   }
 
   // UI Event Handlers
-  togglePassword() { 
-    this.showPassword.update(current => !current); 
+  togglePassword() {
+    this.showPassword.update(current => !current);
   }
-  
-  toggleConfirmPassword() { 
-    this.showConfirmPassword.update(current => !current); 
+
+  toggleConfirmPassword() {
+    this.showConfirmPassword.update(current => !current);
   }
 
   // Validation helper
@@ -301,7 +333,7 @@ export class RegisterPage implements OnInit, OnDestroy {
   // Advanced registration method with comprehensive security
   private async performRegistration(): Promise<void> {
     const formData = this.registerForm.value as RegisterFormData;
-    
+
     // STEP 1: Security validation of attempt
     const validationResult = this.securityAudit.validateRegistrationAttempt({
       email: formData.email,
@@ -310,15 +342,15 @@ export class RegisterPage implements OnInit, OnDestroy {
       apellido: formData.apellido || '',
       telefono: formData.telefono || ''
     });
-    
+
     this.securityValidationResult.set(validationResult);
-    
+
     // Block if security validation fails
     if (!validationResult.allowed) {
       await this.showSecurityBlockedMessage(validationResult);
       return;
     }
-    
+
     // Show additional verification if required
     if (validationResult.requiresAdditionalVerification) {
       const additionalVerificationPassed = await this.showAdditionalVerification(validationResult);
@@ -356,8 +388,9 @@ export class RegisterPage implements OnInit, OnDestroy {
       }
 
       // STEP 4: Make API call
+      console.log('Sending registration data:', sanitizedData);
       const result = await this.http.post<RegisterApiResponse>(`${environment.apiUrl}/auth/register`, sanitizedData).toPromise();
-      
+
       await loading.dismiss();
       this.loading.set(false);
 
@@ -372,9 +405,9 @@ export class RegisterPage implements OnInit, OnDestroy {
           },
           riskLevel: 'low'
         });
-        
+
         await this.showSuccessMessage();
-        await this.navigateToLogin(result);
+        await this.navigateToRoleSelection(result);
       } else {
         this.error.set(result?.error || 'Error durante el registro');
       }
@@ -382,7 +415,7 @@ export class RegisterPage implements OnInit, OnDestroy {
     } catch (error: any) {
       await loading.dismiss();
       this.loading.set(false);
-      
+
       // Log security events
       this.securityAudit.logSecurityEvent({
         type: 'registration_attempt',
@@ -393,7 +426,7 @@ export class RegisterPage implements OnInit, OnDestroy {
         },
         riskLevel: error.message === 'SECURITY_BREACH_DETECTED' ? 'critical' : 'medium'
       });
-      
+
       // Handle specific error cases with enhanced security messaging
       if (error.message === 'SECURITY_BREACH_DETECTED') {
         this.error.set('Por seguridad, no se permite esta contraseña. Ha sido comprometida en múltiples brechas.');
@@ -411,7 +444,7 @@ export class RegisterPage implements OnInit, OnDestroy {
   // Basic input sanitization
   private sanitizeInput(input: string): string {
     if (!input) return input;
-    
+
     return input
       .replace(/[<>]/g, '') // Remove potential HTML tags
       .replace(/javascript:/gi, '') // Remove javascript: protocol
@@ -419,24 +452,10 @@ export class RegisterPage implements OnInit, OnDestroy {
       .trim();
   }
 
-  // Advanced input sanitization with deeper security checks
+  // Simplificación: La sanitización excesiva estaba rompiendo emails válidos y nombres con caracteres especiales
   private advancedSanitizeInput(input: string): string {
     if (!input) return input;
-    
-    return input
-      .replace(/<[^>]*>/g, '') // Remove all HTML tags
-      .replace(/javascript:/gi, '') // Remove javascript: protocol
-      .replace(/on\w+\s*=\s*["'][^"']*["']/gi, '') // Remove event handlers
-      .replace(/data:/gi, '') // Remove data URLs
-      .replace(/vbscript:/gi, '') // Remove vbscript
-      .replace(/[\x00-\x1F\x7F]/g, '') // Remove control characters
-      .replace(/[<>"'&]/g, (char) => {
-        const escapeMap: { [key: string]: string } = {
-          '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#x27;', '&': '&amp;'
-        };
-        return escapeMap[char] || char;
-      })
-      .trim();
+    return input.trim();
   }
 
   // Mask email for security logging
@@ -457,9 +476,9 @@ export class RegisterPage implements OnInit, OnDestroy {
     await toast.present();
   }
 
-  private async navigateToLogin(result: any): Promise<void> {
+  private async navigateToRoleSelection(result: any): Promise<void> {
     const email = this.registerForm.get('email')?.value;
-    this.router.navigate(['/auth/login'], { 
+    this.router.navigate(['/auth/role-selection'], {
       queryParams: { email }
     });
   }
@@ -502,7 +521,7 @@ export class RegisterPage implements OnInit, OnDestroy {
         }
       ]
     });
-    
+
     await alert.present();
   }
 
@@ -543,7 +562,7 @@ export class RegisterPage implements OnInit, OnDestroy {
           }
         ]
       });
-      
+
       await alert.present();
     });
   }
@@ -570,5 +589,5 @@ export class RegisterPage implements OnInit, OnDestroy {
   /**
    * Theme Toggle Methods
    */
-  
+
 }

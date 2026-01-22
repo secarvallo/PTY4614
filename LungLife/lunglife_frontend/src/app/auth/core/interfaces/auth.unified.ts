@@ -108,6 +108,8 @@ export interface UserSession {
 }
 
 // Usuario principal
+export type UserRole = 'PATIENT' | 'DOCTOR' | 'ADMINISTRATOR';
+
 export interface User {
   id: number;
   email: string;
@@ -126,6 +128,9 @@ export interface User {
   security_settings?: UserSecuritySettings;
   devices?: UserDevice[];
   sessions?: UserSession[];
+  // --- Campos de rol para navegación post-login ---
+  role?: UserRole;    // PATIENT, DOCTOR, ADMINISTRATOR
+  roleId?: number;    // 1=PATIENT, 2=DOCTOR, 3=ADMINISTRATOR
   // --- Compatibilidad con código previo (camelCase) ---
   firstName?: string; // -> profile.nombre
   lastName?: string; // -> profile.apellido
@@ -138,8 +143,6 @@ export interface User {
   birthDate?: Date; // -> profile.fecha_nacimiento
   isActive?: boolean; // -> is_active
   avatar?: string; // -> profile.avatar_url
-  role?: string; // (si se agrega en backend futuro)
-  roleId?: number; // 1=PATIENT, 2=DOCTOR
 }
 
 export interface AuthCredentials {

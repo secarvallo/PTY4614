@@ -9,6 +9,8 @@ import {
   unifiedGuestGuard, 
   unifiedTwoFAGuard, 
   patientOnlyGuard,
+  doctorOnlyGuard,
+  adminOnlyGuard,
   allRolesGuard 
 } from './auth/core/guards/unified-auth.guards';
 import { DEFAULT_AUTH_REDIRECT, resolvePostAuthRedirect } from './auth/core/utils/auth-navigation';
@@ -40,8 +42,8 @@ export const routes: Routes = [
       {
         path: 'role-selection',
         loadComponent: () => import('./auth/login/pages/role-selection/role-selection.page').then(m => m.RoleSelectionPage),
-        title: 'Seleccionar Rol - LungLife',
-        canActivate: [unifiedGuestGuard]
+        title: 'Seleccionar Rol - LungLife'
+        // Sin guard - accesible tanto para registro como para usuarios no autenticados
       },
       {
         path: 'register',

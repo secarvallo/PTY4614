@@ -1,6 +1,7 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router, UrlTree } from '@angular/router';
 import { AuthFacadeService } from '../services';
+import { CoreAuthStore } from '../services/core-auth.store';
 import { resolvePostAuthRedirect, buildLoginRedirectTreeParams } from '../utils/auth-navigation';
 
 /**
@@ -45,4 +46,98 @@ export const unifiedTwoFAGuard: CanActivateFn = (): boolean | UrlTree => {
   if (auth.requiresTwoFASync()) return true; // todavía en paso intermedio
   if (auth.isAuthenticatedSync()) return router.parseUrl(resolvePostAuthRedirect()); // ya completó 2FA
   return router.createUrlTree(['/auth/login']); // no autenticado
+};
+
+/**
+ * Guard para rutas exclusivas de pacientes
+ */
+export const patientOnlyGuard: CanActivateFn = (_route, state): boolean | UrlTree => {
+  const auth = inject(AuthFacadeService);
+  const router = inject(Router);
+
+  if (!auth.isAuthenticatedSync()) {
+    const params = buildLoginRedirectTreeParams(null, state.url);
+    return router.createUrlTree(['/auth/login'], { queryParams: params });
+  }
+
+  const user = auth.getCurrentUser();
+  if (user?.role === 'PATIENT') {
+    return true;
+  }
+
+  // Si no es paciente, redirigir al dashboard
+  return router.parseUrl('/dashboard');
+};
+
+/**
+ * Guard para rutas exclusivas de médicos
+ */
+export const doctorOnlyGuard: CanActivateFn = (_route, state): boolean | UrlTree => {
+  const auth = inject(AuthFacadeService);
+  const router = inject(Router);
+
+  if (!auth.isAuthenticatedSync()) {
+    const params = buildLoginRedirectTreeParams(null, state.url);
+    return router.createUrlTree(['/auth/login'], { queryParams: params });
+  }
+
+  const user = auth.getCurrentUser();
+  if (user?.role === 'DOCTOR') {
+    return true;
+  }
+
+  // Si no es médico, redirigir al dashboard
+  return router.parseUrl('/dashboard');
+};
+
+/**
+ * Guard para rutas exclusivas de administradores
+ */
+export const adminOnlyGuard: CanActivateFn = (_route, state): boolean | UrlTree => {
+  const auth = inject(AuthFacadeService);
+  const router = inject(Router);
+
+  if (!auth.isAuthenticatedSync()) {
+    const params = buildLoginRedirectTreeParams(null, state.url);
+    return router.createUrlTree(['/auth/login'], { queryParams: params });
+  }
+
+  const user = auth.getCurrentUser();
+  if (user?.role === 'ADMINISTRATOR') {
+    return true;
+  }
+
+  // Si no es administrador, redirigir al dashboard
+  return router.parseUrl('/dashboard');
+};
+
+/**
+ * Guard que permite todos los roles autenticados
+ */
+export const allRolesGuard: CanActivateFn = (_route, state): boolean | UrlTree => {
+  const auth = inject(AuthFacadeService);
+  const router = inject(Router);
+  const coreStore = inject(CoreAuthStore);
+
+  // Verificar que esté autenticado Y que tenga un usuario válido
+  const isAuthenticated = auth.isAuthenticatedSync();
+  const user = coreStore.getCurrentUserSync();
+  const hasValidUser = user && user.id && user.email;
+
+  if (isAuthenticated && hasValidUser && !auth.requiresTwoFASync()) {
+    return true;
+  }
+
+  // Si está marcado como autenticado pero no hay usuario válido, limpiar sesión
+  if (isAuthenticated && !hasValidUser) {
+    console.warn('[allRolesGuard] Session corrupted, cleaning up');
+    coreStore.resetAll();
+  }
+
+  if (auth.requiresTwoFASync()) {
+    return router.parseUrl('/auth/verify-2fa');
+  }
+
+  const params = buildLoginRedirectTreeParams(null, state.url);
+  return router.createUrlTree(['/auth/login'], { queryParams: params });
 };

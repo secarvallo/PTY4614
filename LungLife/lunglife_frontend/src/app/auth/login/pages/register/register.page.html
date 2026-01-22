@@ -9,6 +9,11 @@
         <p>Únete a LungLife y protege tu salud respiratoria</p>
       </div>
 
+      <div class="selected-role-banner" *ngIf="roleDisplayInfo() as roleInfo">
+        <span class="role-chip" data-test="register-role-label">{{ roleInfo.label }}</span>
+        <p class="role-description">{{ roleInfo.description }}</p>
+      </div>
+
       <form [formGroup]="registerForm" (ngSubmit)="onRegister()" class="auth-form" data-test="register-form">
         
         <!-- Nombre Field -->
