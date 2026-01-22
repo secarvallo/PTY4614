@@ -1,0 +1,185 @@
+/**
+ * Role Selection Page Styles
+ * Matching the design mockup provided
+ */
+
+.role-selection-section {
+  max-width: 420px;
+  min-height: 85vh;
+  padding: 32px 32px 40px;
+  display: flex;
+  flex-direction: column;
+}
+
+// Logo Container
+.logo-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 24px;
+  
+  .logo-img {
+    width: 280px;
+    height: auto;
+    object-fit: contain;
+  }
+}
+
+.role-selection-section .auth-header {
+  margin-bottom: 32px;
+  
+  h1 {
+    font-size: 26px;
+    font-weight: 700;
+    line-height: 1.3;
+    margin-bottom: 12px;
+  }
+  
+  p {
+    font-size: 15px;
+    color: var(--text-light);
+  }
+}
+
+// Role Options Container
+.role-options {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  margin-bottom: 32px;
+}
+
+// Individual Role Card
+.role-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  background: var(--surface);
+  border: 2px solid var(--border, #e5e7eb);
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    border-color: var(--primary, #007aff);
+    background: rgba(0, 122, 255, 0.02);
+  }
+  
+  &.selected {
+    border-color: var(--primary, #007aff);
+    background: rgba(0, 122, 255, 0.05);
+    
+    .role-icon {
+      background: var(--primary, #007aff);
+      
+      ion-icon {
+        color: white;
+      }
+    }
+  }
+}
+
+// Role Icon Container
+.role-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  min-width: 56px;
+  background: rgba(0, 122, 255, 0.1);
+  border-radius: 12px;
+  transition: all 0.2s ease;
+  
+  ion-icon {
+    font-size: 28px;
+    color: var(--primary, #007aff);
+    transition: color 0.2s ease;
+  }
+}
+
+// Role Info
+.role-info {
+  flex: 1;
+  
+  h3 {
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--text);
+    margin: 0 0 4px 0;
+  }
+  
+  p {
+    font-size: 14px;
+    color: var(--text-light);
+    margin: 0;
+    line-height: 1.4;
+  }
+}
+
+// Arrow Icon
+.arrow-icon {
+  font-size: 20px;
+  color: var(--text-light);
+  opacity: 0.5;
+}
+
+// Continue Button
+.continue-button {
+  --background: var(--primary, #007aff);
+  --background-hover: var(--primary-hover, #005ce6);
+  --border-radius: 12px;
+  --padding-top: 16px;
+  --padding-bottom: 16px;
+  font-weight: 600;
+  font-size: 16px;
+  margin-bottom: 24px;
+  
+  &[disabled] {
+    --background: var(--border, #e5e7eb);
+    --color: var(--text-light);
+    opacity: 0.7;
+  }
+}
+
+// Login Link
+.login-link {
+  text-align: center;
+  
+  p {
+    font-size: 14px;
+    color: var(--text-light);
+    margin: 0 0 4px 0;
+  }
+  
+  a {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--primary, #007aff);
+    text-decoration: none;
+    
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+// Dark Mode Adjustments
+[data-theme="dark"] {
+  .role-card {
+    border-color: var(--border-dark, #374151);
+    
+    &:hover {
+      background: rgba(0, 122, 255, 0.08);
+    }
+    
+    &.selected {
+      background: rgba(0, 122, 255, 0.12);
+    }
+  }
+  
+  .role-icon {
+    background: rgba(0, 122, 255, 0.15);
+  }
+}
