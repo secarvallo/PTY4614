@@ -1,133 +1,291 @@
 /**
- * Dashboard Page Styles - Aligned with Profile & Auth UI
- *
- * This design unifies the dashboard page with the clean, card-based
- * layout for a consistent and motivating user experience.
- * 
- * Note: Centering and responsive layout is now handled by shared-layout.scss
+ * Dashboard Page Styles - Matching detailed-profile design
  */
 
-:host {
-  --page-bg-start: #f6f7fb;
-  --page-bg-end: #eef2ff;
-  --card-bg: #ffffff;
-  --text-color: #2d3748;
-  --muted-color: #718096;
-  --border-color: #e5e7eb;
-  --primary-grad: linear-gradient(135deg, #6c63ff 0%, #7b4dff 50%, #9a60ff 100%);
-}
+// Import shared auth styles for centering
+@import '../auth/auth.styles.scss';
 
-/* Background gradient for dashboard page */
-ion-content {
-  --background: linear-gradient(180deg, var(--page-bg-start) 0%, var(--page-bg-end) 100%);
-}
-
-.welcome-header {
-  text-align: center;
-  margin-bottom: 24px;
-
-  h1 {
-    color: var(--text-color);
-    font-weight: 700;
-    font-size: 24px;
-    margin: 0 0 8px;
-  }
-
-  p {
-    color: var(--muted-color);
-    margin: 0;
-    font-size: 16px;
-  }
-}
-
-.dashboard-card {
-  background: var(--card-bg);
-  border-radius: 20px;
-  padding: 24px;
-  box-shadow: 0 18px 40px rgba(29, 33, 84, 0.08);
-  margin-bottom: 24px;
-}
-
-.metrics-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
-}
-
-.metric-item {
+// Dashboard Section
+.dashboard-section {
+  max-width: 420px;
+  min-height: 85vh;
+  padding: 32px 32px 40px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  text-align: center;
-  padding: 16px;
-  border-radius: 16px;
-  background-color: rgba(var(--ion-color-primary-rgb), 0.05);
-
-  ion-icon {
-    font-size: 32px;
-    margin-bottom: 12px;
-    color: var(--ion-color-primary);
-  }
-
-  .value {
-    font-size: 28px;
-    font-weight: 700;
-    color: var(--text-color);
-    line-height: 1.2;
-  }
-
-  .label {
-    font-size: 14px;
-    color: var(--muted-color);
-    margin-top: 4px;
-  }
-
-  // Custom colors for emphasis
-  &.smoke-free ion-icon { color: #10B981; } // Success Green
-  &.money-saved ion-icon { color: #F59E0B; } // Warning Yellow
 }
 
-.dashboard-actions {
+// User Avatar Container
+.user-avatar-container {
+  margin-bottom: 20px;
+  
+  .avatar-circle {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: rgba(0, 122, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border: 3px solid var(--primary, #007aff);
+    
+    ion-icon {
+      font-size: 48px;
+      color: var(--primary, #007aff);
+    }
+    
+    .avatar-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+}
+
+// Auth Header (reusing from auth styles)
+.dashboard-section .auth-header {
+  margin-bottom: 24px;
+  text-align: center;
+  
+  h1 {
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1.3;
+    margin-bottom: 8px;
+    color: var(--text);
+  }
+  
+  p {
+    font-size: 15px;
+    color: var(--text-light);
+    margin: 0;
+  }
+}
+
+// Stats Row
+.stats-row {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 0 8px;
-
-  /* Action buttons now use global auth-button styles from auth.styles.scss */
-  .action-button {
-    /* All styles are inherited from global .action-button rule */
+  align-items: center;
+  gap: 8px;
+  padding: 16px 12px;
+  background: var(--surface);
+  border: 2px solid var(--border, #e5e7eb);
+  border-radius: 16px;
+  text-align: center;
+  
+  .stat-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 122, 255, 0.1);
+    
+    ion-icon {
+      font-size: 22px;
+      color: var(--primary, #007aff);
+    }
+    
+    &.smoke-free {
+      background: rgba(16, 185, 129, 0.1);
+      ion-icon { color: #10B981; }
+    }
+    
+    &.health {
+      background: rgba(239, 68, 68, 0.1);
+      ion-icon { color: #EF4444; }
+    }
+  }
+  
+  .stat-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  
+  .stat-value {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1;
+  }
+  
+  .stat-label {
+    font-size: 12px;
+    color: var(--text-light);
   }
 }
 
+// Section Header
+.section-header {
+  width: 100%;
+  margin: 8px 0 12px;
+  
+  h2 {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-light);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 0;
+  }
+}
+
+// Action Cards (matching profile-card style)
+.action-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  background: var(--surface);
+  border: 2px solid var(--border, #e5e7eb);
+  border-radius: 16px;
+  margin-bottom: 10px;
+  width: 100%;
+  box-sizing: border-box;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    border-color: var(--primary, #007aff);
+    background: rgba(0, 122, 255, 0.02);
+  }
+  
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+// Card Icon
+.card-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  background: rgba(0, 122, 255, 0.1);
+  border-radius: 12px;
+  
+  ion-icon {
+    font-size: 24px;
+    color: var(--primary, #007aff);
+  }
+  
+  &.primary {
+    background: var(--primary, #007aff);
+    ion-icon { color: white; }
+  }
+  
+  &.clinical {
+    background: rgba(239, 68, 68, 0.1);
+    ion-icon { color: #EF4444; }
+  }
+  
+  &.doctor {
+    background: rgba(16, 185, 129, 0.1);
+    ion-icon { color: #10B981; }
+  }
+  
+  &.settings {
+    background: rgba(107, 114, 128, 0.1);
+    ion-icon { color: #6B7280; }
+  }
+}
+
+// Card Info
+.card-info {
+  flex: 1;
+  min-width: 0;
+  
+  h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text);
+    margin: 0 0 4px 0;
+  }
+  
+  p {
+    font-size: 13px;
+    color: var(--text-light);
+    margin: 0;
+    line-height: 1.4;
+  }
+}
+
+// Arrow Icon
+.arrow-icon {
+  font-size: 20px;
+  color: var(--text-light);
+  opacity: 0.5;
+}
+
+// Bottom Link
+.bottom-link {
+  text-align: center;
+  margin-top: 24px;
+  
+  p {
+    font-size: 14px;
+    color: var(--text-light);
+    margin: 0 0 4px 0;
+  }
+  
+  a {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--primary, #007aff);
+    text-decoration: none;
+    
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+// Loading State
 .loading-state {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 60vh;
-  color: var(--muted-color);
-
+  padding: 48px 0;
+  gap: 16px;
+  
   ion-spinner {
-    margin-bottom: 16px;
+    width: 40px;
+    height: 40px;
+  }
+  
+  p {
+    font-size: 15px;
+    color: var(--text-light);
   }
 }
 
-/* Mobile Responsive - Dashboard Specific */
-@media (max-width: 480px) {
-  .dashboard-card {
-    padding: 20px 16px;
-    border-radius: 16px;
+// Dark Mode
+[data-theme="dark"] {
+  .stat-card,
+  .action-card {
+    border-color: var(--border-dark, #374151);
+    
+    &:hover {
+      background: rgba(0, 122, 255, 0.08);
+    }
   }
-
-  .welcome-header h1 {
-    font-size: 20px;
-  }
-
-  .metric-item {
-    padding: 16px;
-  }
-
-  .metric-value {
-    font-size: 20px;
+  
+  .user-avatar-container .avatar-circle {
+    background: rgba(0, 122, 255, 0.15);
   }
 }
