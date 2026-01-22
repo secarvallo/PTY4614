@@ -1,0 +1,283 @@
+<ion-content class="ion-padding" data-test="directory-page">
+  <div class="welcome-container">
+    <div class="action-section directory-section">
+      
+      <!-- Logo -->
+      <div class="logo-container">
+        <img src="assets/icon/logo-lung-life@3x.png" alt="LungLife Logo" class="logo-img">
+      </div>
+
+      <!-- Header - Dynamic based on role -->
+      <div class="auth-header">
+        <h1>{{ config().title }}</h1>
+        <p>{{ config().subtitle }}</p>
+      </div>
+
+      <!-- Admin Statistics Banner -->
+      @if (isAdminRole() && statistics()) {
+        <div class="stats-banner">
+          <div class="stat-item">
+            <span class="stat-value">{{ statistics()?.active_patients }}</span>
+            <span class="stat-label">Pacientes</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-value">{{ statistics()?.active_doctors }}</span>
+            <span class="stat-label">Médicos</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-value">{{ statistics()?.active_assignments }}</span>
+            <span class="stat-label">Asignaciones</span>
+          </div>
+          <div class="stat-item warning">
+            <span class="stat-value">{{ statistics()?.unassigned_patients }}</span>
+            <span class="stat-label">Sin asignar</span>
+          </div>
+        </div>
+      }
+
+      <!-- Patient: Current Doctor Banner -->
+      @if (isPatientRole() && hasCurrentAssignment()) {
+        <div class="current-doctor-banner">
+          <div class="banner-icon">
+            <ion-icon name="checkmark-circle"></ion-icon>
+          </div>
+          <div class="banner-info">
+            <span class="label">Tu médico asignado</span>
+            <span class="doctor-name">Dr(a). {{ currentAssignment()?.fullName }}</span>
+            <span class="specialty">{{ currentAssignment()?.specialty }}</span>
+          </div>
+        </div>
+      }
+
+      <!-- Doctor: Patient Count Banner -->
+      @if (isDoctorRole() && currentAssignment()?.type === 'summary') {
+        <div class="patient-count-banner">
+          <div class="banner-icon">
+            <ion-icon name="people-outline"></ion-icon>
+          </div>
+          <div class="banner-info">
+            <span class="label">Pacientes asignados</span>
+            <span class="count">{{ currentAssignment()?.patientCount }} paciente(s)</span>
+          </div>
+        </div>
+      }
+
+      <!-- Tabs - Only show if role has multiple modes -->
+      @if (showTabs()) {
+        <div class="directory-tabs">
+          @for (tab of tabs(); track tab.id) {
+            <button 
+              class="tab-button"
+              [class.active]="isActiveTab(tab.id)"
+              (click)="onTabChange(tab.id)">
+              <ion-icon [name]="tab.icon"></ion-icon>
+              <span>{{ tab.label }}</span>
+            </button>
+          }
+        </div>
+      }
+
+      <!-- Search Section -->
+      <div class="search-section">
+        <ion-searchbar
+          [value]="searchTerm()"
+          (ionInput)="onSearchChange($event)"
+          [placeholder]="currentMode() === 'doctors' || currentMode() === 'colleagues' ? 'Buscar por nombre o especialidad...' : 'Buscar por nombre o email...'"
+          [debounce]="300"
+          animated
+          class="custom-searchbar"
+        ></ion-searchbar>
+        
+        <div class="filter-buttons">
+          <ion-button fill="clear" size="small" (click)="toggleFilters()" class="filter-toggle">
+            <ion-icon name="options-outline" slot="start"></ion-icon>
+            Filtros
+            @if (selectedSpecialty() || selectedInstitution() || selectedStatus()) {
+              <ion-badge color="primary" slot="end">
+                {{ (selectedSpecialty() ? 1 : 0) + (selectedInstitution() ? 1 : 0) + (selectedStatus() ? 1 : 0) }}
+              </ion-badge>
+            }
+          </ion-button>
+          
+          <ion-button fill="clear" size="small" (click)="refresh()" [disabled]="loading()" class="refresh-btn">
+            <ion-icon name="refresh-outline" slot="icon-only"></ion-icon>
+          </ion-button>
+        </div>
+      </div>
+
+      <!-- Filters Panel -->
+      @if (showFilters()) {
+        <div class="filters-panel">
+          <!-- Specialty filter (doctors/colleagues modes) -->
+          @if (currentMode() === 'doctors' || currentMode() === 'colleagues') {
+            <ion-item lines="none">
+              <ion-label position="stacked">Especialidad</ion-label>
+              <ion-select
+                [value]="selectedSpecialty()"
+                (ionChange)="onSpecialtyChange($event)"
+                placeholder="Todas las especialidades"
+                interface="popover"
+              >
+                <ion-select-option value="">Todas</ion-select-option>
+                @for (specialty of specialties(); track specialty) {
+                  <ion-select-option [value]="specialty">{{ specialty }}</ion-select-option>
+                }
+              </ion-select>
+            </ion-item>
+
+            <ion-item lines="none">
+              <ion-label position="stacked">Institución</ion-label>
+              <ion-select
+                [value]="selectedInstitution()"
+                (ionChange)="onInstitutionChange($event)"
+                placeholder="Todas las instituciones"
+                interface="popover"
+              >
+                <ion-select-option value="">Todas</ion-select-option>
+                @for (institution of institutions(); track institution) {
+                  <ion-select-option [value]="institution">{{ institution }}</ion-select-option>
+                }
+              </ion-select>
+            </ion-item>
+          }
+
+          <!-- Status filter (admin only) -->
+          @if (isAdminRole()) {
+            <ion-item lines="none">
+              <ion-label position="stacked">Estado</ion-label>
+              <ion-select
+                [value]="selectedStatus()"
+                (ionChange)="onStatusChange($event)"
+                placeholder="Todos los estados"
+                interface="popover"
+              >
+                <ion-select-option value="">Todos</ion-select-option>
+                <ion-select-option value="active">Activos</ion-select-option>
+                <ion-select-option value="inactive">Inactivos</ion-select-option>
+              </ion-select>
+            </ion-item>
+          }
+
+          @if (selectedSpecialty() || selectedInstitution() || selectedStatus()) {
+            <ion-button fill="clear" size="small" (click)="clearFilters()" class="clear-filters-btn">
+              <ion-icon name="close-circle-outline" slot="start"></ion-icon>
+              Limpiar filtros
+            </ion-button>
+          }
+        </div>
+      }
+
+      <!-- Results Count -->
+      <div class="results-info">
+        <span class="count">{{ filteredEntries().length }} resultado(s)</span>
+      </div>
+
+      <!-- Loading State -->
+      @if (loading()) {
+        <div class="state-container loading-state">
+          <ion-spinner name="crescent" color="primary"></ion-spinner>
+          <p>Cargando directorio...</p>
+        </div>
+      }
+
+      <!-- Error State -->
+      @if (error()) {
+        <div class="state-container error-state">
+          <div class="state-icon error">
+            <ion-icon name="close-circle-outline"></ion-icon>
+          </div>
+          <p>{{ error() }}</p>
+          <ion-button fill="outline" size="small" (click)="refresh()">
+            Reintentar
+          </ion-button>
+        </div>
+      }
+
+      <!-- Directory List -->
+      @if (!loading() && !error()) {
+        <div class="directory-options">
+          @for (entry of filteredEntries(); track entry.id) {
+            <div 
+              class="directory-card" 
+              [class.selected]="isCurrentDoctor(entry)"
+              [class.inactive]="entry.isActive === false"
+              (click)="onEntryClick(entry)">
+              
+              <!-- Entity Icon -->
+              <div class="entity-icon" [class.doctor]="entry.entityType === 'doctor'" [class.patient]="entry.entityType === 'patient'">
+                @if (entry.entityType === 'doctor') {
+                  <span class="initials">{{ getInitials(entry.name, entry.lastName) }}</span>
+                } @else {
+                  <ion-icon name="person-outline"></ion-icon>
+                }
+              </div>
+              
+              <!-- Entry Info -->
+              <div class="entry-info">
+                <h3>
+                  @if (entry.entityType === 'doctor') {
+                    Dr(a). {{ entry.fullName }}
+                  } @else {
+                    {{ entry.fullName }}
+                  }
+                </h3>
+                
+                @if (entry.specialty) {
+                  <p class="specialty">{{ entry.specialty }}</p>
+                }
+                
+                @if (entry.institution) {
+                  <p class="institution">{{ entry.institution }}</p>
+                }
+                
+                @if (entry.entityType === 'patient' && entry.assignedDoctor) {
+                  <p class="assigned-doctor">
+                    <ion-icon name="medkit-outline"></ion-icon>
+                    Dr(a). {{ entry.assignedDoctor.fullName }}
+                  </p>
+                }
+                
+                @if (isAdminRole() && entry.roleName) {
+                  <p class="role-badge">
+                    <ion-badge [color]="getStatusColor(entry)">
+                      {{ entry.roleName }} - {{ entry.isActive ? 'Activo' : 'Inactivo' }}
+                    </ion-badge>
+                  </p>
+                }
+              </div>
+              
+              <!-- Action Icon -->
+              @if (isPatientRole() && isCurrentDoctor(entry)) {
+                <ion-icon name="checkmark-circle" class="check-icon"></ion-icon>
+              } @else {
+                <ion-icon name="chevron-forward-outline" class="arrow-icon"></ion-icon>
+              }
+            </div>
+          } @empty {
+            <div class="state-container empty-state">
+              <div class="state-icon">
+                <ion-icon name="people-outline"></ion-icon>
+              </div>
+              <p>No se encontraron resultados.</p>
+              @if (searchTerm() || selectedSpecialty() || selectedInstitution() || selectedStatus()) {
+                <ion-button fill="outline" size="small" (click)="clearFilters()">
+                  Limpiar filtros
+                </ion-button>
+              }
+            </div>
+          }
+        </div>
+      }
+
+      <!-- Navigation Section -->
+      <div class="navigation-section">
+        <a routerLink="/dashboard" class="back-link">
+          <ion-icon name="arrow-back-outline"></ion-icon>
+          Volver al Dashboard
+        </a>
+        <app-logout-button [buttonStyle]="'card'" [showConfirmation]="true"></app-logout-button>
+      </div>
+
+    </div>
+  </div>
+</ion-content>
