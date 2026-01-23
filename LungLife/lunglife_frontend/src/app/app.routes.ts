@@ -1,8 +1,8 @@
 import { Routes, UrlTree, Router } from '@angular/router';
 import { inject } from '@angular/core';
 import { AuthFacadeService } from './auth/core/services';
-import { AppInitService } from './core/services/app-init.service';
-import { SplashComponent } from './core/components/splash/splash.component';
+import { AuthInitService } from './auth/core/services/auth-init.service';
+import { SplashComponent } from './auth/pages/splash/splash.component';
 // Legacy simple-auth guards replaced by unified versions
 import { 
   unifiedAuthGuard, 

@@ -13,7 +13,7 @@ import { EnvironmentService } from './core/config/environment.service';
 import { ENVIRONMENT } from './core/config/environment.interface';
 import { EnvironmentAdapter } from '../environments/environment.model';
 import { environment } from '../environments/environment';
-import { AppInitService } from './core/services/app-init.service';
+import { AuthInitService } from './auth/core/services/auth-init.service';
 
 /**
  * 🚀 Application Configuration - Complete Architecture Integration
@@ -52,8 +52,8 @@ export const appConfig: ApplicationConfig = {
     // Bootstrap unificado: sólo CoreAuthStore (reduce race conditions)
     {
       provide: APP_INITIALIZER,
-      useFactory: (appInit: AppInitService) => () => appInit.bootstrapSession(),
-      deps: [AppInitService],
+      useFactory: (authInit: AuthInitService) => () => authInit.bootstrapSession(),
+      deps: [AuthInitService],
       multi: true
     }
 
