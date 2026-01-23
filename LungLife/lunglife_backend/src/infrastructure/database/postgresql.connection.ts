@@ -36,8 +36,7 @@ export class PostgreSQLConnection implements IDatabaseConnection {
         return this.isConnected();
       }
 
-      this.logger.info('Inicializando conexión a PostgreSQL...');
-      this.logger.info(`Conectando a: ${this.config.host}:${this.config.port}/${this.config.database}`);
+      // Silent initialization - only log errors
       
       const poolConfig: PoolConfig = {
         host: this.config.host,
@@ -64,7 +63,7 @@ export class PostgreSQLConnection implements IDatabaseConnection {
       if (testResult) {
         this.isInitialized = true;
         this.connectionMetrics.lastConnectionTime = new Date();
-        this.logger.info('Conexión a PostgreSQL establecida exitosamente');
+        // Connection success logged at startup
         return true;
       } else {
         throw new Error('Falló la prueba de conexión inicial');
@@ -92,19 +91,19 @@ export class PostgreSQLConnection implements IDatabaseConnection {
   private setupPoolEvents(): void {
     if (!this.pool) return;
 
-    this.pool.on('connect', (client) => {
+    this.pool.on('connect', () => {
       this.connectionMetrics.totalConnections++;
-      this.logger.info('Nueva conexión establecida al pool');
+      // Silent on normal connections
     });
 
     this.pool.on('error', (err: Error) => {
       this.connectionMetrics.connectionErrors++;
-      this.logger.error('Error en el pool de conexiones:', err.message);
+      this.logger.error('Database pool error:', err.message);
     });
 
     // Evento para cuando se remueve una conexión del pool
-    this.pool.on('remove', (client) => {
-      this.logger.warn('Conexión removida del pool');
+    this.pool.on('remove', () => {
+      // Silent on normal removals
     });
   }
 
@@ -132,13 +131,12 @@ export class PostgreSQLConnection implements IDatabaseConnection {
 
   private async testConnection(): Promise<boolean> {
     if (!this.pool) {
-      this.logger.error('Pool no está inicializado');
       return false;
     }
 
     let client: PoolClient | null = null;
     try {
-      this.logger.info('Probando conexión a PostgreSQL...');
+      // Silent connection test
       
       // Timeout de 5 segundos para la prueba de conexión
       const timeoutPromise = new Promise<never>((_, reject) => {
@@ -150,11 +148,7 @@ export class PostgreSQLConnection implements IDatabaseConnection {
         timeoutPromise
       ]) as PoolClient;
       
-      const result = await client.query('SELECT NOW() as current_time, version() as pg_version');
-      
-      this.logger.info('Prueba de conexión exitosa');
-      this.logger.info(`Hora del servidor: ${result.rows[0].current_time}`);
-      this.logger.info(`PostgreSQL: ${result.rows[0].pg_version.split(' ')[0]}`);
+      await client.query('SELECT 1');
       
       return true;
     } catch (error) {

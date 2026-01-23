@@ -159,8 +159,7 @@ export const setupSwagger = (app: Express): void => {
     res.send(swaggerSpec);
   });
 
-  console.log(`📚 Swagger UI available at: http://localhost:${process.env.PORT || 3000}/api-docs`);
-  console.log(`📄 OpenAPI Spec available at: http://localhost:${process.env.PORT || 3000}/api-docs.json`);
+  // Swagger available silently - shown in startup banner
 };
 
 export { swaggerSpec };

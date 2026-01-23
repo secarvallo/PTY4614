@@ -151,7 +151,7 @@ export class ConfigManager {
       // Validate configuration
       const validatedConfig = appSchema.parse(rawConfig);
 
-      console.log('✅ Configuration loaded and validated successfully');
+      // Config loaded silently - errors will be logged
       return validatedConfig;
 
     } catch (error) {
