@@ -40,20 +40,3 @@ export function passwordConfirmationValidator(): ValidatorFn {
     }
   };
 }
-
-/**
- * Validador alternativo más simple que solo retorna el error a nivel de FormGroup
- * sin modificar directamente los errores del campo confirmPassword
- */
-export function simplePasswordConfirmationValidator(): ValidatorFn {
-  return (control: AbstractControl): ValidationErrors | null => {
-    const password = control.get('password')?.value;
-    const confirmPassword = control.get('confirmPassword')?.value;
-    
-    if (!password || !confirmPassword) {
-      return null;
-    }
-    
-    return password === confirmPassword ? null : { passwordMismatch: true };
-  };
-}
