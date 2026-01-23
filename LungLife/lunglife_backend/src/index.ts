@@ -1,14 +1,14 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import authRoutes from './routes/auth.routes';
-import { healthRoutes } from './routes/health.routes';
-import directoryRoutes from './routes/directory.routes';
-import { doctorRoutes } from './routes/doctor.routes';
-import userProfileRoutes from './routes/user-profile.routes';
-import clinicalProfileRoutes from './routes/clinical-profile.routes';
-import { DatabaseServiceFactory } from './core/factories/database.factory';
-import { setupSwagger } from './core/config/swagger.config';
+import authRoutes from './presentation/routes/auth.routes';
+import { healthRoutes } from './presentation/routes/health.routes';
+import directoryRoutes from './presentation/routes/directory.routes';
+import { doctorRoutes } from './presentation/routes/doctor.routes';
+import userProfileRoutes from './presentation/routes/user-profile.routes';
+import clinicalProfileRoutes from './presentation/routes/clinical-profile.routes';
+import { DatabaseServiceFactory } from './infrastructure/factories/database.factory';
+import { setupSwagger } from './infrastructure/config/swagger.config';
 
 dotenv.config();
 

@@ -3,9 +3,9 @@
  * Unit tests for authentication business logic
  */
 
-import { AuthenticationService, RegisterUserRequest } from '../../../src/core/services/authentication.service';
-import { IUserRepository, IUnitOfWork } from '../../../src/core/interfaces/repository.interface';
-import { Logger } from '../../../src/core/services/logger.service';
+import { AuthenticationService, RegisterUserRequest } from '../../../src/application/services/authentication.service';
+import { IUserRepository, IUnitOfWork } from '../../../src/domain/interfaces/repository.interface';
+import { Logger } from '../../../src/application/services/logger.service';
 
 // Mock del repositorio de usuarios
 const mockUserRepository = {
