@@ -1,7 +1,14 @@
 -- ============================================
--- LUNG LIFE DATABASE - COMPLETE SETUP SCRIPT v4.0
+-- LUNG LIFE DATABASE - COMPLETE SETUP SCRIPT v5.1
 -- PostgreSQL Database Schema for MVP
--- Fixed syntax errors and dependencies
+-- Changes from v5.0:
+--   - Added ml_predictions table for ML model risk predictions
+--   - Added occupational_exposure table for work-related risk factors
+--   - Added vw_patient_current_risk view
+--   - Added trigger for automatic is_current flag management
+-- Changes from v4.3:
+--   - date_of_birth in patient table is now NULLABLE
+--   - Allows registration without birth date (can be added later)
 -- ============================================
 
 -- ============================================
@@ -9,6 +16,7 @@
 -- ============================================
 
 -- Drop views first
+DROP VIEW IF EXISTS vw_patient_current_risk CASCADE;
 DROP VIEW IF EXISTS patients_clinical_summary CASCADE;
 DROP VIEW IF EXISTS lung_cancer_patients_by_stage CASCADE;
 DROP VIEW IF EXISTS smoking_risk_patients CASCADE;
@@ -16,6 +24,10 @@ DROP VIEW IF EXISTS former_smokers_monitoring CASCADE;
 DROP VIEW IF EXISTS active_patients_with_doctors CASCADE;
 DROP VIEW IF EXISTS doctors_patient_count CASCADE;
 DROP VIEW IF EXISTS active_users_with_roles CASCADE;
+
+-- Drop ML tables first (depend on patient/doctor)
+DROP TABLE IF EXISTS ml_predictions CASCADE;
+DROP TABLE IF EXISTS occupational_exposure CASCADE;
 
 -- Drop tables in reverse dependency order
 DROP TABLE IF EXISTS patient_comorbidities CASCADE;
@@ -30,6 +42,7 @@ DROP TABLE IF EXISTS risk_factors CASCADE;
 DROP TABLE IF EXISTS doctor CASCADE;
 DROP TABLE IF EXISTS patient CASCADE;
 DROP TABLE IF EXISTS email_verifications CASCADE;
+DROP TABLE IF EXISTS refresh_tokens CASCADE;
 DROP TABLE IF EXISTS password_resets CASCADE;
 DROP TABLE IF EXISTS user_auth CASCADE;
 DROP TABLE IF EXISTS users CASCADE;
@@ -98,7 +111,25 @@ CREATE TABLE password_resets (
     CONSTRAINT fk_password_resets_user FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
 
--- 2.5. TABLE: email_verifications (Email verification tokens)
+-- 2.5. TABLE: refresh_tokens (JWT refresh tokens for session management)
+CREATE TABLE refresh_tokens (
+    token_id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL,
+    token_hash VARCHAR(255) NOT NULL,
+    jti VARCHAR(255) UNIQUE NOT NULL,
+    user_agent TEXT,
+    ip_address VARCHAR(45),
+    device_fingerprint VARCHAR(255),
+    issued_at TIMESTAMP NOT NULL,
+    expires_at TIMESTAMP NOT NULL,
+    is_revoked BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    
+    CONSTRAINT fk_refresh_tokens_user FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+);
+
+-- 2.6. TABLE: email_verifications (Email verification tokens)
 CREATE TABLE email_verifications (
     verification_id SERIAL PRIMARY KEY,
     user_id INTEGER NOT NULL,
@@ -106,7 +137,7 @@ CREATE TABLE email_verifications (
     expires_at TIMESTAMP NOT NULL,
     verified_at TIMESTAMP,
     email_sent_at TIMESTAMP,
-    verification_type VARCHAR(20) CHECK (verification_type IN ('SIGNUP', 'CHANGE', 'RECOVERY')),
+    verification_type VARCHAR(20) CHECK (verification_type IN ('SIGNUP', 'CHANGE', 'RECOVERY', 'CREDENTIALS')),
     new_email VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     
@@ -114,12 +145,13 @@ CREATE TABLE email_verifications (
 );
 
 -- 2.6. TABLE: patient (Patient demographic information)
+-- NOTA v5.0: date_of_birth ahora es nullable para permitir registro básico
 CREATE TABLE patient (
     patient_id SERIAL PRIMARY KEY,
     user_id INTEGER UNIQUE REFERENCES users(user_id),
     patient_name VARCHAR(100) NOT NULL,
     patient_last_name VARCHAR(100) NOT NULL,
-    date_of_birth DATE NOT NULL,
+    date_of_birth DATE,  -- Nullable: se puede completar después del registro
     gender VARCHAR(20) CHECK (gender IN ('MALE', 'FEMALE', 'OTHER')),
     height_cm DECIMAL(5,2),
     weight_kg DECIMAL(5,2),
@@ -136,8 +168,9 @@ CREATE TABLE patient (
     
     CONSTRAINT chk_height_weight 
         CHECK (height_cm BETWEEN 50 AND 250 AND weight_kg BETWEEN 2 AND 300),
+    -- v5.0: Constraint modificada para permitir NULL
     CONSTRAINT chk_date_of_birth 
-        CHECK (date_of_birth <= CURRENT_DATE - INTERVAL '1 year')
+        CHECK (date_of_birth IS NULL OR date_of_birth <= CURRENT_DATE - INTERVAL '1 year')
 );
 
 -- 2.7. TABLE: doctor (Doctor professional information)
@@ -253,7 +286,7 @@ CREATE TABLE symptom (
     patient_id INTEGER REFERENCES patient(patient_id) ON DELETE CASCADE,
     chest_pain BOOLEAN DEFAULT FALSE, -- dolor en el pecho
     shortness_of_breath BOOLEAN DEFAULT FALSE, -- dificultad para respirar
-    chronic_cough BOOLEAN DEFAULT FALSE, -- tos crónica
+    chronic_cough BOOLEAN DEFAULT FALSE, -- tos crónica 
     weight_loss BOOLEAN DEFAULT FALSE, -- pérdida de peso
     fatigue BOOLEAN DEFAULT FALSE, -- fatiga
     hemoptysis BOOLEAN DEFAULT FALSE, -- hemoptisis (tos con sangre)
@@ -309,6 +342,68 @@ CREATE TABLE patient_comorbidities (
     notes TEXT,
     PRIMARY KEY (patient_id, comorbidity_id),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 2.15. TABLE: ml_predictions (ML Model Risk Predictions)
+-- Stores risk assessment predictions from the ML model
+CREATE TABLE ml_predictions (
+    prediction_id SERIAL PRIMARY KEY,
+    patient_id INTEGER REFERENCES patient(patient_id) ON DELETE CASCADE,
+    
+    -- Risk Score (0-100%)
+    risk_score DECIMAL(5,2) NOT NULL CHECK (risk_score >= 0 AND risk_score <= 100),
+    
+    -- Risk Level Category
+    risk_level VARCHAR(20) NOT NULL CHECK (risk_level IN ('LOW', 'MODERATE', 'HIGH', 'CRITICAL')),
+    
+    -- Confidence of the prediction (0-100%)
+    confidence DECIMAL(5,2) CHECK (confidence >= 0 AND confidence <= 100),
+    
+    -- Model version used
+    model_version VARCHAR(50) DEFAULT 'v1.0',
+    
+    -- Input features snapshot (JSON for reproducibility)
+    input_features JSONB,
+    
+    -- Assessment details
+    assessment_type VARCHAR(50) DEFAULT 'AUTOMATED' CHECK (assessment_type IN ('AUTOMATED', 'MANUAL_OVERRIDE', 'RECALCULATED')),
+    
+    -- Doctor who reviewed (optional)
+    reviewed_by_doctor_id INTEGER REFERENCES doctor(doctor_id),
+    reviewed_at TIMESTAMP,
+    
+    -- Timestamps
+    prediction_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    
+    -- Flag for current/active prediction
+    is_current BOOLEAN DEFAULT TRUE
+);
+
+-- 2.16. TABLE: occupational_exposure (Occupational Risk Factors)
+-- Stores work-related exposure information
+CREATE TABLE occupational_exposure (
+    exposure_id SERIAL PRIMARY KEY,
+    patient_id INTEGER REFERENCES patient(patient_id) ON DELETE CASCADE,
+    
+    -- Exposure type
+    exposure_type VARCHAR(100) NOT NULL,
+    exposure_description TEXT,
+    
+    -- Duration
+    years_exposed INTEGER CHECK (years_exposed >= 0),
+    
+    -- Risk level for this exposure
+    risk_contribution VARCHAR(20) CHECK (risk_contribution IN ('LOW', 'MODERATE', 'HIGH')),
+    
+    -- Status
+    is_active BOOLEAN DEFAULT TRUE,
+    start_date DATE,
+    end_date DATE,
+    
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- ============================================
@@ -394,6 +489,15 @@ CREATE INDEX idx_medical_history_patient ON medical_history(patient_id);
 CREATE INDEX idx_medical_history_type ON medical_history(entry_type);
 CREATE INDEX idx_medical_history_status ON medical_history(status);
 
+-- 3.16. ML_PREDICTIONS indexes
+CREATE INDEX idx_ml_predictions_patient ON ml_predictions(patient_id);
+CREATE INDEX idx_ml_predictions_current ON ml_predictions(patient_id, is_current) WHERE is_current = TRUE;
+CREATE INDEX idx_ml_predictions_date ON ml_predictions(prediction_date DESC);
+
+-- 3.17. OCCUPATIONAL_EXPOSURE indexes
+CREATE INDEX idx_occupational_exposure_patient ON occupational_exposure(patient_id);
+CREATE INDEX idx_occupational_exposure_active ON occupational_exposure(patient_id) WHERE is_active = TRUE;
+
 -- ============================================
 -- 4. TRIGGERS FOR AUTOMATIC UPDATES
 -- ============================================
@@ -434,6 +538,12 @@ FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 CREATE TRIGGER update_medical_history_updated_at BEFORE UPDATE ON medical_history 
 FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+CREATE TRIGGER update_ml_predictions_updated_at BEFORE UPDATE ON ml_predictions 
+FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_occupational_exposure_updated_at BEFORE UPDATE ON occupational_exposure 
+FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
 -- ============================================
 -- 5. USEFUL FUNCTIONS
 -- ============================================
@@ -470,6 +580,28 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql IMMUTABLE;
 
+-- Function to set new prediction as current and mark previous as non-current
+CREATE OR REPLACE FUNCTION set_current_prediction()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF NEW.is_current = TRUE THEN
+        UPDATE ml_predictions 
+        SET is_current = FALSE, updated_at = NOW()
+        WHERE patient_id = NEW.patient_id 
+          AND prediction_id != NEW.prediction_id 
+          AND is_current = TRUE;
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Trigger to manage current prediction
+DROP TRIGGER IF EXISTS trg_set_current_prediction ON ml_predictions;
+CREATE TRIGGER trg_set_current_prediction
+AFTER INSERT OR UPDATE OF is_current ON ml_predictions
+FOR EACH ROW
+EXECUTE FUNCTION set_current_prediction();
+
 -- ============================================
 -- 6. INITIAL DATA
 -- ============================================
@@ -498,7 +630,28 @@ INSERT INTO comorbidities (comorbidity_code, comorbidity_name, category) VALUES
 -- 7. USEFUL VIEWS FOR THE MVP
 -- ============================================
 
--- 7.1. View: Active patients with their assigned doctors
+-- 7.1. View: Current Risk Assessment per Patient (ML Predictions)
+CREATE OR REPLACE VIEW vw_patient_current_risk AS
+SELECT 
+    p.patient_id,
+    p.user_id,
+    p.patient_name,
+    p.patient_last_name,
+    p.date_of_birth,
+    p.gender,
+    EXTRACT(YEAR FROM AGE(p.date_of_birth)) as age,
+    ml.prediction_id,
+    ml.risk_score,
+    ml.risk_level,
+    ml.confidence,
+    ml.prediction_date,
+    ml.model_version
+FROM patient p
+LEFT JOIN ml_predictions ml ON p.patient_id = ml.patient_id AND ml.is_current = TRUE;
+
+COMMENT ON VIEW vw_patient_current_risk IS 'View to get current ML risk prediction for each patient';
+
+-- 7.2. View: Active patients with their assigned doctors
 CREATE OR REPLACE VIEW active_patients_with_doctors AS
 SELECT 
     p.patient_id,
@@ -517,7 +670,7 @@ JOIN doctor d ON rpd.doctor_id = d.doctor_id
 WHERE rpd.active = TRUE
 AND p.user_id IS NOT NULL;
 
--- 7.2. View: Doctors with active patient count
+-- 7.3. View: Doctors with active patient count
 CREATE OR REPLACE VIEW doctors_patient_count AS
 SELECT 
     d.doctor_id,
@@ -530,7 +683,7 @@ LEFT JOIN relation_patient_doctor rpd ON d.doctor_id = rpd.doctor_id AND rpd.act
 GROUP BY d.doctor_id
 ORDER BY active_patients_count DESC;
 
--- 7.3. View: Active users with roles
+-- 7.4. View: Active users with roles
 CREATE OR REPLACE VIEW active_users_with_roles AS
 SELECT 
     u.user_id,
@@ -543,7 +696,7 @@ FROM users u
 JOIN roles r ON u.role_id = r.role_id
 WHERE u.is_active = TRUE;
 
--- 7.4. View: Patients with smoking risk assessment (LUNG CANCER FOCUS)
+-- 7.5. View: Patients with smoking risk assessment (LUNG CANCER FOCUS)
 -- NOTA: Esta vista necesita columnas calculadas que no existen en la tabla
 -- Vamos a crear una vista auxiliar para calcular estos valores
 CREATE OR REPLACE VIEW vw_smoking_calculations AS
@@ -607,7 +760,7 @@ FROM patient p
 LEFT JOIN vw_smoking_calculations sc ON p.patient_id = sc.patient_id
 ORDER BY sc.pack_years DESC NULLS LAST;
 
--- 7.5. View: Former smokers for monitoring and follow-up
+-- 7.6. View: Former smokers for monitoring and follow-up
 CREATE OR REPLACE VIEW former_smokers_monitoring AS
 SELECT 
     p.patient_id,
@@ -622,7 +775,7 @@ JOIN vw_smoking_calculations sc ON p.patient_id = sc.patient_id
 WHERE sc.smoking_status = 'FORMER_SMOKER'
 ORDER BY sc.quit_date DESC;
 
--- 7.6. View: Patients with symptoms and their latest test
+-- 7.7. View: Patients with symptoms and their latest test
 CREATE OR REPLACE VIEW patients_clinical_summary AS
 SELECT 
     p.patient_id,
@@ -655,7 +808,7 @@ GROUP BY p.patient_id, p.patient_name, p.patient_last_name, p.date_of_birth, p.g
          sc.smoking_status, sc.pack_years,
          dt.stage_of_cancer, dt.test_date, dt.metastasis;
 
--- 7.7. View: Patients with lung cancer by stage
+-- 7.8. View: Patients with lung cancer by stage
 CREATE OR REPLACE VIEW lung_cancer_patients_by_stage AS
 SELECT 
     stage_of_cancer,
@@ -699,6 +852,8 @@ COMMENT ON TABLE symptom IS 'Reported symptoms by patients';
 COMMENT ON TABLE diagnostic_test IS 'Medical diagnostic test results and cancer staging';
 COMMENT ON TABLE comorbidities IS 'Master table of possible comorbidities';
 COMMENT ON TABLE patient_comorbidities IS 'Many-to-many relationship between patients and comorbidities';
+COMMENT ON TABLE ml_predictions IS 'Stores ML model predictions for lung cancer risk assessment';
+COMMENT ON TABLE occupational_exposure IS 'Stores occupational exposure risk factors for patients';
 
 COMMENT ON COLUMN patient.height_cm IS 'Height in centimeters (range: 50-250 cm)';
 COMMENT ON COLUMN patient.weight_kg IS 'Weight in kilograms (range: 2-300 kg)';
@@ -736,17 +891,17 @@ BEGIN
     WHERE schemaname = 'public';
     
     RAISE NOTICE '============================================';
-    RAISE NOTICE 'LUNG LIFE DATABASE SETUP COMPLETE v4.3';
+    RAISE NOTICE 'LUNG LIFE DATABASE SETUP COMPLETE v5.0';
     RAISE NOTICE '============================================';
     RAISE NOTICE 'Tables created: %', table_count;
     RAISE NOTICE 'Views created: %', view_count;
     RAISE NOTICE 'Indexes created: %', index_count;
     RAISE NOTICE '============================================';
-    RAISE NOTICE 'Fixed issues:';
-    RAISE NOTICE '1. Removed invalid WHERE clauses from table constraints';
-    RAISE NOTICE '2. Added missing doctor table before relation_patient_doctor';
-    RAISE NOTICE '3. Added vw_smoking_calculations view for computed columns';
-    RAISE NOTICE '4. Added partial unique indexes for current records';
+    RAISE NOTICE 'New in v5.1:';
+    RAISE NOTICE '1. Added ml_predictions table for ML risk scores';
+    RAISE NOTICE '2. Added occupational_exposure table for work risks';
+    RAISE NOTICE '3. Added vw_patient_current_risk view';
+    RAISE NOTICE '4. Added trigger for is_current flag management';
     RAISE NOTICE '============================================';
     RAISE NOTICE 'Database ready for MVP development!';
     RAISE NOTICE '============================================';
@@ -771,8 +926,10 @@ PHASE 2 (Risk Factors Collection):
 PHASE 3 (Diagnostic Data):
    - diagnostic_test
 
-PHASE 4 (ML Integration):
-   - Add ml_predictions table for model results
+PHASE 4 (ML Integration): ✓ COMPLETED IN v5.1
+   - ml_predictions table for model results
+   - occupational_exposure table for work-related risks
+   - vw_patient_current_risk view for current predictions
 
 SECURITY NOTES:
    - Always hash passwords at application level
@@ -791,12 +948,12 @@ NEXT STEPS:
    3. Build frontend components for data entry
    4. Integrate ML model for risk prediction
 
-FIXED ISSUES IN THIS VERSION:
-   1. Removed CONSTRAINT ... WHERE syntax which is invalid in PostgreSQL
-   2. Replaced with CREATE UNIQUE INDEX ... WHERE (partial unique indexes)
-   3. Fixed table creation order (doctor before relation_patient_doctor)
-   4. Added missing tables to DROP statements
-   5. Added vw_smoking_calculations view for computed smoking metrics
+CHANGES IN v5.1:
+   1. Added ml_predictions table for ML model risk predictions
+   2. Added occupational_exposure table for work-related exposures
+   3. Added vw_patient_current_risk view for current risk assessment
+   4. Added set_current_prediction() function and trigger
+   5. Updated version header and documentation
 */
 
 -- ============================================
