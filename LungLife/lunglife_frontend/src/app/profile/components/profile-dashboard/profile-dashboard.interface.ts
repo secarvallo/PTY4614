@@ -4,19 +4,7 @@
  * 
  * ⚠️ NOTA: UserProfile y LifestyleFactors se importan desde '../../interfaces/profile.interface'
  * para evitar duplicación de código y mantener una fuente única de verdad.
+ * 
+ * Actualmente este archivo está vacío porque las interfaces se usan
+ * directamente desde profile.interface.ts y profile.service.ts
  */
-
-export interface DashboardMetric {
-  label: string;
-  value: string | number;
-  color: string;
-  icon: string;
-  status?: 'success' | 'warning' | 'danger' | 'primary';
-}
-
-export interface HealthSummary {
-  age: number;
-  smokingStatus: string;
-  exerciseFrequency: string;
-  riskLevel?: 'LOW' | 'MODERATE' | 'HIGH' | 'VERY_HIGH';
-}

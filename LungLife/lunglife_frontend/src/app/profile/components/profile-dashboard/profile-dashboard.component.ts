@@ -4,7 +4,6 @@ import { RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { ProfileService } from '../../services/profile.service';
 import { UserProfile } from '../../interfaces/profile.interface';
-import { DashboardMetric, HealthSummary } from './profile-dashboard.interface';
 import { Observable } from 'rxjs';
 
 @Component({

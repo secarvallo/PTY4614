@@ -2,17 +2,12 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { ProfileDashboardComponent } from './components/profile-dashboard/profile-dashboard.component';
 import { ProfileFormComponent } from './components/profile-form/profile-form.component';
-import { ProfileInfoComponent } from './components/profile-info/profile-info.component';
 
 const routes: Routes = [
   {
     path: '',
-    redirectTo: 'info',
+    redirectTo: 'form',
     pathMatch: 'full'
-  },
-  {
-    path: 'info',
-    component: ProfileInfoComponent
   },
   {
     path: 'dashboard',
