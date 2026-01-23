@@ -1,193 +1,193 @@
-# 📱 LungLife Frontend
+# LungLife Frontend
 
-Aplicación móvil/web con Angular 20 + Ionic Framework para evaluación de riesgo de cáncer pulmonar.
+Aplicacion movil/web con Angular 20 + Ionic Framework para evaluacion de riesgo de cancer pulmonar.
 
-## 📁 Estructura de Directorios
+## Estructura de Directorios
 
 ```
 lunglife_frontend/
-├── src/                          # Código fuente
+├── src/                          # Codigo fuente
 │   ├── index.html                # HTML principal
 │   ├── main.ts                   # Bootstrap de Angular
 │   ├── global.scss               # Estilos globales
-│   ├── app/                      # Módulos de la aplicación
-│   ├── assets/                   # Recursos estáticos
-│   ├── environments/             # Configuración por ambiente
+│   ├── app/                      # Modulos de la aplicacion
+│   ├── assets/                   # Recursos estaticos
+│   ├── environments/             # Configuracion por ambiente
 │   └── theme/                    # Variables de tema
-├── www/                          # Build de producción
+├── www/                          # Build de produccion
 ├── .angular/                     # Cache de Angular
-├── angular.json                  # Configuración Angular
-├── ionic.config.json             # Configuración Ionic
-├── capacitor.config.ts           # Configuración Capacitor (móvil)
+├── angular.json                  # Configuracion Angular
+├── ionic.config.json             # Configuracion Ionic
+├── capacitor.config.ts           # Configuracion Capacitor (movil)
 ├── package.json                  # Dependencias
-└── tsconfig.json                 # Configuración TypeScript
+└── tsconfig.json                 # Configuracion TypeScript
 ```
 
 ---
 
-## 🏗️ Arquitectura de Módulos
+## Arquitectura de Modulos
 
-### `src/app/` - Aplicación Principal
+### `src/app/` - Aplicacion Principal
 
 ```
 app/
-├── app.component.ts              # Componente raíz
-├── app.config.ts                 # Configuración de providers
+├── app.component.ts              # Componente raiz
+├── app.config.ts                 # Configuracion de providers
 ├── app.routes.ts                 # Rutas principales
-├── auth/                         # Módulo de autenticación
+├── auth/                         # Modulo de autenticacion
 ├── core/                         # Servicios core
 ├── shared/                       # Componentes compartidos
 ├── dashboard/                    # Dashboard principal
-├── home/                         # Página de inicio
+├── home/                         # Pagina de inicio
 ├── profile/                      # Perfil de usuario
-├── clinical-profile/             # Perfil clínico
+├── clinical-profile/             # Perfil clinico
 ├── directory/                    # Directorio de profesionales
-├── security/                     # Configuración de seguridad
+├── security/                     # Configuracion de seguridad
 └── theme/                        # Estilos compartidos
 ```
 
 ---
 
-## 📂 Módulos Detallados
+## Modulos Detallados
 
-### `app/auth/` - Autenticación
-Maneja login, registro y gestión de sesión.
+### `app/auth/` - Autenticacion
+Maneja login, registro y gestion de sesion.
 
-| Directorio | Función |
+| Directorio | Funcion |
 |------------|---------|
-| `core/guards/` | Guards de rutas (autenticación, roles) |
+| `core/guards/` | Guards de rutas (autenticacion, roles) |
 | `core/interceptors/` | Interceptores HTTP (tokens, errores) |
-| `core/interfaces/` | Interfaces de autenticación |
+| `core/interfaces/` | Interfaces de autenticacion |
 | `core/services/` | Servicios de auth (login, tokens) |
 | `core/validators/` | Validadores de formularios |
-| `login/pages/` | Páginas de login |
+| `login/pages/` | Paginas de login |
 | `pages/splash/` | Pantalla de carga inicial |
 | `shared/components/` | Componentes de auth reutilizables |
 
-### `app/core/` - Núcleo
-Servicios y configuración central.
+### `app/core/` - Nucleo
+Servicios y configuracion central.
 
-| Directorio | Función |
+| Directorio | Funcion |
 |------------|---------|
-| `config/` | Configuración de ambiente |
+| `config/` | Configuracion de ambiente |
 | `rbac/` | Control de acceso por roles |
 | `services/error.service.ts` | Manejo centralizado de errores |
-| `services/logger.service.ts` | Logging de la aplicación |
-| `services/theme.service.ts` | Gestión de tema claro/oscuro |
+| `services/logger.service.ts` | Logging de la aplicacion |
+| `services/theme.service.ts` | Gestion de tema claro/oscuro |
 
 ### `app/profile/` - Perfil de Usuario
-Gestión del perfil personal.
+Gestion del perfil personal.
 
-| Directorio | Función |
+| Directorio | Funcion |
 |------------|---------|
 | `components/profile-form/` | Formulario de perfil |
 | `interfaces/` | Interfaces y enums de perfil |
 | `services/profile.service.ts` | CRUD de perfil |
-| `services/lifestyle.service.ts` | Hábitos de vida |
-| `services/medical-history.service.ts` | Historial médico |
+| `services/lifestyle.service.ts` | Habitos de vida |
+| `services/medical-history.service.ts` | Historial medico |
 
-### `app/clinical-profile/` - Perfil Clínico
-Datos clínicos del paciente.
+### `app/clinical-profile/` - Perfil Clinico
+Datos clinicos del paciente.
 
-| Directorio | Función |
+| Directorio | Funcion |
 |------------|---------|
-| `pages/detailed-profile/` | Vista detallada del perfil clínico |
-| `services/clinical-profile.service.ts` | Servicio de datos clínicos |
+| `pages/detailed-profile/` | Vista detallada del perfil clinico |
+| `services/clinical-profile.service.ts` | Servicio de datos clinicos |
 
 ### `app/directory/` - Directorio
-Búsqueda de profesionales de salud.
+Busqueda de profesionales de salud.
 
-| Directorio | Función |
+| Directorio | Funcion |
 |------------|---------|
 | `pages/directory/` | Lista de doctores |
-| `services/directory.service.ts` | Búsqueda y filtrado |
+| `services/directory.service.ts` | Busqueda y filtrado |
 
 ### `app/security/` - Seguridad
-Configuración de seguridad de cuenta.
+Configuracion de seguridad de cuenta.
 
-| Directorio | Función |
+| Directorio | Funcion |
 |------------|---------|
-| `session-management/` | Gestión de sesiones activas |
-| `two-fa-settings/` | Configuración de 2FA |
-| `two-fa-setup/` | Configuración inicial de 2FA |
+| `session-management/` | Gestion de sesiones activas |
+| `two-fa-settings/` | Configuracion de 2FA |
+| `two-fa-setup/` | Configuracion inicial de 2FA |
 
 ### `app/shared/` - Compartidos
 Componentes y utilidades reutilizables.
 
-| Directorio | Función |
+| Directorio | Funcion |
 |------------|---------|
 | `components/` | Componentes UI reutilizables |
-| `not-found/` | Página 404 |
+| `not-found/` | Pagina 404 |
 
 ### `app/dashboard/` - Dashboard
 Panel principal del usuario.
 
-| Archivo | Función |
+| Archivo | Funcion |
 |---------|---------|
-| `dashboard.page.ts` | Lógica del dashboard |
+| `dashboard.page.ts` | Logica del dashboard |
 | `dashboard.page.html` | Template del dashboard |
 
 ### `app/home/` - Home
-Página de inicio/landing.
+Pagina de inicio/landing.
 
 ---
 
-## 🎨 Estilos y Tema
+## Estilos y Tema
 
 ### `src/theme/`
 Variables CSS de Ionic.
 
-| Archivo | Función |
+| Archivo | Funcion |
 |---------|---------|
 | `variables.css` | Variables CSS customizadas |
 | `variables.scss` | Variables SCSS de Ionic |
 
 ### `app/theme/`
-Estilos compartidos entre módulos.
+Estilos compartidos entre modulos.
 
-| Archivo | Función |
+| Archivo | Funcion |
 |---------|---------|
 | `shared-layout.scss` | Layouts reutilizables |
 
 ---
 
-## 🌍 Ambientes
+## Ambientes
 
 ### `src/environments/`
 
-| Archivo | Función |
+| Archivo | Funcion |
 |---------|---------|
 | `environment.ts` | Desarrollo local |
-| `environment.prod.ts` | Producción |
-| `environment.model.ts` | Interface de configuración |
+| `environment.prod.ts` | Produccion |
+| `environment.model.ts` | Interface de configuracion |
 
 ---
 
-## 📦 Assets
+## Assets
 
 ### `src/assets/`
 
-| Directorio | Función |
+| Directorio | Funcion |
 |------------|---------|
 | `icon/` | Logos e iconos de la app |
-| `images/` | Imágenes estáticas |
+| `images/` | Imagenes estaticas |
 
 ---
 
-## 🚀 Scripts Disponibles
+## Scripts Disponibles
 
 ```bash
 npm start          # Servidor de desarrollo (localhost:4200)
-npm run build      # Build de producción
+npm run build      # Build de produccion
 npm test           # Tests unitarios
-npm run lint       # Linting del código
+npm run lint       # Linting del codigo
 ionic serve        # Servidor Ionic con live-reload
 ionic build        # Build para Capacitor
 ```
 
 ---
 
-## 📱 Plataformas
+## Plataformas
 
-- **Web**: Angular SPA
-- **iOS/Android**: Capacitor (configurado en `capacitor.config.ts`)
+- Web: Angular SPA
+- iOS/Android: Capacitor (configurado en `capacitor.config.ts`)
