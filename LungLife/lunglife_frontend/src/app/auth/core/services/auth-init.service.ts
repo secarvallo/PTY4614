@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of, firstValueFrom } from 'rxjs';
 import { catchError, finalize, timeout } from 'rxjs/operators';
-import { CoreAuthStore } from '../../auth/core/services/core-auth.store';
+import { CoreAuthStore } from './core-auth.store';
 
 @Injectable({ providedIn: 'root' })
-export class AppInitService {
+export class AuthInitService {
   private initializing$ = new BehaviorSubject<boolean>(true);
 
   constructor(private coreStore: CoreAuthStore) {}

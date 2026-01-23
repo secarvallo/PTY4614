@@ -1,10 +1,9 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { LoadingSpinnerComponent } from 'src/app/auth/shared/components/loading-spinner/loading-spinner.component';
-// Fixed duplicated 'app' segment in paths
-import { AuthFacadeService } from 'src/app/auth/core/services';
-import { AppInitService } from 'src/app/core/services/app-init.service';
+import { LoadingSpinnerComponent } from '../../shared/components/loading-spinner/loading-spinner.component';
+import { AuthFacadeService } from '../../core/services';
+import { AuthInitService } from '../../core/services/auth-init.service';
 
 @Component({
   selector: 'app-splash',
@@ -22,7 +21,7 @@ import { AppInitService } from 'src/app/core/services/app-init.service';
 export class SplashComponent implements OnInit {
   private router = inject(Router);
   private auth = inject(AuthFacadeService);
-  private init = inject(AppInitService);
+  private init = inject(AuthInitService);
 
   ngOnInit(): void {
     // Poll hasta que la inicialización termine o se alcance un máximo
