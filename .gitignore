@@ -1,7 +1,12 @@
 # ============================================
 # GITIGNORE GLOBAL - Proyecto PTY4614 LungLife
 # ============================================
-# Este archivo cubre: Node.js, Python, Angular, Ionic, Bases de Datos, IDEs, y más
+# Este archivo cubre: Node.js, Python, Angular, Ionic, Bases de Datos, IDEs, y mas
+
+# ============================================
+# DOCUMENTACION PRIVADA (No subir al repositorio)
+# ============================================
+LungLife/lunglife_docs/01.-Capstone_709V/
 
 # ============================================
 # PYTHON
