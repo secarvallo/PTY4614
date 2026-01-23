@@ -105,6 +105,22 @@ export interface UserSession {
   created_at?: Date;
   last_activity?: Date;
   expires_at: Date;
+  // Propiedades computadas/relaciones para compatibilidad
+  deviceName?: string;
+  deviceType?: string;
+  browser?: string;
+  os?: string;
+  location?: {
+    city?: string;
+    country?: string;
+  };
+  // Propiedades camelCase para compatibilidad con templates
+  isCurrent?: boolean;      // -> is_current
+  ipAddress?: string;       // -> ip_address
+  lastActivity?: Date;      // -> last_activity
+  createdAt?: Date;         // -> created_at
+  expiresAt?: Date;         // -> expires_at
+  isActive?: boolean;       // computada: sesión no expirada
 }
 
 // Usuario principal
@@ -167,4 +183,22 @@ export interface AuthState {
   error$: Observable<string | null>;
   requiresTwoFA$: Observable<boolean>;
   user$: Observable<User | null>;
+}
+
+// ========== Interfaces de Sesiones ==========
+export enum TwoFactorMethod {
+  TOTP = 'totp',
+  SMS = 'sms',
+  EMAIL = 'email'
+}
+
+export interface SessionsResponse {
+  success: boolean;
+  sessions?: UserSession[];
+  error?: string;
+}
+
+export interface RevokeSessionRequest {
+  sessionId?: string;
+  revokeAll?: boolean;
 }

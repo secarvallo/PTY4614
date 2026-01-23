@@ -1,6 +1,5 @@
 import { HttpInterceptorFn, HttpRequest, HttpHandlerFn, HttpErrorResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
-import { AdvancedAuthService } from '../services/advanced-auth.service';
 import { CoreAuthStore } from '../services/core-auth.store';
 import { environment } from '../../../../environments/environment';
 import { ReplaySubject, throwError, of } from 'rxjs';
@@ -46,7 +45,6 @@ function addAuthHeader(req: HttpRequest<unknown>, token: string | null): HttpReq
 }
 
 export const unifiedAuthInterceptor: HttpInterceptorFn = (req: HttpRequest<any>, next: HttpHandlerFn) => {
-  const authService = inject(AdvancedAuthService);
   const coreStore = inject(CoreAuthStore);
 
   // No tocar peticiones excluidas
@@ -54,9 +52,8 @@ export const unifiedAuthInterceptor: HttpInterceptorFn = (req: HttpRequest<any>,
     return next(req);
   }
 
-  // Adjuntar token si procede
-  // Fuente única de verdad: CoreAuthStore (fallback localStorage sólo por resiliencia inicial)
-  const accessToken = coreStore.getAccessTokenSync() || (authService as any)["getAccessToken"]?.() || localStorage.getItem('lunglife_access_token');
+  // Adjuntar token si procede - fuente única: CoreAuthStore
+  const accessToken = coreStore.getAccessTokenSync();
   const authReq = shouldAttachToken(req) ? addAuthHeader(req, accessToken) : req;
 
   return next(authReq).pipe(
@@ -79,7 +76,7 @@ export const unifiedAuthInterceptor: HttpInterceptorFn = (req: HttpRequest<any>,
 
       // Iniciar ciclo de refresh
       refreshInProgress = true;
-      return authService.refreshToken().pipe(
+      return coreStore.refreshAuthToken().pipe(
         switchMap((newToken: string) => {
           refreshInProgress = false;
             // Emitir a los suscriptores en cola
@@ -91,7 +88,7 @@ export const unifiedAuthInterceptor: HttpInterceptorFn = (req: HttpRequest<any>,
           refreshInProgress = false;
           // Notificar error a los que esperaban
           refreshSubject.error(refreshError);
-          // Invalidar sesión centralizadamente (no navegación aquí: facade/guards manejarán redirección posterior)
+          // Invalidar sesión centralizadamente
           try { coreStore.resetAll(); } catch {}
           return throwError(() => refreshError);
         })
