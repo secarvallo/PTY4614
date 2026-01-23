@@ -144,7 +144,7 @@ CREATE TABLE email_verifications (
     CONSTRAINT fk_email_verifications_user FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
 
--- 2.6. TABLE: patient (Patient demographic information)
+-- 2.7. TABLE: patient (Patient demographic information)
 -- NOTA v5.0: date_of_birth ahora es nullable para permitir registro básico
 CREATE TABLE patient (
     patient_id SERIAL PRIMARY KEY,
@@ -173,7 +173,7 @@ CREATE TABLE patient (
         CHECK (date_of_birth IS NULL OR date_of_birth <= CURRENT_DATE - INTERVAL '1 year')
 );
 
--- 2.7. TABLE: doctor (Doctor professional information)
+-- 2.8. TABLE: doctor (Doctor professional information)
 -- CREAR doctor ANTES de relation_patient_doctor
 CREATE TABLE doctor (
     doctor_id SERIAL PRIMARY KEY,
@@ -191,7 +191,7 @@ CREATE TABLE doctor (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- 2.8. TABLE: relation_patient_doctor (Patient-doctor assignments)
+-- 2.9. TABLE: relation_patient_doctor (Patient-doctor assignments)
 CREATE TABLE relation_patient_doctor (
     relation_id SERIAL PRIMARY KEY,
     patient_id INTEGER REFERENCES patient(patient_id),
@@ -204,7 +204,7 @@ CREATE TABLE relation_patient_doctor (
     UNIQUE(doctor_id, patient_id)
 );
 
--- 2.9. TABLE: risk_factors (Non-smoking related risk factors)
+-- 2.10. TABLE: risk_factors (Non-smoking related risk factors)
 CREATE TABLE risk_factors (
     factor_id SERIAL PRIMARY KEY,
     patient_id INTEGER REFERENCES patient(patient_id) ON DELETE CASCADE,
@@ -218,7 +218,7 @@ CREATE TABLE risk_factors (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- 2.10. TABLE: smoking_history (Primary lung cancer factor - smoking)
+-- 2.11. TABLE: smoking_history (Primary lung cancer factor - smoking)
 -- CORREGIDO: Removida constraint inválida con WHERE
 CREATE TABLE smoking_history (
     smoking_id SERIAL PRIMARY KEY,
@@ -243,7 +243,7 @@ CREATE TABLE smoking_history (
     )
 );
 
--- 2.10.a TABLE: medical_history (Patient medical history)
+-- 2.12. TABLE: medical_history (Patient medical history)
 CREATE TABLE medical_history (
     history_id SERIAL PRIMARY KEY,
     patient_id INTEGER REFERENCES patient(patient_id) ON DELETE CASCADE,
@@ -261,7 +261,7 @@ CREATE TABLE medical_history (
     CONSTRAINT fk_medical_history_doctor FOREIGN KEY (doctor_id) REFERENCES doctor(doctor_id)
 );
 
--- 2.10.b TABLE: lifestyle_habits (Patient lifestyle habits)
+-- 2.13. TABLE: lifestyle_habits (Patient lifestyle habits)
 -- CORREGIDO: Removida constraint inválida con WHERE
 CREATE TABLE lifestyle_habits (
     habit_id SERIAL PRIMARY KEY,
@@ -280,7 +280,7 @@ CREATE TABLE lifestyle_habits (
     -- NOTA: La constraint idx_unique_current_habit se moverá a un índice parcial
 );
 
--- 2.11. TABLE: symptom (Reported symptoms)
+-- 2.14. TABLE: symptom (Reported symptoms)
 CREATE TABLE symptom (
     symptom_id SERIAL PRIMARY KEY,
     patient_id INTEGER REFERENCES patient(patient_id) ON DELETE CASCADE,
@@ -300,7 +300,7 @@ CREATE TABLE symptom (
                fatigue = TRUE OR hemoptysis = TRUE)
 );
 
--- 2.12. TABLE: diagnostic_test (Medical test results)
+-- 2.15. TABLE: diagnostic_test (Medical test results)
 CREATE TABLE diagnostic_test (
     test_id SERIAL PRIMARY KEY,
     patient_id INTEGER REFERENCES patient(patient_id) ON DELETE CASCADE,
@@ -322,7 +322,7 @@ CREATE TABLE diagnostic_test (
     CONSTRAINT chk_lung_function CHECK (lung_function BETWEEN 0 AND 100)
 );
 
--- 2.13. TABLE: comorbidities (Comorbidities master table)
+-- 2.16. TABLE: comorbidities (Comorbidities master table)
 CREATE TABLE comorbidities (
     comorbidity_id SERIAL PRIMARY KEY,
     comorbidity_code VARCHAR(10) UNIQUE NOT NULL,
@@ -332,7 +332,7 @@ CREATE TABLE comorbidities (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- 2.14. TABLE: patient_comorbidities (Many-to-many relationship)
+-- 2.17. TABLE: patient_comorbidities (Many-to-many relationship)
 CREATE TABLE patient_comorbidities (
     patient_id INTEGER REFERENCES patient(patient_id) ON DELETE CASCADE,
     comorbidity_id INTEGER REFERENCES comorbidities(comorbidity_id),
@@ -344,7 +344,7 @@ CREATE TABLE patient_comorbidities (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- 2.15. TABLE: ml_predictions (ML Model Risk Predictions)
+-- 2.18. TABLE: ml_predictions (ML Model Risk Predictions)
 -- Stores risk assessment predictions from the ML model
 CREATE TABLE ml_predictions (
     prediction_id SERIAL PRIMARY KEY,
@@ -381,7 +381,7 @@ CREATE TABLE ml_predictions (
     is_current BOOLEAN DEFAULT TRUE
 );
 
--- 2.16. TABLE: occupational_exposure (Occupational Risk Factors)
+-- 2.19. TABLE: occupational_exposure (Occupational Risk Factors)
 -- Stores work-related exposure information
 CREATE TABLE occupational_exposure (
     exposure_id SERIAL PRIMARY KEY,
@@ -423,78 +423,83 @@ CREATE INDEX idx_user_auth_locked ON user_auth(account_locked_until) WHERE accou
 CREATE INDEX idx_password_resets_token ON password_resets(password_reset_token);
 CREATE INDEX idx_password_resets_user_active ON password_resets(user_id, is_used, password_reset_expires);
 
--- 3.4. EMAIL_VERIFICATIONS indexes
+-- 3.4. REFRESH_TOKENS indexes
+CREATE INDEX idx_refresh_tokens_user ON refresh_tokens(user_id);
+CREATE INDEX idx_refresh_tokens_jti ON refresh_tokens(jti);
+CREATE INDEX idx_refresh_tokens_expires ON refresh_tokens(expires_at) WHERE is_revoked = FALSE;
+
+-- 3.5. EMAIL_VERIFICATIONS indexes
 CREATE INDEX idx_email_verifications_token ON email_verifications(verification_token);
 CREATE INDEX idx_email_verifications_user_pending ON email_verifications(user_id, verified_at) WHERE verified_at IS NULL;
 
--- 3.5. PATIENT indexes
+-- 3.6. PATIENT indexes
 CREATE INDEX idx_patient_user_id ON patient(user_id);
 CREATE INDEX idx_patient_name ON patient(patient_name, patient_last_name);
 CREATE INDEX idx_patient_city ON patient(city);
 
--- 3.6. DOCTOR indexes
+-- 3.7. DOCTOR indexes
 CREATE INDEX idx_doctor_user_id ON doctor(user_id);
 CREATE INDEX idx_doctor_name ON doctor(doctor_name, doctor_last_name);
 CREATE INDEX idx_doctor_specialty ON doctor(specialty);
 
--- 3.7. RISK_FACTORS indexes
+-- 3.8. RISK_FACTORS indexes
 CREATE INDEX idx_risk_factors_patient ON risk_factors(patient_id);
 CREATE INDEX idx_risk_factors_evaluation_date ON risk_factors(evaluation_date);
 
--- 3.8. SMOKING_HISTORY indexes (PRIORITY for lung cancer focus)
+-- 3.9. SMOKING_HISTORY indexes (PRIORITY for lung cancer focus)
 CREATE INDEX idx_smoking_current_status ON smoking_history(patient_id, is_current_status) WHERE is_current_status = TRUE;
 CREATE INDEX idx_smoking_status ON smoking_history(smoking_status);
 CREATE INDEX idx_smoking_former_smokers ON smoking_history(patient_id) WHERE smoking_status = 'FORMER_SMOKER';
 CREATE INDEX idx_smoking_current_smokers ON smoking_history(patient_id) WHERE smoking_status = 'CURRENT_SMOKER';
 
--- 3.8.a Índice único parcial para smoking_history (reemplaza la constraint inválida)
+-- 3.9.a Índice único parcial para smoking_history (reemplaza la constraint inválida)
 CREATE UNIQUE INDEX unique_current_smoking_status ON smoking_history(patient_id) WHERE is_current_status = TRUE;
 
--- 3.9. RELATION_PATIENT_DOCTOR indexes
+-- 3.10. RELATION_PATIENT_DOCTOR indexes
 CREATE INDEX idx_relation_doctor_patient ON relation_patient_doctor(doctor_id, patient_id, active);
 CREATE INDEX idx_relation_active_doctors ON relation_patient_doctor(doctor_id) WHERE active = TRUE;
 CREATE INDEX idx_relation_active_patients ON relation_patient_doctor(patient_id) WHERE active = TRUE;
 
--- 3.10. LIFESTYLE_HABITS indexes
+-- 3.11. LIFESTYLE_HABITS indexes
 CREATE INDEX idx_lifestyle_habits_patient ON lifestyle_habits(patient_id);
 CREATE INDEX idx_lifestyle_habits_current ON lifestyle_habits(patient_id, is_current);
 
--- 3.10.a Índice único parcial para lifestyle_habits (reemplaza la constraint inválida)
+-- 3.11.a Índice único parcial para lifestyle_habits (reemplaza la constraint inválida)
 CREATE UNIQUE INDEX unique_current_lifestyle_habit ON lifestyle_habits(patient_id) WHERE is_current = TRUE;
 
--- 3.11. SYMPTOM indexes
+-- 3.12. SYMPTOM indexes
 CREATE INDEX idx_symptom_patient_date ON symptom(patient_id, report_date DESC);
 CREATE INDEX idx_symptom_chest_pain ON symptom(patient_id) WHERE chest_pain = TRUE;
 CREATE INDEX idx_symptom_chronic_cough ON symptom(patient_id) WHERE chronic_cough = TRUE;
 CREATE INDEX idx_symptom_hemoptysis ON symptom(patient_id) WHERE hemoptysis = TRUE;
 
--- 3.12. DIAGNOSTIC_TEST indexes
+-- 3.13. DIAGNOSTIC_TEST indexes
 CREATE INDEX idx_diagnostic_test_patient_date ON diagnostic_test(patient_id, test_date DESC);
 CREATE INDEX idx_diagnostic_test_stage ON diagnostic_test(stage_of_cancer);
 CREATE INDEX idx_diagnostic_test_metastasis ON diagnostic_test(patient_id) WHERE metastasis = TRUE;
 CREATE INDEX idx_diagnostic_test_type ON diagnostic_test(test_type);
 CREATE INDEX idx_diagnostic_test_treatment ON diagnostic_test(treatment_type);
 
--- 3.13. COMORBIDITIES indexes
+-- 3.14. COMORBIDITIES indexes
 CREATE INDEX idx_comorbidities_name ON comorbidities(comorbidity_name);
 CREATE INDEX idx_comorbidities_category ON comorbidities(category);
 
--- 3.14. PATIENT_COMORBIDITIES indexes
+-- 3.15. PATIENT_COMORBIDITIES indexes
 CREATE INDEX idx_patient_comorbidities_patient ON patient_comorbidities(patient_id);
 CREATE INDEX idx_patient_comorbidities_comorbidity ON patient_comorbidities(comorbidity_id);
 CREATE INDEX idx_patient_comorbidities_active ON patient_comorbidities(patient_id) WHERE is_active = TRUE;
 
--- 3.15. MEDICAL_HISTORY indexes
+-- 3.16. MEDICAL_HISTORY indexes
 CREATE INDEX idx_medical_history_patient ON medical_history(patient_id);
 CREATE INDEX idx_medical_history_type ON medical_history(entry_type);
 CREATE INDEX idx_medical_history_status ON medical_history(status);
 
--- 3.16. ML_PREDICTIONS indexes
+-- 3.17. ML_PREDICTIONS indexes
 CREATE INDEX idx_ml_predictions_patient ON ml_predictions(patient_id);
 CREATE INDEX idx_ml_predictions_current ON ml_predictions(patient_id, is_current) WHERE is_current = TRUE;
 CREATE INDEX idx_ml_predictions_date ON ml_predictions(prediction_date DESC);
 
--- 3.17. OCCUPATIONAL_EXPOSURE indexes
+-- 3.18. OCCUPATIONAL_EXPOSURE indexes
 CREATE INDEX idx_occupational_exposure_patient ON occupational_exposure(patient_id);
 CREATE INDEX idx_occupational_exposure_active ON occupational_exposure(patient_id) WHERE is_active = TRUE;
 
@@ -891,7 +896,7 @@ BEGIN
     WHERE schemaname = 'public';
     
     RAISE NOTICE '============================================';
-    RAISE NOTICE 'LUNG LIFE DATABASE SETUP COMPLETE v5.0';
+    RAISE NOTICE 'LUNG LIFE DATABASE SETUP COMPLETE v5.1';
     RAISE NOTICE '============================================';
     RAISE NOTICE 'Tables created: %', table_count;
     RAISE NOTICE 'Views created: %', view_count;
