@@ -38,10 +38,10 @@ export class RiskAssessmentRepository implements IRepository<IRiskAssessment> {
       modelVersion: row.model_version || 'v1.0',
       calculationMethod: row.assessment_type || 'AUTOMATED',
       assessedBy: row.reviewed_by_doctor_id,
-      assessmentNotes: null,
-      recommendations: null,
+      assessmentNotes: undefined,
+      recommendations: undefined,
       assessedAt: row.prediction_date,
-      validUntil: null,
+      validUntil: undefined,
       factorsUsed: row.input_features,
       createdAt: row.created_at,
       updatedAt: row.updated_at

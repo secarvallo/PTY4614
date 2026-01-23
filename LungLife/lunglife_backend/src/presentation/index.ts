@@ -8,7 +8,6 @@ export * from './middleware';
 
 // Controllers
 export * from './controllers/auth.controller';
-export * from './controllers/profile.controller';
 export * from './controllers/user-profile.controller';
 export * from './controllers/clinical-profile.controller';
 export * from './controllers/directory.controller';

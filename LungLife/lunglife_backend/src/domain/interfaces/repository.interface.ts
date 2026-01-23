@@ -21,9 +21,9 @@ export interface IRepository<T, ID = number> {
   findBy(criteria: Partial<T>): Promise<T[]>;
   
   /**
-   * Crear nueva entidad
+   * Crear nueva entidad (acepta DTO o entidad parcial)
    */
-  create(entity: Omit<T, 'id'>): Promise<T>;
+  create(entity: any): Promise<T>;
   
   /**
    * Actualizar entidad existente
