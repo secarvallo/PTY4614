@@ -2,7 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule, AlertController } from '@ionic/angular';
 import { AuthFacadeService } from '../../auth/core/services';
-import { UserSession } from '../../auth/core/interfaces/auth-advanced.interface';
+import { UserSession } from '../../auth/core/interfaces/auth.unified';
 
 @Component({
   selector: 'app-session-management',
@@ -106,7 +106,7 @@ export class SessionManagementPage implements OnInit {
     });
   }
 
-  getDeviceIcon(deviceType: string): string {
+  getDeviceIcon(deviceType?: string): string {
     switch (deviceType) {
       case 'mobile':
         return 'phone-portrait-outline';
@@ -119,7 +119,7 @@ export class SessionManagementPage implements OnInit {
     }
   }
 
-  getDeviceTypeLabel(deviceType: string): string {
+  getDeviceTypeLabel(deviceType?: string): string {
     switch (deviceType) {
       case 'mobile':
         return 'Móvil';
@@ -140,13 +140,13 @@ export class SessionManagementPage implements OnInit {
 
     const parts = [];
     if (location.city) parts.push(location.city);
-    if (location.region) parts.push(location.region);
     if (location.country) parts.push(location.country);
 
     return parts.length > 0 ? parts.join(', ') : 'Ubicación desconocida';
   }
 
-  formatDate(date: Date): string {
+  formatDate(date?: Date): string {
+    if (!date) return 'N/A';
     return new Intl.DateTimeFormat('es-ES', {
       year: 'numeric',
       month: 'short',
