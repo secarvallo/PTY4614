@@ -236,7 +236,7 @@ export class RegisterPage implements OnInit, OnDestroy {
 
       if (result?.success) {
         await this.showSuccessMessage();
-        await this.navigateToRoleSelection(result);
+        await this.navigateToRegisterSuccess(result);
       } else {
         this.error.set(result?.error || 'Error durante el registro');
       }
@@ -268,10 +268,18 @@ export class RegisterPage implements OnInit, OnDestroy {
     await toast.present();
   }
 
-  private async navigateToRoleSelection(result: any): Promise<void> {
-    const email = this.registerForm.get('email')?.value;
-    this.router.navigate(['/auth/role-selection'], {
-      queryParams: { email }
+  private async navigateToRegisterSuccess(result: any): Promise<void> {
+    const formData = this.registerForm.value;
+    const role = this.selectedRole() || 'PATIENT';
+    
+    this.router.navigate(['/auth/register-success'], {
+      queryParams: { 
+        email: formData.email,
+        name: formData.nombre,
+        lastName: formData.apellido || '',
+        role: role,
+        userId: result?.user?.id || ''
+      }
     });
   }
 
