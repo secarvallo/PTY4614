@@ -4,7 +4,7 @@
  */
 
 // Import shared auth styles
-@import '../../../auth/auth.styles.scss';
+@use '../../../auth/auth.styles.scss' as auth;
 
 /* ========== ANIMACIONES ========== */
 @keyframes spin {

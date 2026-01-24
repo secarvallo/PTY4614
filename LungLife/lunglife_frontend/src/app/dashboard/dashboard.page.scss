@@ -3,7 +3,7 @@
  */
 
 // Import shared auth styles for centering
-@import '../auth/auth.styles.scss';
+@use '../auth/auth.styles.scss' as auth;
 
 // Dashboard Section
 .dashboard-section {

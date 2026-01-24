@@ -4,7 +4,7 @@
  */
 
 // Import shared auth styles for .welcome-container and .action-section
-@import '../../../auth/auth.styles.scss';
+@use '../../../auth/auth.styles.scss' as auth;
 
 // Risk Level Colors
 $risk-low: #34c759;
@@ -238,7 +238,7 @@ $risk-critical: #ff3b30;
   
   &.risk-moderate {
     background: rgba($risk-moderate, 0.15);
-    color: darken($risk-moderate, 10%);
+    color: #e68600; // darken($risk-moderate, 10%) - hardcoded para evitar deprecation
   }
   
   &.risk-high {
