@@ -1,6 +1,6 @@
 import { Component, OnInit, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterLink, ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { IonicModule, ToastController, LoadingController } from '@ionic/angular';
 import { HttpClient } from '@angular/common/http';
 import { addIcons } from 'ionicons';
@@ -21,7 +21,7 @@ interface RegistrationDetails {
 @Component({
   selector: 'app-register-success',
   standalone: true,
-  imports: [CommonModule, IonicModule, RouterLink],
+  imports: [CommonModule, IonicModule],
   templateUrl: './register-success.page.html',
   styleUrls: [
     '../../../auth.styles.scss',

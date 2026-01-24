@@ -4,7 +4,7 @@
  */
 import { Component, OnInit, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { 
@@ -18,7 +18,7 @@ import {
 @Component({
   selector: 'app-logout-success',
   standalone: true,
-  imports: [CommonModule, IonicModule, RouterLink],
+  imports: [CommonModule, IonicModule],
   templateUrl: './logout-success.page.html',
   styleUrls: [
     '../../../auth.styles.scss',
