@@ -61,6 +61,7 @@ export class DetailedProfilePage implements OnInit {
   // User role
   readonly roleId = signal<number>(1);
   readonly patientIdFromRoute = signal<number | null>(null);
+  readonly generatingPrediction = signal<boolean>(false);
 
   // Expose service signals
   readonly profile = this.clinicalProfileService.profile;
@@ -314,6 +315,60 @@ export class DetailedProfilePage implements OnInit {
       ]
     });
     await alert.present();
+  }
+
+  /**
+   * Generate ML prediction for the current patient
+   */
+  async generatePrediction(): Promise<void> {
+    // Get patient ID from demographics
+    const patientId = this.demographics()?.patientId;
+    
+    if (!patientId) {
+      const toast = await this.toastController.create({
+        message: 'No se encontró el ID del paciente',
+        duration: 3000,
+        color: 'danger'
+      });
+      await toast.present();
+      return;
+    }
+
+    this.generatingPrediction.set(true);
+
+    try {
+      const result = await this.clinicalProfileService.generatePrediction(patientId);
+
+      if (result) {
+        const toast = await this.toastController.create({
+          message: `Riesgo calculado: ${result.riskScore.toFixed(0)}% - ${this.clinicalProfileService.getRiskLevelLabel(result.riskLevel)}`,
+          duration: 4000,
+          color: 'success',
+          icon: 'checkmark-circle-outline'
+        });
+        await toast.present();
+      } else {
+        // Error was set in service
+        const errorMsg = this.error() || 'Error al generar predicción';
+        const toast = await this.toastController.create({
+          message: errorMsg,
+          duration: 4000,
+          color: 'danger',
+          icon: 'alert-circle-outline'
+        });
+        await toast.present();
+      }
+    } catch (err: any) {
+      console.error('Error generating prediction:', err);
+      const toast = await this.toastController.create({
+        message: err.message || 'Error al conectar con el servicio ML',
+        duration: 4000,
+        color: 'danger'
+      });
+      await toast.present();
+    } finally {
+      this.generatingPrediction.set(false);
+    }
   }
 
   // Format RUT (Chilean ID) - placeholder for now

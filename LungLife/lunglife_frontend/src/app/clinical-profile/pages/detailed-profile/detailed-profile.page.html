@@ -78,6 +78,21 @@
               <h3>Score de Riesgo ML</h3>
               <p>Evaluación basada en IA</p>
             </div>
+            <!-- Generate Prediction Button -->
+            <ion-button 
+              size="small" 
+              fill="outline"
+              class="generate-btn"
+              [disabled]="generatingPrediction()"
+              (click)="generatePrediction()">
+              @if (generatingPrediction()) {
+                <ion-spinner name="crescent" slot="start"></ion-spinner>
+                Calculando...
+              } @else {
+                <ion-icon name="refresh-outline" slot="start"></ion-icon>
+                {{ hasRiskAssessment() ? 'Recalcular' : 'Calcular' }}
+              }
+            </ion-button>
           </div>
           
           @if (hasRiskAssessment()) {
@@ -111,6 +126,7 @@
             <div class="no-data-state">
               <ion-icon name="hourglass-outline"></ion-icon>
               <p>Evaluación pendiente</p>
+              <small>Haz clic en "Calcular" para generar tu evaluación de riesgo</small>
             </div>
           }
         </div>
