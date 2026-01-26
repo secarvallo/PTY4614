@@ -1,0 +1,97 @@
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    PRÓXIMOS PASOS - ROADMAP MVP                              ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║                                                                              ║
+║  FASE ACTUAL: MVP v1.0                                                       ║
+║  ─────────────────────                                                       ║
+║  ✓ Modelo ML entrenado y evaluado                                            ║
+║  ✓ API REST implementada (FastAPI)                                           ║
+║  ✓ Arquitectura de microservicios definida                                   ║
+║  ✓ Containerización Docker completa                                          ║
+║  ✓ Documentación OpenAPI                                                     ║
+║  ✓ Esquema de base de datos                                                  ║
+║                                                                              ║
+║  ┌─────────────────────────────────────────────────────────────────────────┐ ║
+║  │                         ROADMAP DE EVOLUCIÓN                            │ ║
+║  └─────────────────────────────────────────────────────────────────────────┘ ║
+║                                                                              ║
+║  CORTO PLAZO (1-2 semanas)                                                   ║
+║  ─────────────────────────                                                   ║
+║  1. Integración del Frontend Ionic existente                                 ║
+║     • Conectar formulario de evaluación con API                              ║
+║     • Implementar visualización de resultados                                ║
+║     • Mostrar gráficos de SHAP contributions                                 ║
+║                                                                              ║
+║  2. Integración del Backend Node.js existente                                ║
+║     • Implementar MLServiceClient en código existente                        ║
+║     • Agregar endpoints de predicción                                        ║
+║     • Configurar persistencia de predicciones                                ║
+║                                                                              ║
+║  3. Testing End-to-End                                                       ║
+║     • Tests de integración Frontend → Backend → ML                           ║
+║     • Tests de carga para ML Service                                         ║
+║     • Validación con datos de prueba clínicos                                ║
+║                                                                              ║
+║  MEDIANO PLAZO (3-4 semanas)                                                 ║
+║  ──────────────────────────                                                  ║
+║  4. Monitoreo y Observabilidad                                               ║
+║     • Prometheus + Grafana para métricas                                     ║
+║     • ELK Stack para logs centralizados                                      ║
+║     • Alertas para degradación de servicio                                   ║
+║                                                                              ║
+║  5. CI/CD Pipeline                                                           ║
+║     • GitHub Actions para build automático                                   ║
+║     • Tests automatizados en cada PR                                         ║
+║     • Deployment automatizado a staging                                      ║
+║                                                                              ║
+║  6. Mejoras de Seguridad                                                     ║
+║     • Certificados SSL/TLS                                                   ║
+║     • Auditoría de seguridad                                                 ║
+║     • Penetration testing                                                    ║
+║                                                                              ║
+║  LARGO PLAZO (1-2 meses)                                                     ║
+║  ─────────────────────                                                       ║
+║  7. Escalabilidad                                                            ║
+║     • Kubernetes deployment                                                  ║
+║     • Auto-scaling de ML Service                                             ║
+║     • Load balancing                                                         ║
+║                                                                              ║
+║  8. Mejoras del Modelo                                                       ║
+║     • A/B testing de modelos                                                 ║
+║     • Retraining pipeline                                                    ║
+║     • Model versioning con MLflow                                            ║
+║                                                                              ║
+║  9. Funcionalidades Adicionales                                              ║
+║     • Historial de predicciones por paciente                                 ║
+║     • Dashboard de estadísticas                                              ║
+║     • Exportación de reportes PDF                                            ║
+║                                                                              ║
+║  ┌─────────────────────────────────────────────────────────────────────────┐ ║
+║  │                      COMANDOS DE INICIO RÁPIDO                          │ ║
+║  └─────────────────────────────────────────────────────────────────────────┘ ║
+║                                                                              ║
+║  # 1. Copiar modelo entrenado                                                ║
+║  cp ../models/best_model.pkl deployment/ml_service/models/                   ║
+║                                                                              ║
+║  # 2. Configurar variables de entorno                                        ║
+║  cp deployment/.env.example deployment/.env                                  ║
+║  # Editar .env con valores seguros                                           ║
+║                                                                              ║
+║  # 3. Construir contenedores                                                 ║
+║  cd deployment && docker-compose build                                       ║
+║                                                                              ║
+║  # 4. Iniciar servicios                                                      ║
+║  docker-compose up -d                                                        ║
+║                                                                              ║
+║  # 5. Verificar estado                                                       ║
+║  docker-compose ps                                                           ║
+║  python scripts/health_check.py                                              ║
+║                                                                              ║
+║  # 6. Acceder a servicios                                                    ║
+║  Frontend:    http://localhost:8100                                          ║
+║  Backend:     http://localhost:3000/api                                      ║
+║  ML Service:  http://localhost:8000                                          ║
+║  Swagger:     http://localhost:8000/docs                                     ║
+║                                                                              ║
+╚══════════════════════════════════════════════════════════════════════════════╝

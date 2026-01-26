@@ -1,0 +1,119 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://lunglife.cl/schemas/prediction-response.json",
+  "title": "PredictionResponse",
+  "description": "Respuesta de predicción enviada al frontend",
+  "type": "object",
+  "required": [
+    "success",
+    "data"
+  ],
+  "properties": {
+    "success": {
+      "type": "boolean"
+    },
+    "data": {
+      "type": "object",
+      "required": [
+        "predictionId",
+        "prediction",
+        "probability",
+        "riskLevel"
+      ],
+      "properties": {
+        "predictionId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "patientId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "prediction": {
+          "type": "string",
+          "enum": [
+            "Early",
+            "Advanced"
+          ]
+        },
+        "probability": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "riskLevel": {
+          "type": "string",
+          "enum": [
+            "low",
+            "medium",
+            "high"
+          ]
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "requiresReview": {
+          "type": "boolean"
+        },
+        "recommendation": {
+          "type": "string"
+        },
+        "riskFactors": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "factor": {
+                "type": "string"
+              },
+              "impact": {
+                "type": "number"
+              },
+              "description": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "modelVersion": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "processingTimeMs": {
+          "type": "integer"
+        },
+        "requestId": {
+          "type": "string",
+          "format": "uuid"
+        }
+      }
+    },
+    "error": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,53 @@
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    ESTRUCTURA DEL MICROSERVICIO ML                           ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║                                                                              ║
+║  ml_service/                                                                 ║
+║  ├── app/                                                                    ║
+║  │   ├── __init__.py              # Inicialización del paquete              ║
+║  │   ├── main.py                  # Punto de entrada FastAPI                ║
+║  │   ├── config.py                # Configuración y variables de entorno    ║
+║  │   ├── dependencies.py          # Inyección de dependencias               ║
+║  │   │                                                                       ║
+║  │   ├── api/                                                                ║
+║  │   │   ├── __init__.py                                                     ║
+║  │   │   ├── routes/                                                         ║
+║  │   │   │   ├── __init__.py                                                 ║
+║  │   │   │   ├── health.py        # Endpoints de health check               ║
+║  │   │   │   └── prediction.py    # Endpoints de predicción                 ║
+║  │   │   └── middleware/                                                     ║
+║  │   │       ├── __init__.py                                                 ║
+║  │   │       └── logging.py       # Middleware de logging                   ║
+║  │   │                                                                       ║
+║  │   ├── core/                                                               ║
+║  │   │   ├── __init__.py                                                     ║
+║  │   │   ├── model_loader.py      # Carga del modelo ML                     ║
+║  │   │   ├── predictor.py         # Lógica de predicción                    ║
+║  │   │   └── preprocessor.py      # Preprocesamiento de datos               ║
+║  │   │                                                                       ║
+║  │   ├── schemas/                                                            ║
+║  │   │   ├── __init__.py                                                     ║
+║  │   │   ├── request.py           # Schemas de request (Pydantic)           ║
+║  │   │   └── response.py          # Schemas de response (Pydantic)          ║
+║  │   │                                                                       ║
+║  │   └── utils/                                                              ║
+║  │       ├── __init__.py                                                     ║
+║  │       ├── exceptions.py        # Excepciones personalizadas              ║
+║  │       └── validators.py        # Validadores de datos                    ║
+║  │                                                                           ║
+║  ├── models/                       # Artefactos del modelo                   ║
+║  │   ├── lung_cancer_classifier.joblib                                       ║
+║  │   ├── label_encoders.joblib                                               ║
+║  │   └── model_config.json                                                   ║
+║  │                                                                           ║
+║  ├── tests/                        # Tests unitarios e integración           ║
+║  │   ├── __init__.py                                                         ║
+║  │   ├── test_prediction.py                                                  ║
+║  │   └── test_health.py                                                      ║
+║  │                                                                           ║
+║  ├── Dockerfile                    # Imagen Docker del servicio              ║
+║  ├── requirements.txt              # Dependencias Python                     ║
+║  └── .env.example                  # Variables de entorno ejemplo            ║
+║                                                                              ║
+╚══════════════════════════════════════════════════════════════════════════════╝

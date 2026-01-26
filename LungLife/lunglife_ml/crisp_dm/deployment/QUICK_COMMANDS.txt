@@ -1,0 +1,55 @@
+
+╔══════════════════════════════════════════════════════════════════════════════════════════╗
+║                      COMANDOS RÁPIDOS DE DESPLIEGUE                                     ║
+╠══════════════════════════════════════════════════════════════════════════════════════════╣
+║                                                                                          ║
+║   DESARROLLO LOCAL                                                                       ║
+║   ────────────────                                                                       ║
+║   # Levantar todos los servicios                                                         ║
+║   $ docker-compose up -d                                                                 ║
+║                                                                                          ║
+║   # Ver logs en tiempo real                                                              ║
+║   $ docker-compose logs -f                                                               ║
+║                                                                                          ║
+║   # Detener servicios                                                                    ║
+║   $ docker-compose down                                                                  ║
+║                                                                                          ║
+║   # Reconstruir un servicio específico                                                   ║
+║   $ docker-compose build ml-service                                                      ║
+║   $ docker-compose up -d ml-service                                                      ║
+║                                                                                          ║
+║   PRODUCCIÓN                                                                             ║
+║   ──────────                                                                             ║
+║   # Despliegue inicial                                                                   ║
+║   $ chmod +x scripts/deploy-prod.sh                                                      ║
+║   $ ./scripts/deploy-prod.sh                                                             ║
+║                                                                                          ║
+║   # Actualizar un servicio sin downtime                                                  ║
+║   $ docker-compose up -d --no-deps --build <servicio>                                    ║
+║                                                                                          ║
+║   MANTENIMIENTO                                                                          ║
+║   ─────────────                                                                          ║
+║   # Backup de base de datos                                                              ║
+║   $ docker exec lunglife-postgres pg_dump -U lunglife_user lunglife_db > backup.sql      ║
+║                                                                                          ║
+║   # Restaurar base de datos                                                              ║
+║   $ cat backup.sql | docker exec -i lunglife-postgres psql -U lunglife_user lunglife_db  ║
+║                                                                                          ║
+║   # Ver uso de recursos                                                                  ║
+║   $ docker stats                                                                         ║
+║                                                                                          ║
+║   # Limpiar imágenes no usadas                                                           ║
+║   $ docker system prune -a                                                               ║
+║                                                                                          ║
+║   TESTING                                                                                ║
+║   ───────                                                                                ║
+║   # Test de predicción                                                                   ║
+║   $ curl -X POST http://localhost:8000/api/v1/predict \                                 ║
+║       -H "Content-Type: application/json" \                                             ║
+║       -H "X-API-Key: $ML_API_KEY" \                                                     ║
+║       -d '{"age": 55, "gender": "M", "smoking_status": "Former"}'                        ║
+║                                                                                          ║
+║   # Ver documentación Swagger                                                            ║
+║   Abrir en navegador: http://localhost:8000/docs                                         ║
+║                                                                                          ║
+╚══════════════════════════════════════════════════════════════════════════════════════════╝

@@ -1,0 +1,84 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "lunglife-frontend-prediction-response",
+  "title": "Frontend Prediction Response",
+  "description": "Schema para respuesta de predicci\u00f3n hacia el Frontend (camelCase)",
+  "type": "object",
+  "required": [
+    "prediction",
+    "probability",
+    "riskLevel",
+    "modelVersion"
+  ],
+  "properties": {
+    "prediction": {
+      "type": "integer",
+      "enum": [
+        0,
+        1
+      ],
+      "description": "Predicci\u00f3n binaria (0: Sin riesgo, 1: Con riesgo)"
+    },
+    "probability": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Probabilidad de riesgo"
+    },
+    "riskLevel": {
+      "type": "string",
+      "enum": [
+        "LOW",
+        "MODERATE",
+        "HIGH",
+        "VERY_HIGH"
+      ],
+      "description": "Nivel de riesgo cl\u00ednico"
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Confianza del modelo"
+    },
+    "modelVersion": {
+      "type": "string",
+      "description": "Versi\u00f3n del modelo ML"
+    },
+    "topFeatures": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "feature": {
+            "type": "string"
+          },
+          "featureLabel": {
+            "type": "string"
+          },
+          "contribution": {
+            "type": "number"
+          },
+          "direction": {
+            "type": "string",
+            "enum": [
+              "positive",
+              "negative"
+            ]
+          }
+        }
+      },
+      "maxItems": 5,
+      "description": "Top 5 factores contribuyentes"
+    },
+    "recommendation": {
+      "type": "string",
+      "description": "Recomendaci\u00f3n cl\u00ednica"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp de la predicci\u00f3n"
+    }
+  }
+}
