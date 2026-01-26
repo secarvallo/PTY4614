@@ -7,6 +7,7 @@ import directoryRoutes from './presentation/routes/directory.routes';
 import { doctorRoutes } from './presentation/routes/doctor.routes';
 import userProfileRoutes from './presentation/routes/user-profile.routes';
 import clinicalProfileRoutes from './presentation/routes/clinical-profile.routes';
+import mlPredictionRoutes from './presentation/routes/ml-prediction.routes';
 import { DatabaseServiceFactory } from './infrastructure/factories/database.factory';
 import { setupSwagger } from './infrastructure/config/swagger.config';
 
@@ -63,6 +64,9 @@ app.use('/api/profile', userProfileRoutes);
 
 // Clinical Profile routes - Detailed clinical data
 app.use('/api/clinical-profile', clinicalProfileRoutes);
+
+// ML Prediction routes - Machine Learning risk predictions
+app.use('/api/ml', mlPredictionRoutes);
 
 // ========== API DOCUMENTATION ==========
 // Setup Swagger API documentation
