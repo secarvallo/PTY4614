@@ -35,19 +35,19 @@ El sistema utiliza una **Arquitectura en 3 Capas (3-Tier Architecture)** robusta
 
 ```mermaid
 flowchart LR
-A["Frontend (Ionic/Angular)"] -- HTTP/REST + JWT --> B["Backend (Node/Express)"]
-B -- SQL --> C[("PostgreSQL")]
-B <-. API REST .-> D["Modelo ML (Python)"]
+    A["Frontend (Ionic/Angular)"] -- HTTP/REST + JWT --> B["Backend (Node/Express)"]
+    B -- SQL --> C[("PostgreSQL")]
+    B <-. API REST .-> D["Modelo ML (Python)"]
 
-A:::Peach
-B:::Peach
-D:::Peach
-classDef Aqua stroke-width:1px, stroke-dasharray:none, stroke:#46EDC8, fill:#DEFFF8, color:#378E7A
-classDef Peach stroke-width:1px, stroke-dasharray:none, stroke:#FBB35A, fill:#FFEFDB, color:#8F632D
-style A fill:#FFF9C4,stroke:#FFF9C4,stroke-width:2px
-style B fill:#E1BEE7,stroke:#E1BEE7,stroke-width:2px
-style C fill:#336791,stroke:#333,stroke-width:2px
-style D fill:#BBDEFB,stroke:#BBDEFB,stroke-width:2px
+    A:::Peach
+    B:::Peach
+    D:::Peach
+    classDef Aqua stroke-width:1px, stroke-dasharray:none, stroke:#46EDC8, fill:#DEFFF8, color:#378E7A
+    classDef Peach stroke-width:1px, stroke-dasharray:none, stroke:#FBB35A, fill:#FFEFDB, color:#8F632D
+    style A fill:#FFF9C4,stroke:#FFF9C4,stroke-width:2px
+    style B fill:#E1BEE7,stroke:#E1BEE7,stroke-width:2px
+    style C fill:#336791,stroke:#333,stroke-width:2px
+    style D fill:#BBDEFB,stroke:#BBDEFB,stroke-width:2px
 ```
 
 ---
@@ -57,26 +57,22 @@ style D fill:#BBDEFB,stroke:#BBDEFB,stroke-width:2px
 El sistema se compone de módulos funcionales claramente definidos:
 
 ### Módulo de Autenticación y Seguridad
-
 - [x] **Registro de Usuarios**: Permite a pacientes y especialistas crear cuentas seguras.
 - [x] **Login Seguro**: Autenticación mediante **JWT (Json Web Tokens)**.
 - [ ] **Recuperación de Contraseña**: Flujo seguro para restablecer credenciales.
 - [ ] **Gestión de Sesiones**: Manejo de Refresh Tokens y expiración de sesiones.
 
 ### Módulo de Usuario
-
-- [x] **Perfil de Usuario**: Gestión de información personal y antecedentes médicos.
-- [x] **Dashboard Principal**: Vista resumen del estado de salud y últimas evaluaciones.
+- [ ] **Perfil de Usuario**: Gestión de información personal y antecedentes médicos.
+- [ ] **Dashboard Principal**: Vista resumen del estado de salud y últimas evaluaciones.
 - [ ] **Historial Médico**: Registro de evaluaciones previas y resultados.
 
 ### Módulo de Diagnóstico (Machine Learning)
-
 - [ ] **Evaluación de Síntomas**: Formulario interactivo para ingreso de sintomatología.
 - [ ] **Predicción de Riesgo**: Procesamiento de datos mediante modelos de ML (CRISP-DM).
 - [ ] **Resultados Interpretables**: Visualización clara del nivel de riesgo detectado.
 
 ### Módulo de Administración (Backend)
-
 - [x] **API RESTful**: Endpoints documentados para todas las operaciones.
 - [x] **Validación de Datos**: Uso de `Zod` y `Validator` para integridad de datos.
 - [ ] **Logs de Auditoría**: Registro de actividades críticas del sistema.
@@ -86,14 +82,12 @@ El sistema se compone de módulos funcionales claramente definidos:
 ## Stack Tecnológico
 
 ### Frontend Mobile
-
 - **Framework**: Ionic Framework v8 + Angular v19 (Standalone Components).
 - **Lenguaje**: TypeScript.
 - **Estilos**: SCSS, Diseño Responsivo.
 - **Testing**: Playwright (E2E), Jasmine/Karma (Unit).
 
 ### Backend API
-
 - **Runtime**: Node.js.
 - **Framework**: Express.js.
 - **Lenguaje**: TypeScript.
@@ -102,12 +96,10 @@ El sistema se compone de módulos funcionales claramente definidos:
 - **Documentación**: Swagger/OpenAPI.
 
 ### Base de Datos
-
 - **Motor**: PostgreSQL.
 - **Gestión**: Scripts SQL nativos y migraciones controladas.
 
 ### Machine Learning
-
 - **Metodología**: CRISP-DM.
 - **Lenguaje**: Python 3.x.
 - **Librerías**: Pandas, Scikit-learn, XGBoost.
@@ -120,7 +112,6 @@ El sistema se compone de módulos funcionales claramente definidos:
 Sigue estos pasos para levantar el entorno de desarrollo local.
 
 ### Prerrequisitos
-
 - Node.js (v18+)
 - Python (v3.9+)
 - PostgreSQL (Local o Docker)
@@ -156,31 +147,27 @@ pip install -r requirements.txt
 ## Metodología de Trabajo
 
 ### Gestión Ágil (Jira + Scrum)
-
 Utilizamos Jira para la gestión transparente del ciclo de vida del desarrollo:
-
-* **Product Backlog**: Historias de usuario priorizadas.
-* **Sprints**: Ciclos iterativos de desarrollo.
-* **Roles**: Product Owner, Scrum Master, Dev Team.
+*   **Product Backlog**: Historias de usuario priorizadas.
+*   **Sprints**: Ciclos iterativos de desarrollo.
+*   **Roles**: Product Owner, Scrum Master, Dev Team.
 
 ### Control de Versiones (Git Flow)
-
 Estrategia de ramas para garantizar estabilidad:
-
-* `main`: Código estable en producción.
-* `develop`: Rama de integración principal.
-* `feature/`: Nuevas funcionalidades (ej. `feature/LUNG-101-login`).
-* `bugfix/`: Corrección de errores.
-* `release/`: Preparación para despliegue.
+*   `main`: Código estable en producción.
+*   `develop`: Rama de integración principal.
+*   `feature/`: Nuevas funcionalidades (ej. `feature/LUNG-101-login`).
+*   `bugfix/`: Corrección de errores.
+*   `release/`: Preparación para despliegue.
 
 ---
 
 ## Atributos de Calidad
 
-* **Mantenibilidad**: Código modular, tipado estático (TypeScript) y Clean Architecture.
-* **Escalabilidad**: Separación de responsabilidades y diseño API First.
-* **Seguridad**: Encriptación de datos sensibles y protección contra vulnerabilidades web comunes.
-* **Usabilidad**: Diseño centrado en el usuario (Mobile-First).
+*   **Mantenibilidad**: Código modular, tipado estático (TypeScript) y Clean Architecture.
+*   **Escalabilidad**: Separación de responsabilidades y diseño API First.
+*   **Seguridad**: Encriptación de datos sensibles y protección contra vulnerabilidades web comunes.
+*   **Usabilidad**: Diseño centrado en el usuario (Mobile-First).
 
 ---
 
