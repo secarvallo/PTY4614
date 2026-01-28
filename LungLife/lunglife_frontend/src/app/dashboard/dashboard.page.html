@@ -39,7 +39,11 @@
               <ion-icon name="leaf-outline"></ion-icon>
             </div>
             <div class="stat-info">
-              <span class="stat-value">{{ smokeFreeDays }}</span>
+              @if (statsLoading()) {
+                <span class="stat-value">--</span>
+              } @else {
+                <span class="stat-value">{{ smokeFreeDays() }}</span>
+              }
               <span class="stat-label">Días sin fumar</span>
             </div>
           </div>
@@ -49,7 +53,11 @@
               <ion-icon name="fitness-outline"></ion-icon>
             </div>
             <div class="stat-info">
-              <span class="stat-value">{{ lungHealthPercentage }}%</span>
+              @if (statsLoading()) {
+                <span class="stat-value">--</span>
+              } @else {
+                <span class="stat-value">{{ lungHealthPercentage() }}%</span>
+              }
               <span class="stat-label">Salud Pulmonar</span>
             </div>
           </div>
