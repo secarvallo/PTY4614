@@ -4,14 +4,14 @@ import { AuthFacadeService } from './auth/core/services';
 import { AuthInitService } from './auth/core/services/auth-init.service';
 import { SplashComponent } from './auth/pages/splash/splash.component';
 // Legacy simple-auth guards replaced by unified versions
-import { 
-  unifiedAuthGuard, 
-  unifiedGuestGuard, 
-  unifiedTwoFAGuard, 
+import {
+  unifiedAuthGuard,
+  unifiedGuestGuard,
+  unifiedTwoFAGuard,
   patientOnlyGuard,
   doctorOnlyGuard,
   adminOnlyGuard,
-  allRolesGuard 
+  allRolesGuard
 } from './auth/core/guards/unified-auth.guards';
 import { DEFAULT_AUTH_REDIRECT, resolvePostAuthRedirect } from './auth/core/utils/auth-navigation';
 
@@ -27,6 +27,16 @@ export const routes: Routes = [
     path: 'home',
     loadComponent: () => import('./home/home.page').then(m => m.HomePage),
     title: 'LungLife - Inicio'
+  },
+  {
+    path: 'onboarding',
+    loadComponent: () => import('./onboarding/onboarding.page').then(m => m.OnboardingPage),
+    title: 'Conoce LungLife'
+  },
+  {
+    path: 'onboarding/:cardId',
+    loadComponent: () => import('./onboarding/onboarding.page').then(m => m.OnboardingPage),
+    title: 'Conoce LungLife'
   },
   {
     path: 'auth',

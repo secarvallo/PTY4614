@@ -37,7 +37,7 @@ export interface SaveLifestyleRequest {
 export class LifestyleService {
   private apiUrl = environment.apiUrl || '/api';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   /**
    * Get lifestyle and smoking data for a patient
@@ -80,7 +80,18 @@ export class LifestyleService {
   /**
    * Helper to convert API response to form values
    */
-  formatForForm(data: LifestyleSmokingResponse): any {
+  formatForForm(data: LifestyleSmokingResponse | null): any {
+    // Handle null data gracefully
+    if (!data) {
+      return {
+        smoking_status: 'NEVER',
+        smoking_pack_years: 0,
+        alcohol_consumption: 'NONE',
+        exercise_frequency: 'RARELY',
+        sleep_hours: 8
+      };
+    }
+
     // Map database values back to frontend values
     const alcoholMapping: { [key: string]: string } = {
       'NONE': 'NONE',
@@ -88,20 +99,20 @@ export class LifestyleService {
       'REGULAR': 'MODERATE',
       'HEAVY': 'DAILY'
     };
-    
+
     const exerciseMapping: { [key: string]: string } = {
       'SEDENTARY': 'RARELY',
       'LIGHT': 'WEEKLY',
       'MODERATE': 'FREQUENT',
       'INTENSE': 'DAILY'
     };
-    
+
     const smokingMapping: { [key: string]: string } = {
       'NEVER': 'NEVER',
       'FORMER_SMOKER': 'FORMER',
       'CURRENT_SMOKER': 'CURRENT'
     };
-    
+
     return {
       smoking_status: data.smoking ? smokingMapping[data.smoking.smokingStatus] || 'NEVER' : 'NEVER',
       smoking_pack_years: data.smoking?.packYears || 0,

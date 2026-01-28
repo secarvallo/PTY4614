@@ -21,6 +21,7 @@ import {
   chevronForwardOutline,
   logOutOutline,
   alertCircleOutline,
+  arrowBack,
   settingsOutline
 } from 'ionicons/icons';
 import { AuthFacadeService } from '../auth/core/services';
@@ -77,6 +78,7 @@ export class DashboardPage implements OnInit {
       chevronForwardOutline,
       logOutOutline,
       alertCircleOutline,
+      arrowBack,
       settingsOutline
     });
   }
@@ -223,5 +225,9 @@ export class DashboardPage implements OnInit {
   viewProgress() {
     // Logic to navigate to a detailed progress page
     console.log('View Progress button clicked');
+  }
+
+  navigateBack() {
+    this.router.navigate(['/home']);
   }
 }

@@ -1,0 +1,130 @@
+<ion-header class="ion-no-border">
+    <ion-toolbar>
+        <ion-title>{{ currentCard.title }}</ion-title>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+    <div class="onboarding-container">
+
+        <!-- Main Content Card -->
+        <div class="content-card" [style.background]="currentCard.gradient">
+
+            <!-- Illustration Section -->
+            <div class="illustration-container">
+                @switch (currentCard.illustration) {
+                @case ('detection') {
+                <svg viewBox="0 0 200 120" class="illustration">
+                    <!-- AI/Brain illustration -->
+                    <circle cx="100" cy="60" r="40" fill="rgba(255,255,255,0.2)" stroke="white" stroke-width="2" />
+                    <path d="M80 50 Q100 30 120 50" stroke="white" stroke-width="2" fill="none" />
+                    <path d="M80 70 Q100 90 120 70" stroke="white" stroke-width="2" fill="none" />
+                    <circle cx="85" cy="55" r="5" fill="white" opacity="0.8" />
+                    <circle cx="115" cy="55" r="5" fill="white" opacity="0.8" />
+                    <circle cx="100" cy="75" r="4" fill="white" opacity="0.8" />
+                    <!-- Connection lines -->
+                    <line x1="60" y1="40" x2="75" y2="50" stroke="white" stroke-width="1.5" opacity="0.6" />
+                    <line x1="60" y1="80" x2="75" y2="70" stroke="white" stroke-width="1.5" opacity="0.6" />
+                    <line x1="140" y1="40" x2="125" y2="50" stroke="white" stroke-width="1.5" opacity="0.6" />
+                    <line x1="140" y1="80" x2="125" y2="70" stroke="white" stroke-width="1.5" opacity="0.6" />
+                    <!-- Data points -->
+                    <circle cx="55" cy="35" r="6" fill="white" opacity="0.4" />
+                    <circle cx="55" cy="85" r="6" fill="white" opacity="0.4" />
+                    <circle cx="145" cy="35" r="6" fill="white" opacity="0.4" />
+                    <circle cx="145" cy="85" r="6" fill="white" opacity="0.4" />
+                </svg>
+                }
+                @case ('tracking') {
+                <svg viewBox="0 0 200 120" class="illustration">
+                    <!-- Heart with pulse -->
+                    <path
+                        d="M100 90 C60 60 60 30 80 30 C90 30 100 40 100 50 C100 40 110 30 120 30 C140 30 140 60 100 90"
+                        fill="rgba(255,255,255,0.3)" stroke="white" stroke-width="2" />
+                    <!-- Pulse line -->
+                    <polyline points="30,60 60,60 70,40 80,80 90,50 100,60 170,60" stroke="white" stroke-width="2.5"
+                        fill="none" stroke-linecap="round" />
+                    <!-- Progress dots -->
+                    <circle cx="40" cy="100" r="4" fill="white" opacity="0.5" />
+                    <circle cx="60" cy="100" r="4" fill="white" opacity="0.6" />
+                    <circle cx="80" cy="100" r="4" fill="white" opacity="0.7" />
+                    <circle cx="100" cy="100" r="5" fill="white" opacity="0.9" />
+                    <circle cx="120" cy="100" r="4" fill="white" opacity="0.4" />
+                    <circle cx="140" cy="100" r="4" fill="white" opacity="0.3" />
+                    <circle cx="160" cy="100" r="4" fill="white" opacity="0.2" />
+                </svg>
+                }
+                @case ('security') {
+                <svg viewBox="0 0 200 120" class="illustration">
+                    <!-- Shield -->
+                    <path d="M100 15 L140 30 L140 70 Q140 100 100 110 Q60 100 60 70 L60 30 Z"
+                        fill="rgba(255,255,255,0.25)" stroke="white" stroke-width="2" />
+                    <!-- Lock icon inside -->
+                    <rect x="85" y="55" width="30" height="25" rx="3" fill="white" opacity="0.9" />
+                    <path d="M90 55 L90 45 Q90 35 100 35 Q110 35 110 45 L110 55" stroke="white" stroke-width="3"
+                        fill="none" />
+                    <circle cx="100" cy="67" r="4" fill="rgba(0,0,0,0.3)" />
+                    <!-- Stars around -->
+                    <circle cx="50" cy="25" r="3" fill="white" opacity="0.5" />
+                    <circle cx="150" cy="25" r="3" fill="white" opacity="0.5" />
+                    <circle cx="45" cy="90" r="2" fill="white" opacity="0.4" />
+                    <circle cx="155" cy="90" r="2" fill="white" opacity="0.4" />
+                </svg>
+                }
+                @case ('community') {
+                <svg viewBox="0 0 200 120" class="illustration">
+                    <!-- Central person -->
+                    <circle cx="100" cy="40" r="15" fill="white" opacity="0.9" />
+                    <ellipse cx="100" cy="75" rx="20" ry="15" fill="white" opacity="0.7" />
+                    <!-- Left person -->
+                    <circle cx="50" cy="50" r="12" fill="white" opacity="0.6" />
+                    <ellipse cx="50" cy="80" rx="15" ry="12" fill="white" opacity="0.5" />
+                    <!-- Right person -->
+                    <circle cx="150" cy="50" r="12" fill="white" opacity="0.6" />
+                    <ellipse cx="150" cy="80" rx="15" ry="12" fill="white" opacity="0.5" />
+                    <!-- Connection lines -->
+                    <line x1="70" y1="55" x2="85" y2="50" stroke="white" stroke-width="2" opacity="0.4" />
+                    <line x1="130" y1="55" x2="115" y2="50" stroke="white" stroke-width="2" opacity="0.4" />
+                    <path d="M60 100 Q100 115 140 100" stroke="white" stroke-width="2" fill="none" opacity="0.3" />
+                </svg>
+                }
+                }
+            </div>
+
+            <!-- Text Content -->
+            <div class="card-text-content">
+                <h1 class="card-title">{{ currentCard.title }}</h1>
+                <p class="card-description">{{ currentCard.description }}</p>
+
+                <ul class="details-list">
+                    @for (detail of currentCard.details; track detail) {
+                    <li>
+                        <ion-icon name="checkmark-circle" class="check-icon"></ion-icon>
+                        <span>{{ detail }}</span>
+                    </li>
+                    }
+                </ul>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <ion-button expand="block" fill="solid" color="primary" shape="round" (click)="navigateToRegister()">
+                Crear cuenta gratis
+                <ion-icon name="chevron-forward" slot="end"></ion-icon>
+            </ion-button>
+
+            <ion-button expand="block" fill="outline" color="medium" shape="round" (click)="navigateHome()">
+                <ion-icon name="arrow-back" slot="start"></ion-icon>
+                Volver
+            </ion-button>
+
+            <div class="login-link">
+                <span>¿Ya tienes cuenta?</span>
+                <ion-button fill="clear" color="primary" size="small" (click)="navigateToLogin()">
+                    Iniciar Sesión
+                </ion-button>
+            </div>
+        </div>
+
+    </div>
+</ion-content>
