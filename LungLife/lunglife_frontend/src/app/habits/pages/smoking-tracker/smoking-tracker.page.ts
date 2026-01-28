@@ -24,9 +24,30 @@ import {
   timeOutline,
   saveOutline
 } from 'ionicons/icons';
-import { AuthFacadeService } from '../../auth/core/services';
-import { ProfileService, PatientProfile } from '../../profile/services/profile.service';
-import { SmokingTrackerService, DailySmokingRecord, WeeklyStats } from '../services/smoking-tracker.service';
+import { AuthFacadeService } from '../../../auth/core/services';
+import { ProfileService, PatientProfile, UserProfileResponse } from '../../../profile/services/profile.service';
+import { SmokingTrackerService, DailySmokingRecord, WeeklyStats, SmokingEntry } from '../../services/smoking-tracker.service';
+
+// Response interfaces
+interface ApiResponse<T> {
+  success: boolean;
+  data?: T;
+  message?: string;
+}
+
+interface PatientStats {
+  smokeFreeDays: number;
+  lungHealthImprovement: number;
+}
+
+interface TodayRecord {
+  cigarettes_per_day: number;
+}
+
+interface User {
+  id: number;
+  email: string;
+}
 
 @Component({
   selector: 'app-smoking-tracker',
@@ -93,7 +114,7 @@ export class SmokingTrackerPage implements OnInit {
   }
 
   private loadUserData(): void {
-    this.authFacade.user$.subscribe(user => {
+    this.authFacade.user$.subscribe((user) => {
       if (user) {
         this.loadUserProfile();
       }
@@ -102,23 +123,23 @@ export class SmokingTrackerPage implements OnInit {
 
   private loadUserProfile(): void {
     this.profileService.getMyProfile().subscribe({
-      next: (response) => {
+      next: (response: UserProfileResponse) => {
         if (response.success && response.data?.profile) {
           const profile = response.data.profile;
-          
-          if (profile.type === 'PATIENT') {
+
+          if (profile && profile.type === 'PATIENT') {
             const patientProfile = profile as PatientProfile;
             this.userFullName.set(patientProfile.fullName || `${patientProfile.firstName} ${patientProfile.lastName}`.trim());
             this.patientId.set(patientProfile.patientId);
-            
-            // Cargar estadísticas del paciente
+
+            // Load patient statistics
             this.loadPatientStats(patientProfile.patientId);
             this.loadWeeklyData(patientProfile.patientId);
             this.loadTodayRecord(patientProfile.patientId);
           }
         }
       },
-      error: (error) => {
+      error: (error: Error) => {
         console.error('[SmokingTracker] Error loading profile:', error);
       }
     });
@@ -126,7 +147,7 @@ export class SmokingTrackerPage implements OnInit {
 
   private loadPatientStats(patientId: number): void {
     this.smokingService.getPatientStats(patientId).subscribe({
-      next: (response) => {
+      next: (response: ApiResponse<PatientStats>) => {
         if (response.success && response.data) {
           this.smokeFreeDays.set(response.data.smokeFreeDays);
           this.lungHealthPercentage.set(response.data.lungHealthImprovement);
@@ -137,9 +158,9 @@ export class SmokingTrackerPage implements OnInit {
 
   private loadWeeklyData(patientId: number): void {
     this.isLoadingStats.set(true);
-    
+
     this.smokingService.getHistory(patientId, 7).subscribe({
-      next: (response) => {
+      next: (response: ApiResponse<DailySmokingRecord[]>) => {
         if (response.success && response.data) {
           this.weeklyRecords.set(response.data);
         }
@@ -151,7 +172,7 @@ export class SmokingTrackerPage implements OnInit {
     });
 
     this.smokingService.getWeeklyStats(patientId).subscribe({
-      next: (response) => {
+      next: (response: ApiResponse<WeeklyStats>) => {
         if (response.success && response.data) {
           this.weeklyStats.set(response.data);
         }
@@ -161,7 +182,7 @@ export class SmokingTrackerPage implements OnInit {
 
   private loadTodayRecord(patientId: number): void {
     this.smokingService.getTodayRecord(patientId).subscribe({
-      next: (response) => {
+      next: (response: ApiResponse<SmokingEntry | null>) => {
         if (response.success && response.data) {
           this.todayCigarettes.set(response.data.cigarettes_per_day);
           this.hasRecordToday.set(true);
@@ -191,27 +212,27 @@ export class SmokingTrackerPage implements OnInit {
   async saveToday(): Promise<void> {
     const patientId = this.patientId();
     if (!patientId) {
-      this.showToast('Error: No se pudo identificar al paciente', 'danger');
+      this.showToast('Error: Could not identify patient', 'danger');
       return;
     }
 
     this.isSaving.set(true);
 
     this.smokingService.logDailyConsumption(patientId, this.todayCigarettes()).subscribe({
-      next: async (response) => {
+      next: async (response: ApiResponse<unknown>) => {
         this.isSaving.set(false);
         if (response.success) {
           this.hasRecordToday.set(true);
-          await this.showToast('¡Registro guardado correctamente!', 'success');
-          // Recargar datos semanales
+          await this.showToast('Record saved successfully!', 'success');
+          // Reload weekly data
           this.loadWeeklyData(patientId);
         } else {
-          await this.showToast('Error al guardar el registro', 'danger');
+          await this.showToast('Error saving record', 'danger');
         }
       },
       error: async () => {
         this.isSaving.set(false);
-        await this.showToast('Error de conexión', 'danger');
+        await this.showToast('Connection error', 'danger');
       }
     });
   }
@@ -256,10 +277,10 @@ export class SmokingTrackerPage implements OnInit {
   }
 
   getSliderColor(): string {
-    const cigs = this.todayCigarettes();
-    if (cigs === 0) return '#10B981'; // green
-    if (cigs <= 5) return '#F59E0B'; // yellow
-    if (cigs <= 10) return '#F97316'; // orange
+    const cigaretteCount = this.todayCigarettes();
+    if (cigaretteCount === 0) return '#10B981'; // green
+    if (cigaretteCount <= 5) return '#F59E0B'; // yellow
+    if (cigaretteCount <= 10) return '#F97316'; // orange
     return '#EF4444'; // red
   }
 
