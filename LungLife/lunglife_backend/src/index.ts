@@ -8,6 +8,8 @@ import { doctorRoutes } from './presentation/routes/doctor.routes';
 import userProfileRoutes from './presentation/routes/user-profile.routes';
 import clinicalProfileRoutes from './presentation/routes/clinical-profile.routes';
 import mlPredictionRoutes from './presentation/routes/ml-prediction.routes';
+import smokingRoutes from './presentation/routes/smoking.routes';
+import patientRoutes from './presentation/routes/patient.routes';
 import { DatabaseServiceFactory } from './infrastructure/factories/database.factory';
 import { setupSwagger } from './infrastructure/config/swagger.config';
 
@@ -67,6 +69,12 @@ app.use('/api/clinical-profile', clinicalProfileRoutes);
 
 // ML Prediction routes - Machine Learning risk predictions
 app.use('/api/ml', mlPredictionRoutes);
+
+// Smoking tracker routes - Patient habit tracking
+app.use('/api/smoking', smokingRoutes);
+
+// Patient routes - Medical history and lifestyle
+app.use('/api/patients', patientRoutes);
 
 // ========== API DOCUMENTATION ==========
 // Setup Swagger API documentation
@@ -129,7 +137,7 @@ const startServer = async () => {
 
     const attemptListen = () => {
         attempts++;
-        
+
         const server = app.listen(port, '0.0.0.0', () => {
             console.log(`\n🚀 LungLife Backend v1.0.0`);
             console.log(`   Server:  http://localhost:${port}`);
