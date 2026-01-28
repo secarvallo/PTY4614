@@ -1,0 +1,77 @@
+{
+  "model": {
+    "path": "models/lung_cancer_classifier.joblib",
+    "type": "Random Forest",
+    "version": "1.0.0"
+  },
+  "preprocessing": {
+    "label_encoders_path": "models/label_encoders.joblib",
+    "feature_columns": [
+      "Age",
+      "Years_Smoked",
+      "Pack_Years",
+      "BMI",
+      "Lung_Function_Test_Result",
+      "Air_Quality_Index",
+      "Tumor_Size_cm",
+      "Age_Group_18-40",
+      "Age_Group_41-60",
+      "Age_Group_61+",
+      "Gender",
+      "Smoking_History",
+      "Family_History_Cancer",
+      "Occupation",
+      "Exposure_to_Toxins",
+      "Residential_Area",
+      "Chest_Pain_Symptoms",
+      "Shortness_of_Breath",
+      "Chronic_Cough",
+      "Weight_Loss",
+      "Physical_Activity_Level",
+      "Dietary_Habits",
+      "Comorbidities",
+      "Previous_Cancer_Diagnosis",
+      "Pack_Years_Normalized",
+      "Smoking_Risk_Level",
+      "Symptom_Count",
+      "Environmental_Risk",
+      "Risk_Score_Composite"
+    ]
+  },
+  "prediction": {
+    "threshold": 0.1,
+    "default_threshold": 0.5,
+    "classes": [
+      "Early",
+      "Advanced"
+    ]
+  },
+  "risk_classification": {
+    "high": {
+      "min": 0.7,
+      "max": 1.0,
+      "action": "urgent_referral"
+    },
+    "medium": {
+      "min": 0.4,
+      "max": 0.7,
+      "action": "medical_review"
+    },
+    "low": {
+      "min": 0.0,
+      "max": 0.4,
+      "action": "regular_followup"
+    }
+  },
+  "api_response": {
+    "include_probability": true,
+    "include_risk_level": true,
+    "include_confidence": true,
+    "include_top_factors": true
+  },
+  "monitoring": {
+    "log_predictions": true,
+    "alert_threshold_recall": 0.8,
+    "alert_threshold_precision": 0.65
+  }
+}

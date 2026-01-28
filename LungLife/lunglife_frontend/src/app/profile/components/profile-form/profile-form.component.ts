@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormsModule, FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
 import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 import { IonicModule, AlertController, ToastController, LoadingController } from '@ionic/angular';
-import { ProfileService } from '../../services/profile.service';
+import { ProfileService, UserProfileResponse, PatientProfile, DoctorProfile, AdminProfile } from '../../services/profile.service';
 import { MedicalHistoryService } from '../../services/medical-history.service';
 import { LifestyleService } from '../../services/lifestyle.service';
 import { AuthFacadeService } from '../../../auth/core/services/application/auth-facade.service';
@@ -20,7 +20,7 @@ import {
   ExerciseFrequency,
   CommunicationMethod
 } from '../../interfaces/profile.enums';
-import { Subject, BehaviorSubject } from 'rxjs';
+import { Subject, BehaviorSubject, firstValueFrom } from 'rxjs';
 import { takeUntil, debounceTime, distinctUntilChanged, startWith } from 'rxjs/operators';
 
 @Component({
@@ -63,9 +63,31 @@ export class ProfileFormComponent implements OnInit, OnDestroy {
   validationErrors: string[] = [];
   calculatedAge: number | null = null;
 
+  // Role-based profile data
+  userRole: string | null = null;
+  userEmail: string | null = null;
+  patientProfile: PatientProfile | null = null;
+  doctorProfile: DoctorProfile | null = null;
+  adminProfile: AdminProfile | null = null;
+  isProfileLoading = true;
+  profileLoadError: string | null = null;
+
   // Reactive streams
   private destroy$ = new Subject<void>();
   completionPercentage$ = new BehaviorSubject<number>(0);
+
+  // Computed properties for role-based display
+  get isPatient(): boolean {
+    return this.userRole === 'PATIENT';
+  }
+
+  get isDoctor(): boolean {
+    return this.userRole === 'DOCTOR';
+  }
+
+  get isAdmin(): boolean {
+    return this.userRole === 'ADMINISTRATOR';
+  }
 
   // Form data arrays
   get medicalHistoryArray(): FormArray {
@@ -177,10 +199,13 @@ export class ProfileFormComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Carga el perfil del usuario actual
-   * En modo inicial los datos se muestran en modo lectura
+   * Carga el perfil del usuario actual según su rol
+   * Usa el nuevo endpoint /api/profile/me que retorna datos específicos del rol
    */
-  private loadUserProfile() {
+  loadUserProfile() {
+    this.isProfileLoading = true;
+    this.profileLoadError = null;
+
     // Obtener el ID del usuario desde el servicio de autenticación
     const currentUser = this.authFacade.getCurrentUser();
     
@@ -191,18 +216,89 @@ export class ProfileFormComponent implements OnInit, OnDestroy {
     }
     
     const userId = currentUser.id;
-    this.currentUserId = userId; // Store for medical history operations
-    
-    // Cargar perfil del usuario si existe
-    // loadMedicalHistory and loadLifestyleData are now called inside loadProfile
-    // after the profile is loaded to avoid race conditions
+    this.currentUserId = userId;
     this.profileId = userId;
     
     // Inicialmente mostrar en modo visualización
     this.isViewMode = true;
-    // Note: disableForm is called AFTER data is loaded in loadProfile callbacks
-    
-    this.loadProfile(userId);
+
+    // Usar el nuevo endpoint que obtiene perfil según rol
+    this.profileService.getMyProfile().subscribe({
+      next: (response: UserProfileResponse) => {
+        console.log('[ProfileForm] Perfil cargado:', response);
+        this.isProfileLoading = false;
+
+        if (response.success && response.data) {
+          // Guardar datos del usuario
+          this.userEmail = response.data.user.email;
+          this.userRole = response.data.user.role;
+
+          // Guardar perfil específico según rol
+          if (response.data.profile) {
+            if (response.data.profile.type === 'PATIENT') {
+              this.patientProfile = response.data.profile as PatientProfile;
+              // Poblar formulario con datos del paciente
+              this.patchFormWithPatientProfile(this.patientProfile);
+              // Cargar historial médico y estilo de vida
+              this.loadMedicalHistoryAndLifestyle();
+            } else if (response.data.profile.type === 'DOCTOR') {
+              this.doctorProfile = response.data.profile as DoctorProfile;
+              // Los médicos no usan el formulario de paciente
+              this.disableForm();
+            } else if (response.data.profile.type === 'ADMINISTRATOR') {
+              this.adminProfile = response.data.profile as AdminProfile;
+              // Los administradores no usan el formulario de paciente
+              this.disableForm();
+            }
+          } else {
+            // No hay perfil específico, habilitar creación
+            this.isViewMode = false;
+            this.enableForm();
+          }
+        }
+      },
+      error: (error) => {
+        console.error('[ProfileForm] Error cargando perfil:', error);
+        this.isProfileLoading = false;
+        this.profileLoadError = 'Error al cargar el perfil';
+        
+        // Fallback: intentar cargar con el método legacy
+        this.loadProfile(userId);
+      }
+    });
+  }
+
+  /**
+   * Pobla el formulario con datos del perfil de paciente
+   */
+  private patchFormWithPatientProfile(profile: PatientProfile): void {
+    this.profileForm.patchValue({
+      first_name: profile.firstName || '',
+      last_name: profile.lastName || '',
+      birth_date: profile.dateOfBirth || '',
+      gender: profile.gender || '',
+      phone: profile.phone || '',
+      occupation: profile.occupation || '',
+      emergency_contact_name: profile.emergencyContact?.name || '',
+      emergency_contact_phone: profile.emergencyContact?.phone || ''
+    });
+
+    // Si tiene historial de tabaquismo, poblarlo
+    if (profile.smokingHistory) {
+      this.profileForm.get('lifestyle_factors')?.patchValue({
+        smoking_status: profile.smokingHistory.status || 'NEVER'
+      });
+    }
+
+    // Calcular edad si hay fecha de nacimiento
+    if (profile.dateOfBirth) {
+      this.calculatedAge = this.calculateAge(profile.dateOfBirth);
+    }
+
+    // Deshabilitar formulario en modo visualización
+    if (this.isViewMode) {
+      this.disableForm();
+    }
   }
 
   /**
@@ -270,12 +366,14 @@ export class ProfileFormComponent implements OnInit, OnDestroy {
    * Load medical history and lifestyle data, then disable form if in view mode
    */
   private loadMedicalHistoryAndLifestyle(): void {
+    console.log('[ProfileForm] Cargando historial médico y estilo de vida para userId:', this.currentUserId);
     let completedLoads = 0;
     const totalLoads = 2;
     
     const checkAndDisable = () => {
       completedLoads++;
       if (completedLoads >= totalLoads && this.isViewMode) {
+        console.log('[ProfileForm] Datos cargados, deshabilitando formulario');
         this.disableForm();
       }
     };
@@ -284,15 +382,17 @@ export class ProfileFormComponent implements OnInit, OnDestroy {
     if (this.currentUserId) {
       this.medicalHistoryService.getMedicalHistory(this.currentUserId).subscribe({
         next: (data) => {
+          console.log('[ProfileForm] Historial médico recibido:', data);
           this.populateMedicalHistoryFromData(data);
           checkAndDisable();
         },
         error: (error) => {
-          console.error('Error loading medical history:', error);
+          console.error('[ProfileForm] Error loading medical history:', error);
           checkAndDisable();
         }
       });
     } else {
+      console.warn('[ProfileForm] No hay currentUserId, saltando carga de historial médico');
       checkAndDisable();
     }
     
@@ -300,6 +400,7 @@ export class ProfileFormComponent implements OnInit, OnDestroy {
     if (this.currentUserId) {
       this.lifestyleService.getLifestyleData(this.currentUserId).subscribe({
         next: (data) => {
+          console.log('[ProfileForm] Datos de estilo de vida recibidos:', data);
           const formValues = this.lifestyleService.formatForForm(data);
           
           // Patch the lifestyle_factors group
@@ -307,11 +408,12 @@ export class ProfileFormComponent implements OnInit, OnDestroy {
           checkAndDisable();
         },
         error: (error) => {
-          console.error('Error loading lifestyle data:', error);
+          console.error('[ProfileForm] Error loading lifestyle data:', error);
           checkAndDisable();
         }
       });
     } else {
+      console.warn('[ProfileForm] No hay currentUserId, saltando carga de lifestyle data');
       checkAndDisable();
     }
   }
@@ -320,6 +422,8 @@ export class ProfileFormComponent implements OnInit, OnDestroy {
    * Populate medical history arrays from loaded data
    */
   private populateMedicalHistoryFromData(data: any): void {
+    console.log('[ProfileForm] Poblando formulario con historial médico:', data);
+    
     // Clear existing arrays
     this.clearFormArray('medical_history');
     this.clearFormArray('allergies');
@@ -327,36 +431,48 @@ export class ProfileFormComponent implements OnInit, OnDestroy {
     
     // Populate conditions
     if (data.medicalHistory && data.medicalHistory.length > 0) {
+      console.log('[ProfileForm] Agregando', data.medicalHistory.length, 'condiciones médicas');
       data.medicalHistory.forEach((item: any) => {
         this.medicalHistoryArray.push(this.fb.group({
           condition: [item.entryName, Validators.required]
         }));
       });
     } else {
+      console.log('[ProfileForm] No hay condiciones médicas, agregando item vacío');
       this.medicalHistoryArray.push(this.createMedicalHistoryItem());
     }
     
     // Populate allergies
     if (data.allergies && data.allergies.length > 0) {
+      console.log('[ProfileForm] Agregando', data.allergies.length, 'alergias');
       data.allergies.forEach((item: any) => {
         this.allergiesArray.push(this.fb.group({
           allergen: [item.entryName, Validators.required]
         }));
       });
     } else {
+      console.log('[ProfileForm] No hay alergias, agregando item vacío');
       this.allergiesArray.push(this.createAllergyItem());
     }
     
     // Populate medications
     if (data.currentMedications && data.currentMedications.length > 0) {
+      console.log('[ProfileForm] Agregando', data.currentMedications.length, 'medicamentos');
       data.currentMedications.forEach((item: any) => {
         this.currentMedicationsArray.push(this.fb.group({
           name: [item.entryName, Validators.required]
         }));
       });
     } else {
+      console.log('[ProfileForm] No hay medicamentos, agregando item vacío');
       this.currentMedicationsArray.push(this.createMedicationItem());
     }
+    
+    console.log('[ProfileForm] Historial médico poblado. Arrays:', {
+      medicalHistory: this.medicalHistoryArray.value,
+      allergies: this.allergiesArray.value,
+      medications: this.currentMedicationsArray.value
+    });
   }
 
   private patchFormWithProfile(profile: UserProfile) {
@@ -552,6 +668,58 @@ export class ProfileFormComponent implements OnInit, OnDestroy {
     return genderMap[value] || value;
   }
 
+  /**
+   * Get human-readable label for lifestyle factor values
+   */
+  getLifestyleLabel(fieldName: string, value: string): string {
+    if (!value) return 'No especificado';
+
+    const labels: Record<string, Record<string, string>> = {
+      smoking_status: {
+        'NEVER': 'Nunca he fumado',
+        'FORMER': 'Ex fumador',
+        'CURRENT': 'Fumador actual',
+        'OCCASIONAL': 'Fumador ocasional'
+      },
+      alcohol_consumption: {
+        'NONE': 'No consume',
+        'OCCASIONAL': 'Ocasional',
+        'MODERATE': 'Moderado',
+        'FREQUENT': 'Frecuente',
+        'DAILY': 'Diario'
+      },
+      exercise_frequency: {
+        'NEVER': 'Nunca',
+        'RARELY': 'Raramente',
+        'WEEKLY': 'Semanal',
+        'FREQUENT': 'Frecuente',
+        'DAILY': 'Diario'
+      }
+    };
+
+    return labels[fieldName]?.[value] || value;
+  }
+
+  /**
+   * Check if array has any valid data (non-empty values)
+   */
+  hasArrayData(arrayName: 'medical_history' | 'allergies' | 'current_medications'): boolean {
+    const fieldMap = {
+      medical_history: 'condition',
+      allergies: 'allergen',
+      current_medications: 'name'
+    };
+
+    const array = this.profileForm.get(arrayName) as FormArray;
+    if (!array || array.length === 0) return false;
+
+    const fieldName = fieldMap[arrayName];
+    return array.controls.some(control => {
+      const value = control.get(fieldName)?.value;
+      return value && value.trim() !== '';
+    });
+  }
+
   // Utility Functions
   formatPhone(event: any) {
     let value = event.detail.value.replace(/\D/g, '');
@@ -703,7 +871,7 @@ export class ProfileFormComponent implements OnInit, OnDestroy {
   private async createProfile(): Promise<UserProfile> {
     const profileData = this.createProfileRequest();
     const serviceData = this.transformToServiceCreateRequest(profileData);
-    const profile = await this.profileService.createProfile(serviceData);
+    const profile = await firstValueFrom(this.profileService.createProfile(serviceData));
     
     // Save medical history after profile creation
     if (this.currentUserId) {
@@ -717,7 +885,7 @@ export class ProfileFormComponent implements OnInit, OnDestroy {
   private async updateProfile(): Promise<UserProfile> {
     const updateData = this.createUpdateRequest();
     const serviceData = this.transformToServiceUpdateRequest(updateData);
-    const profile = await this.profileService.updateProfile(this.profileId!, serviceData);
+    const profile = await firstValueFrom(this.profileService.updateProfile(this.profileId!, serviceData));
     
     // Save medical history and lifestyle data
     if (this.currentUserId) {

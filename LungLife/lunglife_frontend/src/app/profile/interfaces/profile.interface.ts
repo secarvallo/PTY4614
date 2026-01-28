@@ -73,3 +73,28 @@ export interface UpdateProfileRequest {
   consentDataSharing?: boolean;
   consentMarketing?: boolean;
 }
+
+export interface RiskAssessment {
+  id: number;
+  userId: number;
+  assessmentDate: string;
+  riskLevel: 'LOW' | 'MODERATE' | 'HIGH' | 'VERY_HIGH';
+  riskScore: number;
+  factors: Record<string, any>;
+  recommendations: string[];
+  nextAssessmentDate?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface HealthMetric {
+  id: number;
+  userId: number;
+  metricType: string;
+  value: number;
+  unit: string;
+  measuredAt: string;
+  notes?: string;
+  createdAt: string;
+  updatedAt: string;
+}

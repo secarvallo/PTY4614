@@ -1,0 +1,42 @@
+{
+  "high_priority": [
+    "Pack_Years",
+    "Lung_Function_Test_Result",
+    "Age",
+    "Smoking_History",
+    "Tumor_Size_cm",
+    "Chronic_Cough",
+    "Shortness_of_Breath",
+    "Metastasis_Status"
+  ],
+  "medium_priority": [
+    "Air_Quality_Index",
+    "Years_Smoked",
+    "BMI",
+    "Exposure_to_Toxins",
+    "Family_History_Cancer",
+    "Comorbidities",
+    "Chest_Pain_Symptoms",
+    "Weight_Loss"
+  ],
+  "low_priority": [
+    "Residential_Area",
+    "Physical_Activity_Level",
+    "Dietary_Habits",
+    "Occupation",
+    "Previous_Cancer_Diagnosis",
+    "Gender"
+  ],
+  "exclude": [
+    "Patient_ID",
+    "Treatment_Type",
+    "Survival_Years",
+    "Follow_Up_Visits",
+    "Medication_Response",
+    "Symptom_Progression",
+    "Year_of_Diagnosis",
+    "Stage_of_Cancer"
+  ],
+  "target_variable": "Cancer_Stage_Binary",
+  "target_numeric": "Cancer_Stage_Numeric"
+}

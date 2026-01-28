@@ -1,11 +1,39 @@
-export const DEFAULT_AUTH_REDIRECT = '/profile';
+export const DEFAULT_AUTH_REDIRECT = '/dashboard';
+
+/**
+ * Tipo de rol de usuario para navegación
+ */
+export type UserRole = 'PATIENT' | 'DOCTOR' | 'ADMINISTRATOR';
+
+/**
+ * Mapeo de roles a rutas de dashboard específicas
+ * Configurable para agregar dashboards específicos por rol
+ */
+const ROLE_DASHBOARD_MAP: Record<UserRole, string> = {
+  'PATIENT': '/dashboard',
+  'DOCTOR': '/dashboard',
+  'ADMINISTRATOR': '/dashboard'
+};
+
+/**
+ * Obtiene la URL de dashboard según el rol del usuario
+ * @param role - Rol del usuario (PATIENT, DOCTOR, ADMINISTRATOR)
+ * @returns URL del dashboard correspondiente al rol
+ */
+export const getRoleDashboardUrl = (role?: UserRole | string | null): string => {
+  if (!role) return DEFAULT_AUTH_REDIRECT;
+  const normalizedRole = role.toUpperCase() as UserRole;
+  return ROLE_DASHBOARD_MAP[normalizedRole] || DEFAULT_AUTH_REDIRECT;
+};
 
 // Central allowlist extendable (add here when nuevas rutas seguras post-login existan)
 const AUTH_ALLOWLIST = new Set<string>([
   '/profile',
   '/dashboard',
   '/security/2fa-settings',
-  '/security/sessions'
+  '/security/sessions',
+  '/directory',
+  '/clinical-profile'
 ]);
 
 // Bloqueos explícitos (rutas que nunca deben usarse como destino tras auth)

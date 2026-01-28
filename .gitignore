@@ -1,7 +1,12 @@
 # ============================================
 # GITIGNORE GLOBAL - Proyecto PTY4614 LungLife
 # ============================================
-# Este archivo cubre: Node.js, Python, Angular, Ionic, Bases de Datos, IDEs, y más
+# Este archivo cubre: Node.js, Python, Angular, Ionic, Bases de Datos, IDEs, y mas
+
+# ============================================
+# DOCUMENTACION PRIVADA (No subir al repositorio)
+# ============================================
+LungLife/lunglife_docs/01.-Capstone_709V/
 
 # ============================================
 # PYTHON
@@ -197,6 +202,7 @@ Thumbs.db
 # PostgreSQL
 *.sql.backup
 *.sql.bak
+*.pgerd
 pgdata/
 pg_log/
 postgresql-data/
@@ -217,6 +223,12 @@ mysql-data/
 *.backup
 *.old
 dumps/
+
+# Diagramas y schemas de BD (excepto versiones principales)
+**/lunglife_bd/*.png
+**/lunglife_bd/*.svg
+!**/lunglife_bd/schema_v*.png
+!**/lunglife_bd/er_diagram_v*.png
 
 # ============================================
 # IDEs y EDITORES
@@ -443,6 +455,12 @@ lunglife_backend/build/
 lunglife_backend/node_modules/
 lunglife_backend/.env
 
+# Scripts temporales de fix/migración
+**/fix-*.js
+**/fix-*.ts
+**/scripts/fix-*.js
+**/scripts/fix-*.ts
+
 # Frontend Angular/Ionic (lunglife_front)
 lunglife_front/.angular/
 lunglife_front/www/
@@ -475,6 +493,8 @@ lunglife_ml/crisp_dm/wandb/
 lunglife_bd/*.backup
 lunglife_bd/*.bak
 lunglife_bd/dumps/
+lunglife_bd/fix_*.sql
+lunglife_bd/migration_verify*.sql
 
 # Documentación (archivos temporales)
 lunglife_docs/~$*
@@ -510,8 +530,16 @@ connect.lock
 typings/
 libpeerconnection.log
 testem.log
+
+# Archivos nul (errores de redirección en Windows)
 nul
-LungLife\lunglife_docs\01.-Capstone_709V
+
+# Documentación temporal y análisis
+**/ANALISIS_*.md
+**/REFACTORING_*.md
+**/MIGRATION_*.md
+**/*_ANALYSIS.md
+**/*_SUMMARY.md
+LungLife/lunglife_docs/01.-Capstone_709V
 ARQUITECTURA.md
 PROYECTO-APT.md
-REFACTORING_ANALYSIS.md

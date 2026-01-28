@@ -255,6 +255,34 @@ export class CoreAuthStore {
     );
   }
 
+  /**
+   * Método público para refresh reactivo desde interceptor
+   * Devuelve el nuevo accessToken si tiene éxito
+   */
+  refreshAuthToken(): Observable<string> {
+    const refreshToken = this.getRefreshTokenSync();
+    const deviceId = this.extractDeviceId();
+    if (!refreshToken || !deviceId) {
+      return throwError(() => new Error('Missing refresh token or device ID'));
+    }
+
+    return this.http.post<any>(`${environment.apiUrl}/auth/refresh`, { refreshToken, deviceId }).pipe(
+      map(resp => {
+        if (resp?.success && resp.accessToken) {
+          this.storeTokens(resp.accessToken, resp.refreshToken || '');
+          this.scheduleRefreshFromToken();
+          return resp.accessToken;
+        } else {
+          throw new Error(resp?.error || 'Refresh response invalid');
+        }
+      }),
+      catchError(e => {
+        this.resetAll();
+        return throwError(() => e);
+      })
+    );
+  }
+
   private extractDeviceId(): string | null {
     try { return localStorage.getItem('lunglife_device_id'); } catch { return null; }
   }

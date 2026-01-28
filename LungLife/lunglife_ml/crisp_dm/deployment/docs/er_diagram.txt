@@ -1,0 +1,72 @@
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    DIAGRAMA ENTIDAD-RELACIÓN - LUNGLIFE                      ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║                                                                              ║
+║  ┌────────────────────────────────────────────────────────────────────────┐  ║
+║  │                              USERS                                      │  ║
+║  ├────────────────────────────────────────────────────────────────────────┤  ║
+║  │  PK  │ id              │ UUID         │ Identificador único            │  ║
+║  │      │ email           │ VARCHAR(255) │ Email del usuario              │  ║
+║  │      │ password_hash   │ VARCHAR(255) │ Hash de contraseña             │  ║
+║  │      │ role            │ ENUM         │ admin, doctor, nurse           │  ║
+║  │      │ full_name       │ VARCHAR(255) │ Nombre completo                │  ║
+║  │      │ created_at      │ TIMESTAMP    │ Fecha de creación              │  ║
+║  │      │ updated_at      │ TIMESTAMP    │ Última actualización           │  ║
+║  └────────────────────────────────────────────────────────────────────────┘  ║
+║                                        │                                     ║
+║                                        │ 1:N                                 ║
+║                                        ▼                                     ║
+║  ┌────────────────────────────────────────────────────────────────────────┐  ║
+║  │                            PATIENTS                                     │  ║
+║  ├────────────────────────────────────────────────────────────────────────┤  ║
+║  │  PK  │ id              │ UUID         │ Identificador único            │  ║
+║  │  FK  │ created_by      │ UUID         │ Usuario que registró           │  ║
+║  │      │ rut             │ VARCHAR(12)  │ RUT del paciente               │  ║
+║  │      │ full_name       │ VARCHAR(255) │ Nombre completo                │  ║
+║  │      │ age             │ INTEGER      │ Edad                           │  ║
+║  │      │ gender          │ ENUM         │ Male, Female                   │  ║
+║  │      │ region          │ VARCHAR(100) │ Región de residencia           │  ║
+║  │      │ created_at      │ TIMESTAMP    │ Fecha de registro              │  ║
+║  └────────────────────────────────────────────────────────────────────────┘  ║
+║                                        │                                     ║
+║                                        │ 1:N                                 ║
+║                                        ▼                                     ║
+║  ┌────────────────────────────────────────────────────────────────────────┐  ║
+║  │                          PREDICTIONS                                    │  ║
+║  ├────────────────────────────────────────────────────────────────────────┤  ║
+║  │  PK  │ id              │ UUID         │ Identificador único            │  ║
+║  │  FK  │ patient_id      │ UUID         │ Paciente asociado              │  ║
+║  │  FK  │ requested_by    │ UUID         │ Usuario que solicitó           │  ║
+║  │      │ prediction_id   │ VARCHAR(50)  │ ID externo de predicción       │  ║
+║  │      │ prediction      │ ENUM         │ Early, Advanced                │  ║
+║  │      │ probability     │ DECIMAL(5,4) │ Probabilidad (0-1)             │  ║
+║  │      │ confidence      │ DECIMAL(5,4) │ Confianza (0-1)                │  ║
+║  │      │ risk_level      │ ENUM         │ low, medium, high              │  ║
+║  │      │ requires_review │ BOOLEAN      │ Requiere revisión médica       │  ║
+║  │      │ model_version   │ VARCHAR(20)  │ Versión del modelo             │  ║
+║  │      │ input_data      │ JSONB        │ Datos de entrada (encriptados) │  ║
+║  │      │ top_factors     │ JSONB        │ Factores contribuyentes        │  ║
+║  │      │ processing_ms   │ DECIMAL(10,2)│ Tiempo de procesamiento        │  ║
+║  │      │ created_at      │ TIMESTAMP    │ Fecha de predicción            │  ║
+║  └────────────────────────────────────────────────────────────────────────┘  ║
+║                                        │                                     ║
+║                                        │ 1:N                                 ║
+║                                        ▼                                     ║
+║  ┌────────────────────────────────────────────────────────────────────────┐  ║
+║  │                          AUDIT_LOGS                                     │  ║
+║  ├────────────────────────────────────────────────────────────────────────┤  ║
+║  │  PK  │ id              │ UUID         │ Identificador único            │  ║
+║  │  FK  │ user_id         │ UUID         │ Usuario que realizó acción     │  ║
+║  │  FK  │ prediction_id   │ UUID         │ Predicción asociada (opcional) │  ║
+║  │      │ action          │ ENUM         │ CREATE, READ, UPDATE, DELETE   │  ║
+║  │      │ entity_type     │ VARCHAR(50)  │ Tipo de entidad afectada       │  ║
+║  │      │ entity_id       │ UUID         │ ID de la entidad               │  ║
+║  │      │ old_values      │ JSONB        │ Valores anteriores             │  ║
+║  │      │ new_values      │ JSONB        │ Valores nuevos                 │  ║
+║  │      │ ip_address      │ INET         │ Dirección IP del cliente       │  ║
+║  │      │ user_agent      │ TEXT         │ User agent del navegador       │  ║
+║  │      │ created_at      │ TIMESTAMP    │ Fecha del evento               │  ║
+║  └────────────────────────────────────────────────────────────────────────┘  ║
+║                                                                              ║
+╚══════════════════════════════════════════════════════════════════════════════╝

@@ -7,7 +7,7 @@ import { AuthResult } from '../../interfaces/auth-strategy.interface';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../../environments/environment';
 import { LoggerService } from 'src/app/core/services/logger.service';
-import { UserSession, RevokeSessionRequest, SessionsResponse } from '../../interfaces/auth-advanced.interface';
+import { UserSession, RevokeSessionRequest, SessionsResponse } from '../../interfaces/auth.unified';
 import { CoreAuthStore } from '../core-auth.store';
 import { normalizeUser } from '../../mappers/auth-user.mapper';
 
@@ -44,21 +44,6 @@ export class AuthFacadeService {
       requiresTwoFA$: this.requiresTwoFA$,
       user$: this.user$
     };
-  }
-
-  // Método legacy usado por AdvancedAuthService mientras se completa migración
-  syncFromAdvanced(user: User | null, options: { isAuthenticated?: boolean; requiresTwoFA?: boolean } = {}): void {
-    // Delegar al store mediante applyAuthResult simulando un resultado parcial
-    this.store.applyAuthResult({
-      success: !!options.isAuthenticated,
-      user: user ? normalizeUser(user) : null,
-      requiresTwoFA: options.requiresTwoFA,
-      registerFlowSkipAuth: options.isAuthenticated === false && !user
-    });
-    if (options.isAuthenticated === false && !user) {
-      // asegurar reset de error si venía de logout
-      this.store.setError(null);
-    }
   }
 
   login(credentials: any): Observable<AuthResult> {

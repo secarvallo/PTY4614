@@ -13,15 +13,11 @@
     "resolveJsonModule": true
   },
   "include": [
-    "src/index.ts",
-    "src/routes/**/*.ts",
-    "src/controllers/auth.controller.v2.ts",
-    "src/core/**/*.ts",
-    "src/scripts/**/*.ts"
+    "src/**/*.ts"
   ],
   "exclude": [
     "node_modules",
     "dist",
-    "src/tests"
+    "tests"
   ]
 }

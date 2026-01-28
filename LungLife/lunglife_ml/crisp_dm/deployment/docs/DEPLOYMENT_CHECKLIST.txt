@@ -1,0 +1,70 @@
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                      CHECKLIST DE DEPLOYMENT - MVP                           ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║                                                                              ║
+║  PRE-DEPLOYMENT                                                              ║
+║  ──────────────                                                              ║
+║  [ ] Modelo ML entrenado y validado (05_evaluation.ipynb)                    ║
+║  [ ] Archivo del modelo exportado (model.pkl / model.joblib)                 ║
+║  [ ] Variables de entorno configuradas (.env desde .env.example)             ║
+║  [ ] Credenciales de base de datos seguras                                   ║
+║  [ ] JWT_SECRET generado (mínimo 64 caracteres aleatorios)                   ║
+║  [ ] CORS_ORIGINS configurado para dominios permitidos                       ║
+║                                                                              ║
+║  CONSTRUCCIÓN                                                                ║
+║  ────────────                                                                ║
+║  [ ] docker-compose build ejecutado sin errores                              ║
+║  [ ] Imágenes Docker creadas correctamente                                   ║
+║  [ ] Frontend build de producción (npm run build)                            ║
+║  [ ] Backend compilado (npm run build / tsc)                                 ║
+║  [ ] Dependencias de producción instaladas                                   ║
+║                                                                              ║
+║  DATABASE                                                                    ║
+║  ────────                                                                    ║
+║  [ ] PostgreSQL iniciado y saludable                                         ║
+║  [ ] Schema aplicado (database_schema.sql)                                   ║
+║  [ ] Usuario de aplicación creado con permisos correctos                     ║
+║  [ ] Índices verificados                                                     ║
+║  [ ] Triggers de auditoría activos                                           ║
+║                                                                              ║
+║  ML SERVICE                                                                  ║
+║  ──────────                                                                  ║
+║  [ ] Modelo cargado correctamente                                            ║
+║  [ ] Health check responde OK                                                ║
+║  [ ] Endpoint /api/v1/predict funcional                                      ║
+║  [ ] SHAP interpretabilidad activa                                           ║
+║  [ ] Logs estructurados activos                                              ║
+║                                                                              ║
+║  BACKEND                                                                     ║
+║  ───────                                                                     ║
+║  [ ] Conexión a PostgreSQL establecida                                       ║
+║  [ ] Conexión a Redis establecida                                            ║
+║  [ ] Conexión a ML Service establecida                                       ║
+║  [ ] Autenticación JWT funcional                                             ║
+║  [ ] Circuit breaker configurado                                             ║
+║                                                                              ║
+║  FRONTEND                                                                    ║
+║  ────────                                                                    ║
+║  [ ] Nginx sirviendo archivos estáticos                                      ║
+║  [ ] Proxy a backend configurado                                             ║
+║  [ ] SPA routing funcional                                                   ║
+║  [ ] Assets cacheados correctamente                                          ║
+║                                                                              ║
+║  SEGURIDAD                                                                   ║
+║  ─────────                                                                   ║
+║  [ ] HTTPS configurado (producción)                                          ║
+║  [ ] Headers de seguridad activos                                            ║
+║  [ ] Rate limiting configurado                                               ║
+║  [ ] Contenedores ejecutando como non-root                                   ║
+║  [ ] Secrets no expuestos en logs                                            ║
+║                                                                              ║
+║  POST-DEPLOYMENT                                                             ║
+║  ───────────────                                                             ║
+║  [ ] Health checks pasando                                                   ║
+║  [ ] Test de predicción end-to-end exitoso                                   ║
+║  [ ] Logs centralizados y accesibles                                         ║
+║  [ ] Métricas de rendimiento capturadas                                      ║
+║  [ ] Documentación de API accesible (/docs)                                  ║
+║                                                                              ║
+╚══════════════════════════════════════════════════════════════════════════════╝

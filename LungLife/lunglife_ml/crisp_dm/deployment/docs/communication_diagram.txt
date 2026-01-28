@@ -1,0 +1,54 @@
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    COMUNICACIÓN ENTRE SERVICIOS                              ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║                                                                              ║
+║  ┌─────────────────────────────────────────────────────────────────────────┐ ║
+║  │                      CABECERAS DE SEGURIDAD                             │ ║
+║  ├─────────────────────────────────────────────────────────────────────────┤ ║
+║  │  Authorization: Bearer <JWT_TOKEN>                                      │ ║
+║  │  X-Request-ID: <UUID>                                                   │ ║
+║  │  X-Client-Version: <APP_VERSION>                                        │ ║
+║  │  Content-Type: application/json                                         │ ║
+║  │  Accept: application/json                                               │ ║
+║  └─────────────────────────────────────────────────────────────────────────┘ ║
+║                                                                              ║
+║  ┌─────────────────────────────────────────────────────────────────────────┐ ║
+║  │                      TIMEOUTS Y REINTENTOS                              │ ║
+║  ├─────────────────────────────────────────────────────────────────────────┤ ║
+║  │                                                                         │ ║
+║  │  Frontend -> Backend:                                                   │ ║
+║  │    - Timeout: 30 segundos                                               │ ║
+║  │    - Reintentos: 3 (con backoff exponencial)                            │ ║
+║  │    - Retry delay: 1s, 2s, 4s                                            │ ║
+║  │                                                                         │ ║
+║  │  Backend -> ML Service:                                                 │ ║
+║  │    - Timeout: 10 segundos (predicción rápida)                           │ ║
+║  │    - Reintentos: 2                                                      │ ║
+║  │    - Circuit breaker: Activar tras 5 fallos consecutivos                │ ║
+║  │                                                                         │ ║
+║  │  Backend -> PostgreSQL:                                                 │ ║
+║  │    - Timeout: 5 segundos                                                │ ║
+║  │    - Pool size: 20 conexiones                                           │ ║
+║  │    - Idle timeout: 10 minutos                                           │ ║
+║  │                                                                         │ ║
+║  └─────────────────────────────────────────────────────────────────────────┘ ║
+║                                                                              ║
+║  ┌─────────────────────────────────────────────────────────────────────────┐ ║
+║  │                      MANEJO DE ERRORES                                  │ ║
+║  ├─────────────────────────────────────────────────────────────────────────┤ ║
+║  │                                                                         │ ║
+║  │  Código   │ Descripción              │ Acción del Cliente              │ ║
+║  │  ─────────┼──────────────────────────┼────────────────────────────────│ ║
+║  │  200      │ OK                       │ Procesar respuesta             │ ║
+║  │  400      │ Bad Request              │ Mostrar error de validación    │ ║
+║  │  401      │ Unauthorized             │ Redirigir a login              │ ║
+║  │  403      │ Forbidden                │ Mostrar acceso denegado        │ ║
+║  │  408      │ Request Timeout          │ Reintentar con backoff         │ ║
+║  │  429      │ Too Many Requests        │ Esperar y reintentar           │ ║
+║  │  500      │ Internal Server Error    │ Mostrar error genérico         │ ║
+║  │  503      │ Service Unavailable      │ Modo offline / reintentar      │ ║
+║  │                                                                         │ ║
+║  └─────────────────────────────────────────────────────────────────────────┘ ║
+║                                                                              ║
+╚══════════════════════════════════════════════════════════════════════════════╝

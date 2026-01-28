@@ -29,6 +29,12 @@ log.txt
 /out-tsc
 /bazel-out
 
+# Compiled CSS outputs (regenerated on build)
+src/global.css
+src/global.css.map
+src/theme/variables.css
+src/theme/variables.css.map
+
 # Node
 /node_modules
 npm-debug.log

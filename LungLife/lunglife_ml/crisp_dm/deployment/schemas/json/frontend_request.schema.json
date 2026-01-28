@@ -1,0 +1,114 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "lunglife-frontend-prediction-request",
+  "title": "Frontend Prediction Request",
+  "description": "Schema para solicitud de predicci\u00f3n desde el Frontend (camelCase)",
+  "type": "object",
+  "required": [
+    "patientId",
+    "age",
+    "gender",
+    "smoking"
+  ],
+  "properties": {
+    "patientId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "UUID del paciente"
+    },
+    "age": {
+      "type": "integer",
+      "minimum": 18,
+      "maximum": 120,
+      "description": "Edad del paciente en a\u00f1os"
+    },
+    "gender": {
+      "type": "string",
+      "enum": [
+        "M",
+        "F"
+      ],
+      "description": "G\u00e9nero del paciente"
+    },
+    "smoking": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2,
+      "description": "Nivel de tabaquismo (0: No, 1: Ex-fumador, 2: Activo)"
+    },
+    "yellowFingers": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2,
+      "default": 0,
+      "description": "Dedos amarillos por nicotina"
+    },
+    "anxiety": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2,
+      "default": 0
+    },
+    "peerPressure": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2,
+      "default": 0
+    },
+    "chronicDisease": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2,
+      "default": 0
+    },
+    "fatigue": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2,
+      "default": 0
+    },
+    "allergy": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2,
+      "default": 0
+    },
+    "wheezing": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2,
+      "default": 0
+    },
+    "alcoholConsuming": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2,
+      "default": 0
+    },
+    "coughing": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2,
+      "default": 0
+    },
+    "shortnessOfBreath": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2,
+      "default": 0
+    },
+    "swallowingDifficulty": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2,
+      "default": 0
+    },
+    "chestPain": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2,
+      "default": 0
+    }
+  },
+  "additionalProperties": false
+}

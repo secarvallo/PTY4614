@@ -16,12 +16,18 @@
 
       <!-- Welcome Header -->
       <div class="auth-header">
-        @if (isDoctor()) {
-          <h1>¡Hola, Dr(a). {{ user.firstName }} {{ user.lastName }}!</h1>
+        @if (isDoctor() && userFullName()) {
+          <h1>¡Hola, Dr(a). {{ userFullName() }}!</h1>
+          <p>Bienvenido de vuelta a LungLife</p>
+        } @else if (userFullName() && userFullName() !== '') {
+          <h1>¡Hola, {{ userFullName() }}!</h1>
+          <p>Bienvenido de vuelta a LungLife</p>
+        } @else if (user && user.email) {
+          <h1>¡Hola, {{ user.email.split('@')[0] }}!</h1>
           <p>Bienvenido de vuelta a LungLife</p>
         } @else {
-          <h1>¡Hola, {{ user.firstName }}!</h1>
-          <p>Bienvenido de vuelta a LungLife</p>
+          <h1>¡Bienvenido a LungLife!</h1>
+          <p>Cargando tu información...</p>
         }
       </div>
 
@@ -152,6 +158,70 @@
         </div>
 
         <!-- Logout Button for Doctors -->
+        <app-logout-button [buttonStyle]="'card'" [showConfirmation]="true"></app-logout-button>
+      }
+
+      <!-- ===== ADMINISTRATOR ACTIONS ===== -->
+      @if (isAdmin()) {
+        <div class="action-card" routerLink="/directory">
+          <div class="card-icon doctor">
+            <ion-icon name="people-outline"></ion-icon>
+          </div>
+          <div class="card-info">
+            <h3>Gestión de Usuarios</h3>
+            <p>Administrar usuarios del sistema</p>
+          </div>
+          <ion-icon name="chevron-forward-outline" class="arrow-icon"></ion-icon>
+        </div>
+
+        <div class="action-card" (click)="viewProgress()">
+          <div class="card-icon">
+            <ion-icon name="bar-chart-outline"></ion-icon>
+          </div>
+          <div class="card-info">
+            <h3>Estadísticas del Sistema</h3>
+            <p>Métricas y reportes generales</p>
+          </div>
+          <ion-icon name="chevron-forward-outline" class="arrow-icon"></ion-icon>
+        </div>
+
+        <div class="action-card" routerLink="/profile">
+          <div class="card-icon settings">
+            <ion-icon name="person-outline"></ion-icon>
+          </div>
+          <div class="card-info">
+            <h3>Mi Perfil</h3>
+            <p>Edita tu información de administrador</p>
+          </div>
+          <ion-icon name="chevron-forward-outline" class="arrow-icon"></ion-icon>
+        </div>
+
+        <!-- Logout Button for Admins -->
+        <app-logout-button [buttonStyle]="'card'" [showConfirmation]="true"></app-logout-button>
+      }
+
+      <!-- ===== FALLBACK: Usuario sin rol definido ===== -->
+      @if (!hasKnownRole()) {
+        <div class="alert-card warning">
+          <ion-icon name="alert-circle-outline"></ion-icon>
+          <div class="alert-content">
+            <h4>Rol no configurado</h4>
+            <p>Tu cuenta no tiene un rol asignado. Contacta al administrador del sistema.</p>
+          </div>
+        </div>
+
+        <div class="action-card" routerLink="/profile">
+          <div class="card-icon settings">
+            <ion-icon name="person-outline"></ion-icon>
+          </div>
+          <div class="card-info">
+            <h3>Gestión de Perfil</h3>
+            <p>Edita tu información personal</p>
+          </div>
+          <ion-icon name="chevron-forward-outline" class="arrow-icon"></ion-icon>
+        </div>
+
+        <!-- Logout Button for users without role -->
         <app-logout-button [buttonStyle]="'card'" [showConfirmation]="true"></app-logout-button>
       }
 

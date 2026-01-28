@@ -1,0 +1,88 @@
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    ÁRBOL DE DIAGNÓSTICO DE PROBLEMAS                         ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║                                                                              ║
+║                        ┌─────────────────────┐                               ║
+║                        │  ¿El servicio no    │                               ║
+║                        │     responde?       │                               ║
+║                        └──────────┬──────────┘                               ║
+║                                   │                                          ║
+║              ┌────────────────────┼────────────────────┐                     ║
+║              ▼                    ▼                    ▼                     ║
+║    ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐            ║
+║    │    Frontend     │  │    Backend      │  │   ML Service    │            ║
+║    │   (Port 8100)   │  │   (Port 3000)   │  │   (Port 8000)   │            ║
+║    └────────┬────────┘  └────────┬────────┘  └────────┬────────┘            ║
+║             │                    │                    │                      ║
+║             ▼                    ▼                    ▼                      ║
+║    ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐            ║
+║    │ ¿Nginx activo?  │  │ ¿Node running?  │  │ ¿Uvicorn up?    │            ║
+║    │                 │  │                 │  │                 │            ║
+║    │ docker logs     │  │ docker logs     │  │ docker logs     │            ║
+║    │ lunglife_       │  │ lunglife_       │  │ lunglife_       │            ║
+║    │ frontend        │  │ backend         │  │ ml_service      │            ║
+║    └────────┬────────┘  └────────┬────────┘  └────────┬────────┘            ║
+║             │                    │                    │                      ║
+║             │                    │                    │                      ║
+║  ┌──────────┴──────────┐         │         ┌──────────┴──────────┐          ║
+║  │                     │         │         │                     │          ║
+║  ▼                     ▼         ▼         ▼                     ▼          ║
+║ [Verificar build]  [Config]  [DB/Redis]  [Modelo]           [Deps]         ║
+║                                                                              ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║                                                                              ║
+║  ERRORES COMUNES Y SOLUCIONES                                               ║
+║  ─────────────────────────────                                              ║
+║                                                                              ║
+║  ┌───────────────────────────────────────────────────────────────────────┐  ║
+║  │ ERROR: Connection refused (ECONNREFUSED)                              │  ║
+║  ├───────────────────────────────────────────────────────────────────────┤  ║
+║  │ CAUSA: Servicio no está corriendo o puerto bloqueado                  │  ║
+║  │ SOLUCIÓN:                                                             │  ║
+║  │   1. docker-compose ps (verificar estado)                             │  ║
+║  │   2. docker-compose up -d <servicio>                                  │  ║
+║  │   3. netstat -an | grep <puerto>                                      │  ║
+║  └───────────────────────────────────────────────────────────────────────┘  ║
+║                                                                              ║
+║  ┌───────────────────────────────────────────────────────────────────────┐  ║
+║  │ ERROR: Model not loaded / Model file not found                        │  ║
+║  ├───────────────────────────────────────────────────────────────────────┤  ║
+║  │ CAUSA: Archivo del modelo no existe o path incorrecto                 │  ║
+║  │ SOLUCIÓN:                                                             │  ║
+║  │   1. Verificar MODEL_PATH en .env                                     │  ║
+║  │   2. docker exec lunglife_ml_service ls /app/models                   │  ║
+║  │   3. Copiar modelo: docker cp model.pkl lunglife_ml_service:/app/     │  ║
+║  └───────────────────────────────────────────────────────────────────────┘  ║
+║                                                                              ║
+║  ┌───────────────────────────────────────────────────────────────────────┐  ║
+║  │ ERROR: Database connection failed                                     │  ║
+║  ├───────────────────────────────────────────────────────────────────────┤  ║
+║  │ CAUSA: PostgreSQL no disponible o credenciales incorrectas            │  ║
+║  │ SOLUCIÓN:                                                             │  ║
+║  │   1. docker-compose logs postgres                                     │  ║
+║  │   2. Verificar DATABASE_URL en .env                                   │  ║
+║  │   3. docker exec lunglife_postgres pg_isready                         │  ║
+║  └───────────────────────────────────────────────────────────────────────┘  ║
+║                                                                              ║
+║  ┌───────────────────────────────────────────────────────────────────────┐  ║
+║  │ ERROR: 401 Unauthorized                                               │  ║
+║  ├───────────────────────────────────────────────────────────────────────┤  ║
+║  │ CAUSA: Token JWT expirado o inválido                                  │  ║
+║  │ SOLUCIÓN:                                                             │  ║
+║  │   1. Verificar header Authorization: Bearer <token>                   │  ║
+║  │   2. Verificar JWT_SECRET coincide en todos los servicios             │  ║
+║  │   3. Renovar token con endpoint /api/auth/refresh                     │  ║
+║  └───────────────────────────────────────────────────────────────────────┘  ║
+║                                                                              ║
+║  ┌───────────────────────────────────────────────────────────────────────┐  ║
+║  │ ERROR: 503 Service Unavailable (Circuit Breaker Open)                 │  ║
+║  ├───────────────────────────────────────────────────────────────────────┤  ║
+║  │ CAUSA: ML Service ha fallado múltiples veces                          │  ║
+║  │ SOLUCIÓN:                                                             │  ║
+║  │   1. docker-compose logs ml-service                                   │  ║
+║  │   2. docker-compose restart ml-service                                │  ║
+║  │   3. Esperar 30s para que circuit breaker se cierre                   │  ║
+║  └───────────────────────────────────────────────────────────────────────┘  ║
+║                                                                              ║
+╚══════════════════════════════════════════════════════════════════════════════╝

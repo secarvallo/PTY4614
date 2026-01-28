@@ -9,6 +9,11 @@
         <p>Únete a LungLife y protege tu salud respiratoria</p>
       </div>
 
+      <div class="selected-role-banner" *ngIf="roleDisplayInfo() as roleInfo">
+        <span class="role-chip" data-test="register-role-label">{{ roleInfo.label }}</span>
+        <p class="role-description">{{ roleInfo.description }}</p>
+      </div>
+
       <form [formGroup]="registerForm" (ngSubmit)="onRegister()" class="auth-form" data-test="register-form">
         
         <!-- Nombre Field -->
@@ -121,36 +126,6 @@
           </div>
         </div>
 
-        <!-- Advanced Security Validation -->
-        <div class="security-validation" *ngIf="registerForm.get('password')?.value && registerForm.get('password')?.value.length >= 8">
-          <!-- Breach Check Status -->
-          <div class="security-check" *ngIf="breachCheckInProgress()">
-            <ion-spinner name="crescent" color="primary"></ion-spinner>
-            <span>Verificando seguridad de contraseña...</span>
-          </div>
-
-          <!-- Password Security Result -->
-          <div class="security-result" *ngIf="passwordSecurityResult() && !breachCheckInProgress()">
-            <div class="security-level" [ngClass]="'level-' + passwordSecurityLevel">
-              <ion-icon name="shield-outline"></ion-icon>
-              <span>Nivel de seguridad: {{ passwordSecurityLevel | titlecase }}</span>
-            </div>
-
-            <!-- Breach Warning -->
-            <div class="breach-warning" *ngIf="isPasswordBreached">
-              <ion-icon name="warning" color="danger"></ion-icon>
-              <span>⚠️ Esta contraseña ha sido comprometida en brechas de seguridad</span>
-            </div>
-
-            <!-- Security Warnings -->
-            <div class="security-warnings" *ngIf="securityWarningsList.length > 0">
-              <div class="warning-item" *ngFor="let warning of securityWarningsList">
-                <ion-icon name="alert-circle" color="warning"></ion-icon>
-                <span>{{ warning }}</span>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
 
       <!-- Confirm Password Field -->

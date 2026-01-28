@@ -4,8 +4,8 @@
  * Matches role-selection page design language
  */
 
-@import '../../../theme/shared-layout.scss';
-@import '../../../auth/auth.styles.scss';
+@use '../../../theme/shared-layout.scss' as layout;
+@use '../../../auth/auth.styles.scss' as auth;
 
 .directory-section {
   max-width: 520px;

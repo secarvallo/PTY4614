@@ -1,14 +1,16 @@
 import { Routes, UrlTree, Router } from '@angular/router';
 import { inject } from '@angular/core';
 import { AuthFacadeService } from './auth/core/services';
-import { AppInitService } from './core/services/app-init.service';
-import { SplashComponent } from './core/components/splash/splash.component';
+import { AuthInitService } from './auth/core/services/auth-init.service';
+import { SplashComponent } from './auth/pages/splash/splash.component';
 // Legacy simple-auth guards replaced by unified versions
 import { 
   unifiedAuthGuard, 
   unifiedGuestGuard, 
   unifiedTwoFAGuard, 
   patientOnlyGuard,
+  doctorOnlyGuard,
+  adminOnlyGuard,
   allRolesGuard 
 } from './auth/core/guards/unified-auth.guards';
 import { DEFAULT_AUTH_REDIRECT, resolvePostAuthRedirect } from './auth/core/utils/auth-navigation';
@@ -40,8 +42,8 @@ export const routes: Routes = [
       {
         path: 'role-selection',
         loadComponent: () => import('./auth/login/pages/role-selection/role-selection.page').then(m => m.RoleSelectionPage),
-        title: 'Seleccionar Rol - LungLife',
-        canActivate: [unifiedGuestGuard]
+        title: 'Seleccionar Rol - LungLife'
+        // Sin guard - accesible tanto para registro como para usuarios no autenticados
       },
       {
         path: 'register',
