@@ -700,63 +700,6 @@
   max-width: 420px;
   margin: 0 auto;
 
-  /* Avatar del Doctor */
-  .doctor-avatar {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--ion-color-success) 0%, var(--ion-color-tertiary) 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 1rem;
-    box-shadow: 0 8px 24px rgba(var(--ion-color-success-rgb), 0.3);
-    
-    ion-icon {
-      font-size: 36px;
-      color: white;
-    }
-  }
-
-  /* Header del Perfil */
-  .auth-header {
-    text-align: center;
-    margin-bottom: 1.5rem;
-
-    .header-content {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .header-text {
-      h1 {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: var(--text);
-        margin: 0.5rem 0 0.25rem;
-        line-height: 1.3;
-      }
-    }
-
-    .specialty-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.5rem 1rem;
-      background: linear-gradient(135deg, rgba(var(--ion-color-success-rgb), 0.1) 0%, rgba(var(--ion-color-tertiary-rgb), 0.1) 100%);
-      border-radius: 20px;
-      font-size: 0.875rem;
-      font-weight: 600;
-      color: var(--ion-color-success-shade);
-      margin-top: 0.5rem;
-
-      ion-icon {
-        font-size: 1rem;
-      }
-    }
-  }
-
   /* Tarjeta Destacada de Estadísticas */
   .doctor-highlight-card {
     background: linear-gradient(135deg, var(--ion-color-primary) 0%, var(--ion-color-tertiary) 100%);
@@ -840,30 +783,23 @@
     }
   }
 
-  /* Campos de Visualización */
+  /* Campos de Visualización - Mismo estilo que paciente */
   .view-field {
     background: var(--surface);
     border: 2px solid var(--border, #e5e7eb);
     border-radius: 16px;
-    padding: 14px 18px;
+    padding: 16px 20px;
     display: flex;
     flex-direction: column;
-    gap: 0.25rem;
+    gap: 0.35rem;
     margin-bottom: 12px;
-    transition: all 0.2s ease;
-
-    &:hover {
-      border-color: var(--ion-color-primary-tint);
-      background: rgba(var(--ion-color-primary-rgb), 0.02);
-    }
 
     label {
-      font-size: 0.75rem;
+      font-size: 0.85rem;
       color: var(--text-light);
       text-transform: uppercase;
       letter-spacing: 0.04em;
       margin: 0;
-      font-weight: 500;
     }
 
     p {
@@ -895,7 +831,7 @@
 
   /* Acciones del Formulario */
   .form-actions {
-    margin-top: 1.5rem;
+    margin-top: 24px;
     padding-top: 0;
   }
 
@@ -905,21 +841,21 @@
     gap: 12px;
   }
 
-  /* Botones Personalizados */
+  /* Botones - Mismo estilo que paciente */
   .primary-button {
-    --background: var(--ion-color-primary);
-    --background-hover: var(--ion-color-primary-shade);
+    --background: var(--primary, #007aff);
+    --background-hover: var(--primary-hover, #005ce6);
     --border-radius: 12px;
-    --padding-top: 14px;
-    --padding-bottom: 14px;
+    --padding-top: 16px;
+    --padding-bottom: 16px;
     font-weight: 600;
-    font-size: 15px;
-    height: 50px;
+    font-size: 16px;
+    height: 52px;
     text-transform: none;
-    box-shadow: 0 4px 12px rgba(var(--ion-color-primary-rgb), 0.3);
+    margin-top: 0.5rem;
 
-    ion-icon {
-      font-size: 1.25rem;
+    &:hover {
+      --background: var(--primary-hover, #005ce6);
     }
   }
 
@@ -928,53 +864,30 @@
     --border-width: 2px;
     --border-color: var(--border, #e5e7eb);
     --border-radius: 12px;
-    --padding-top: 12px;
-    --padding-bottom: 12px;
+    --padding-top: 14px;
+    --padding-bottom: 14px;
     --color: var(--text);
     font-weight: 600;
-    font-size: 14px;
-    height: 46px;
+    font-size: 15px;
+    height: 48px;
     text-transform: none;
 
     &:hover {
-      --border-color: var(--ion-color-primary);
-      --color: var(--ion-color-primary);
-    }
-
-    ion-icon {
-      font-size: 1.125rem;
+      --border-color: var(--primary, #007aff);
+      --color: var(--primary, #007aff);
     }
   }
 
   /* Sección de Navegación */
   .navigation-section {
-    margin-top: 2rem;
-    padding-top: 1.5rem;
-    border-top: 1px solid var(--border, #e5e7eb);
+    margin-top: 24px;
+    padding-top: 16px;
   }
 }
 
 /* ========== RESPONSIVE DOCTOR PROFILE ========== */
 @media (max-width: 480px) {
   .doctor-profile-section {
-    .doctor-avatar {
-      width: 70px;
-      height: 70px;
-
-      ion-icon {
-        font-size: 32px;
-      }
-    }
-
-    .auth-header .header-text h1 {
-      font-size: 1.35rem;
-    }
-
-    .specialty-badge {
-      font-size: 0.8rem;
-      padding: 0.4rem 0.875rem;
-    }
-
     .doctor-highlight-card {
       padding: 1.25rem;
 
@@ -1009,15 +922,6 @@
     .view-field {
       background: var(--ion-color-step-50);
       border-color: var(--ion-color-step-200);
-
-      &:hover {
-        background: rgba(var(--ion-color-primary-rgb), 0.05);
-      }
-    }
-
-    .specialty-badge {
-      background: rgba(var(--ion-color-success-rgb), 0.15);
-      color: var(--ion-color-success);
     }
 
     .form-section-header {

@@ -77,18 +77,13 @@
     <!-- ========== PERFIL DE MÉDICO ========== -->
     <div *ngIf="isDoctor && doctorProfile" class="doctor-profile-section">
       <div class="action-section profile-section">
-        <!-- Header con Badge y Título -->
+        <!-- Header igual que paciente -->
         <div class="auth-header">
+          <div class="logo-placeholder"></div>
           <div class="header-content">
-            <div class="doctor-avatar">
-              <ion-icon name="medkit"></ion-icon>
-            </div>
             <div class="header-text">
               <h1>Dr. {{ doctorProfile.fullName }}</h1>
-              <p class="specialty-badge">
-                <ion-icon name="ribbon-outline"></ion-icon>
-                {{ doctorProfile.specialty || 'Especialidad no especificada' }}
-              </p>
+              <p>{{ doctorProfile.specialty || 'Especialidad no especificada' }}</p>
             </div>
           </div>
         </div>
