@@ -697,87 +697,332 @@
 
 /* ========== DOCTOR PROFILE SECTION ========== */
 .doctor-profile-section {
-  .doctor-badge {
-    background: linear-gradient(135deg, var(--ion-color-success) 0%, var(--ion-color-tertiary) 100%);
-    border-radius: 50%;
+  max-width: 420px;
+  margin: 0 auto;
+
+  /* Avatar del Doctor */
+  .doctor-avatar {
     width: 80px;
     height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--ion-color-success) 0%, var(--ion-color-tertiary) 100%);
     display: flex;
     align-items: center;
     justify-content: center;
     margin: 0 auto 1rem;
-
+    box-shadow: 0 8px 24px rgba(var(--ion-color-success-rgb), 0.3);
+    
     ion-icon {
-      font-size: 40px;
+      font-size: 36px;
       color: white;
     }
   }
 
-  .doctor-info-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
-    margin: 1.5rem 0;
+  /* Header del Perfil */
+  .auth-header {
+    text-align: center;
+    margin-bottom: 1.5rem;
 
-    .info-card {
-      background: var(--ion-color-light);
-      border-radius: 8px;
-      padding: 1rem;
+    .header-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
 
-      label {
-        display: block;
-        font-size: 0.75rem;
-        color: var(--ion-color-medium);
-        margin-bottom: 0.25rem;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
+    .header-text {
+      h1 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--text);
+        margin: 0.5rem 0 0.25rem;
+        line-height: 1.3;
       }
+    }
 
-      p {
-        margin: 0;
+    .specialty-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: linear-gradient(135deg, rgba(var(--ion-color-success-rgb), 0.1) 0%, rgba(var(--ion-color-tertiary-rgb), 0.1) 100%);
+      border-radius: 20px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--ion-color-success-shade);
+      margin-top: 0.5rem;
+
+      ion-icon {
         font-size: 1rem;
-        font-weight: 500;
-        color: var(--ion-color-dark);
       }
     }
   }
 
-  .doctor-stats {
-    margin: 1.5rem 0;
+  /* Tarjeta Destacada de Estadísticas */
+  .doctor-highlight-card {
+    background: linear-gradient(135deg, var(--ion-color-primary) 0%, var(--ion-color-tertiary) 100%);
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 8px 24px rgba(var(--ion-color-primary-rgb), 0.25);
 
-    .stat-highlight {
-      background: var(--ion-color-primary-tint);
-      border-radius: 12px;
-      padding: 1.5rem;
+    .highlight-content {
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 1rem;
+    }
+
+    .highlight-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
 
       ion-icon {
-        font-size: 48px;
+        font-size: 28px;
+        color: white;
       }
+    }
 
-      h2 {
+    .highlight-info {
+      display: flex;
+      flex-direction: column;
+      color: white;
+
+      .highlight-number {
         font-size: 2.5rem;
-        font-weight: 700;
-        margin: 0;
-        color: var(--ion-color-primary);
+        font-weight: 800;
+        line-height: 1;
       }
 
-      p {
-        margin: 0;
-        font-size: 1rem;
-        color: var(--ion-color-medium);
+      .highlight-label {
+        font-size: 0.9rem;
+        opacity: 0.9;
+        font-weight: 500;
       }
     }
   }
 
-  .doctor-actions {
+  /* Secciones del Formulario */
+  .form-section {
+    margin-bottom: 1.5rem;
+  }
+
+  .form-section-header {
+    text-align: center;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background: var(--ion-color-light);
+    border-radius: 12px;
+
+    h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--ion-color-primary);
+      margin: 0 0 0.25rem 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+
+      ion-icon {
+        font-size: 1.125rem;
+      }
+    }
+
+    p {
+      font-size: 0.8rem;
+      color: var(--ion-color-medium);
+      margin: 0;
+    }
+  }
+
+  /* Campos de Visualización */
+  .view-field {
+    background: var(--surface);
+    border: 2px solid var(--border, #e5e7eb);
+    border-radius: 16px;
+    padding: 14px 18px;
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
+    gap: 0.25rem;
+    margin-bottom: 12px;
+    transition: all 0.2s ease;
+
+    &:hover {
+      border-color: var(--ion-color-primary-tint);
+      background: rgba(var(--ion-color-primary-rgb), 0.02);
+    }
+
+    label {
+      font-size: 0.75rem;
+      color: var(--text-light);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin: 0;
+      font-weight: 500;
+    }
+
+    p {
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      .field-icon {
+        font-size: 1.125rem;
+        color: var(--ion-color-primary);
+      }
+    }
+  }
+
+  /* Fila de Campos (2 columnas) */
+  .view-fields-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+
+    .view-field {
+      margin-bottom: 0;
+    }
+  }
+
+  /* Acciones del Formulario */
+  .form-actions {
     margin-top: 1.5rem;
+    padding-top: 0;
+  }
+
+  .button-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  /* Botones Personalizados */
+  .primary-button {
+    --background: var(--ion-color-primary);
+    --background-hover: var(--ion-color-primary-shade);
+    --border-radius: 12px;
+    --padding-top: 14px;
+    --padding-bottom: 14px;
+    font-weight: 600;
+    font-size: 15px;
+    height: 50px;
+    text-transform: none;
+    box-shadow: 0 4px 12px rgba(var(--ion-color-primary-rgb), 0.3);
+
+    ion-icon {
+      font-size: 1.25rem;
+    }
+  }
+
+  .secondary-button {
+    --background: transparent;
+    --border-width: 2px;
+    --border-color: var(--border, #e5e7eb);
+    --border-radius: 12px;
+    --padding-top: 12px;
+    --padding-bottom: 12px;
+    --color: var(--text);
+    font-weight: 600;
+    font-size: 14px;
+    height: 46px;
+    text-transform: none;
+
+    &:hover {
+      --border-color: var(--ion-color-primary);
+      --color: var(--ion-color-primary);
+    }
+
+    ion-icon {
+      font-size: 1.125rem;
+    }
+  }
+
+  /* Sección de Navegación */
+  .navigation-section {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border, #e5e7eb);
+  }
+}
+
+/* ========== RESPONSIVE DOCTOR PROFILE ========== */
+@media (max-width: 480px) {
+  .doctor-profile-section {
+    .doctor-avatar {
+      width: 70px;
+      height: 70px;
+
+      ion-icon {
+        font-size: 32px;
+      }
+    }
+
+    .auth-header .header-text h1 {
+      font-size: 1.35rem;
+    }
+
+    .specialty-badge {
+      font-size: 0.8rem;
+      padding: 0.4rem 0.875rem;
+    }
+
+    .doctor-highlight-card {
+      padding: 1.25rem;
+
+      .highlight-icon {
+        width: 48px;
+        height: 48px;
+
+        ion-icon {
+          font-size: 24px;
+        }
+      }
+
+      .highlight-info .highlight-number {
+        font-size: 2rem;
+      }
+    }
+
+    .view-fields-row {
+      grid-template-columns: 1fr;
+      gap: 0;
+
+      .view-field {
+        margin-bottom: 12px;
+      }
+    }
+  }
+}
+
+/* ========== DARK MODE DOCTOR PROFILE ========== */
+[data-theme="dark"] {
+  .doctor-profile-section {
+    .view-field {
+      background: var(--ion-color-step-50);
+      border-color: var(--ion-color-step-200);
+
+      &:hover {
+        background: rgba(var(--ion-color-primary-rgb), 0.05);
+      }
+    }
+
+    .specialty-badge {
+      background: rgba(var(--ion-color-success-rgb), 0.15);
+      color: var(--ion-color-success);
+    }
+
+    .form-section-header {
+      background: var(--ion-color-step-100);
+    }
   }
 }
 
