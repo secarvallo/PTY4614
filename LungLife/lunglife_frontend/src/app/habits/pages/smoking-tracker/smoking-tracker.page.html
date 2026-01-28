@@ -1,0 +1,206 @@
+<ion-content class="ion-padding" data-test="smoking-tracker-page">
+  <div class="welcome-container">
+    <div class="action-section dashboard-section">
+
+      <!-- Header con Avatar (igual que dashboard) -->
+      <div class="user-avatar-container">
+        <div class="avatar-circle">
+          <ion-icon name="person-outline"></ion-icon>
+        </div>
+      </div>
+
+      <!-- Welcome Header -->
+      <div class="auth-header">
+        @if (userFullName()) {
+          <h1>¡Hola, {{ userFullName() }}!</h1>
+          <p>Bienvenido de vuelta a LungLife</p>
+        } @else {
+          <h1>Registro de Hábitos</h1>
+          <p>Controla tu consumo diario</p>
+        }
+      </div>
+
+      <!-- Quick Stats Cards (igual que dashboard) -->
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-icon smoke-free">
+            <ion-icon name="leaf-outline"></ion-icon>
+          </div>
+          <div class="stat-info">
+            <span class="stat-value">{{ smokeFreeDays() }}</span>
+            <span class="stat-label">Días sin fumar</span>
+          </div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-icon health">
+            <ion-icon name="heart-outline"></ion-icon>
+          </div>
+          <div class="stat-info">
+            <span class="stat-value">{{ lungHealthPercentage() }}%</span>
+            <span class="stat-label">Salud Pulmonar</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========== SECCIÓN: ESTADÍSTICAS SEMANALES (GRÁFICO) ========== -->
+      <div class="section-header">
+        <h2><ion-icon name="stats-chart-outline"></ion-icon> Estadísticas Semanales</h2>
+      </div>
+
+      <div class="chart-card">
+        @if (isLoadingStats()) {
+          <div class="chart-loading">
+            <ion-spinner name="crescent"></ion-spinner>
+            <p>Cargando estadísticas...</p>
+          </div>
+        } @else {
+          <!-- Summary Stats -->
+          <div class="chart-summary">
+            <div class="summary-item">
+              <span class="summary-value">{{ weeklyStats()?.totalCigarettes || 0 }}</span>
+              <span class="summary-label">Total semana</span>
+            </div>
+            <div class="summary-divider"></div>
+            <div class="summary-item">
+              <span class="summary-value">{{ weeklyStats()?.averagePerDay || 0 }}</span>
+              <span class="summary-label">Promedio/día</span>
+            </div>
+            <div class="summary-divider"></div>
+            <div class="summary-item trend" [class.positive]="weeklyStats()?.trend === 'down'" [class.negative]="weeklyStats()?.trend === 'up'">
+              <ion-icon [name]="getTrendIcon()" [color]="getTrendColor()"></ion-icon>
+              <span class="summary-value">{{ weeklyStats()?.percentageChange || 0 }}%</span>
+              <span class="summary-label">vs semana ant.</span>
+            </div>
+          </div>
+
+          <!-- Bar Chart -->
+          <div class="bar-chart">
+            @for (record of weeklyRecords(); track record.date) {
+              <div class="bar-column" [class.today]="isToday(record.date)">
+                <div class="bar-value">{{ record.cigarettes }}</div>
+                <div class="bar-wrapper">
+                  <div 
+                    class="bar" 
+                    [style.height.%]="getBarHeight(record.cigarettes)"
+                    [style.background]="getBarColor(record.cigarettes)">
+                  </div>
+                </div>
+                <div class="bar-label">{{ getDayLabel(record.date) }}</div>
+              </div>
+            }
+          </div>
+
+          <!-- Chart Legend -->
+          <div class="chart-legend">
+            <div class="legend-item">
+              <span class="legend-dot" style="background: var(--ion-color-success);"></span>
+              <span>0 cig.</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-dot" style="background: var(--ion-color-warning);"></span>
+              <span>1-5 cig.</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-dot" style="background: var(--ion-color-danger);"></span>
+              <span>+5 cig.</span>
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- ========== SECCIÓN: REGISTRO DIARIO ========== -->
+      <div class="section-header">
+        <h2><ion-icon name="calendar-outline"></ion-icon> Registro de Hoy</h2>
+      </div>
+
+      <div class="daily-tracker-card">
+        <div class="tracker-header">
+          <ion-icon name="flame-outline" class="tracker-icon"></ion-icon>
+          <div class="tracker-title">
+            <h3>Cigarrillos fumados hoy</h3>
+            <p>{{ hasRecordToday() ? 'Actualiza tu registro' : 'Registra tu consumo' }}</p>
+          </div>
+        </div>
+
+        <!-- Cigarette Counter -->
+        <div class="cigarette-counter">
+          <button 
+            class="counter-btn decrement" 
+            (click)="decrementCigarettes()" 
+            [disabled]="todayCigarettes() === 0">
+            <ion-icon name="remove-outline"></ion-icon>
+          </button>
+          
+          <div class="counter-display">
+            <span class="counter-value" [style.color]="getSliderColor()">{{ todayCigarettes() }}</span>
+            <span class="counter-label">cigarrillos</span>
+          </div>
+          
+          <button 
+            class="counter-btn increment" 
+            (click)="incrementCigarettes()"
+            [disabled]="todayCigarettes() >= maxCigarettes">
+            <ion-icon name="add-outline"></ion-icon>
+          </button>
+        </div>
+
+        <!-- Slider Bar -->
+        <div class="slider-container">
+          <input 
+            type="range" 
+            class="cigarette-slider"
+            [min]="0" 
+            [max]="maxCigarettes" 
+            [value]="todayCigarettes()"
+            (input)="setCigarettes($any($event.target).value)"
+            [style.--slider-progress]="getSliderPercentage() + '%'"
+            [style.--slider-color]="getSliderColor()">
+          <div class="slider-labels">
+            <span>0</span>
+            <span>{{ maxCigarettes / 2 }}</span>
+            <span>{{ maxCigarettes }}</span>
+          </div>
+        </div>
+
+        <!-- Motivational Message -->
+        <div class="motivation-message">
+          @if (todayCigarettes() === 0) {
+            <ion-icon name="checkmark-circle-outline" color="success"></ion-icon>
+            <p>¡Excelente! Un día más sin fumar 🎉</p>
+          } @else if (todayCigarettes() <= 5) {
+            <ion-icon name="leaf-outline" color="warning"></ion-icon>
+            <p>Vas bien, sigue reduciendo 💪</p>
+          } @else {
+            <ion-icon name="heart-outline" color="danger"></ion-icon>
+            <p>Cada cigarrillo menos cuenta ❤️</p>
+          }
+        </div>
+
+        <!-- Save Button -->
+        <ion-button 
+          expand="block" 
+          class="save-button"
+          (click)="saveToday()"
+          [disabled]="isSaving()">
+          @if (isSaving()) {
+            <ion-spinner name="crescent" slot="start"></ion-spinner>
+            Guardando...
+          } @else {
+            <ion-icon name="save-outline" slot="start"></ion-icon>
+            {{ hasRecordToday() ? 'Actualizar Registro' : 'Guardar Registro' }}
+          }
+        </ion-button>
+      </div>
+
+      <!-- Navigation Section -->
+      <div class="navigation-section">
+        <a [routerLink]="['/dashboard']" class="back-link">
+          <ion-icon name="arrow-back-outline"></ion-icon>
+          Volver al Dashboard
+        </a>
+      </div>
+
+    </div>
+  </div>
+</ion-content>

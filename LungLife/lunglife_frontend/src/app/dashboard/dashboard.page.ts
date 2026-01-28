@@ -5,7 +5,7 @@
 import { Component, OnInit, inject, computed, signal } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { addIcons } from 'ionicons';
 import {
   leafOutline,
@@ -41,6 +41,7 @@ import { ProfileService, PatientProfile, DoctorProfile, AdminProfile } from '../
 export class DashboardPage implements OnInit {
   private authFacade = inject(AuthFacadeService);
   private profileService = inject(ProfileService);
+  private router = inject(Router);
 
   user: User | null = null;
   userProfile: PatientProfile | DoctorProfile | AdminProfile | null = null;
@@ -182,8 +183,8 @@ export class DashboardPage implements OnInit {
   }
 
   logHabit() {
-    // Logic to log a new habit
-    console.log('Log Habit button clicked');
+    // Navigate to smoking tracker page
+    this.router.navigate(['/habits/smoking']);
   }
 
   viewProgress() {

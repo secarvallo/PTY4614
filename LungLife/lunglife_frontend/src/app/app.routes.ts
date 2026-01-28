@@ -93,6 +93,18 @@ export const routes: Routes = [
     title: 'Dashboard - LungLife'
   },
   {
+    path: 'habits',
+    canActivate: [unifiedAuthGuard, patientOnlyGuard],
+    children: [
+      { path: '', redirectTo: 'smoking', pathMatch: 'full' },
+      {
+        path: 'smoking',
+        loadComponent: () => import('./habits/pages/smoking-tracker/smoking-tracker.page').then(m => m.SmokingTrackerPage),
+        title: 'Registro de Hábitos - LungLife'
+      }
+    ]
+  },
+  {
     path: 'profile',
     canActivate: [unifiedAuthGuard],
     children: [
