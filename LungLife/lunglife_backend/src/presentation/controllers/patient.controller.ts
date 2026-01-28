@@ -41,13 +41,31 @@ export class PatientController {
                 ORDER BY created_at DESC
             `, [patientId]);
 
+            // Transform to camelCase for frontend
+            const formatEntry = (r: any) => ({
+                id: r.history_id,
+                patientId: r.patient_id,
+                doctorId: r.doctor_id,
+                entryType: r.entry_type,
+                entryName: r.entry_name,
+                details: r.details,
+                status: r.status,
+                startDate: r.start_date,
+                endDate: r.end_date,
+                createdAt: r.created_at,
+                updatedAt: r.updated_at
+            });
+
+            const conditions = result.filter((r: any) => r.entry_type === 'CONDITION').map(formatEntry);
+            const allergies = result.filter((r: any) => r.entry_type === 'ALLERGY').map(formatEntry);
+            const medications = result.filter((r: any) => r.entry_type === 'MEDICATION').map(formatEntry);
+
             res.json({
                 success: true,
                 data: {
-                    conditions: result.filter((r: any) => r.entry_type === 'CONDITION'),
-                    allergies: result.filter((r: any) => r.entry_type === 'ALLERGY'),
-                    medications: result.filter((r: any) => r.entry_type === 'MEDICATION'),
-                    all: result
+                    medicalHistory: conditions,
+                    allergies: allergies,
+                    currentMedications: medications
                 }
             });
         } catch (error) {
@@ -98,7 +116,7 @@ export class PatientController {
 
     /**
      * GET /api/patients/:patientId/lifestyle
-     * Get patient lifestyle habits
+     * Get patient lifestyle habits and smoking data
      */
     static async getLifestyle(req: Request, res: Response): Promise<void> {
         try {
@@ -113,7 +131,7 @@ export class PatientController {
             }
 
             // Get current lifestyle habits
-            const result = await connection.query(`
+            const lifestyleResult = await connection.query(`
                 SELECT 
                     habit_id,
                     patient_id,
@@ -134,9 +152,47 @@ export class PatientController {
                 LIMIT 1
             `, [patientId]);
 
+            // Get current smoking status
+            const smokingResult = await connection.query(`
+                SELECT 
+                    smoking_id,
+                    patient_id,
+                    smoking_status,
+                    cigarettes_per_day,
+                    start_date,
+                    quit_date,
+                    is_current_status,
+                    created_at
+                FROM smoking_history
+                WHERE patient_id = $1 AND is_current_status = TRUE
+                ORDER BY created_at DESC
+                LIMIT 1
+            `, [patientId]);
+
+            // Format response to match frontend expectation
+            const lifestyle = lifestyleResult.length > 0 ? {
+                alcoholConsumption: lifestyleResult[0].alcohol_consumption,
+                alcoholUnitsPerWeek: lifestyleResult[0].alcohol_units_per_week,
+                exerciseFrequency: lifestyleResult[0].physical_activity_frequency,
+                exerciseMinutesWeekly: lifestyleResult[0].physical_activity_minutes_weekly,
+                dietType: lifestyleResult[0].diet_type,
+                sleepHours: lifestyleResult[0].sleep_duration_hours,
+                stressLevel: lifestyleResult[0].stress_level
+            } : null;
+
+            const smoking = smokingResult.length > 0 ? {
+                smokingStatus: smokingResult[0].smoking_status,
+                cigarettesPerDay: smokingResult[0].cigarettes_per_day,
+                startDate: smokingResult[0].start_date,
+                quitDate: smokingResult[0].quit_date
+            } : null;
+
             res.json({
                 success: true,
-                data: result.length > 0 ? result[0] : null
+                data: {
+                    lifestyle,
+                    smoking
+                }
             });
         } catch (error) {
             console.error('[PatientController] Error getting lifestyle:', error);
