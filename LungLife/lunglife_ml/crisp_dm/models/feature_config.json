@@ -1,0 +1,59 @@
+{
+  "version": "1.0.0",
+  "created_at": "2026-01-25T20:21:51.749206",
+  "numeric_features": [
+    "Age",
+    "Years_Smoked",
+    "Pack_Years",
+    "BMI",
+    "Lung_Function_Test_Result",
+    "Air_Quality_Index",
+    "Tumor_Size_cm",
+    "Pack_Years_Normalized",
+    "Symptom_Count",
+    "Environmental_Risk",
+    "Risk_Score_Composite"
+  ],
+  "categorical_features": [
+    "Age_Group"
+  ],
+  "passthrough_features": [
+    "Pack_Years_Normalized",
+    "Symptom_Count",
+    "Environmental_Risk",
+    "Risk_Score_Composite"
+  ],
+  "target_variable": "Cancer_Stage_Binary",
+  "target_mapping": {
+    "Early (I-II)": 0,
+    "Advanced (III-IV)": 1
+  },
+  "excluded_variables": [
+    "Patient_ID",
+    "Stage_of_Cancer",
+    "Cancer_Stage_Label",
+    "Treatment_Type",
+    "Survival_Years",
+    "Follow_Up_Visits",
+    "Medication_Response",
+    "Symptom_Progression",
+    "Year_of_Diagnosis",
+    "Metastasis_Status"
+  ],
+  "engineered_features": [
+    "Cancer_Stage_Binary",
+    "Pack_Years_Normalized",
+    "Age_Group",
+    "Smoking_Risk_Level",
+    "Symptom_Count",
+    "Environmental_Risk",
+    "Risk_Score_Composite"
+  ],
+  "split_ratios": {
+    "train": 0.7,
+    "validation": 0.15,
+    "test": 0.15
+  },
+  "smote_applied": false,
+  "random_state": 42
+}

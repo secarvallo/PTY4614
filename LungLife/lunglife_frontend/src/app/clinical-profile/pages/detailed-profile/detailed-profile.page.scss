@@ -4,7 +4,7 @@
  */
 
 // Import shared auth styles for .welcome-container and .action-section
-@import '../../../auth/auth.styles.scss';
+@use '../../../auth/auth.styles.scss' as auth;
 
 // Risk Level Colors
 $risk-low: #34c759;
@@ -238,7 +238,7 @@ $risk-critical: #ff3b30;
   
   &.risk-moderate {
     background: rgba($risk-moderate, 0.15);
-    color: darken($risk-moderate, 10%);
+    color: #e68600; // darken($risk-moderate, 10%) - hardcoded para evitar deprecation
   }
   
   &.risk-high {
@@ -270,6 +270,31 @@ $risk-critical: #ff3b30;
     align-items: center;
     gap: 12px;
     margin-bottom: 20px;
+    flex-wrap: wrap;
+    
+    .card-info {
+      flex: 1;
+      min-width: 120px;
+    }
+    
+    // Generate Prediction Button
+    .generate-btn {
+      --border-radius: 8px;
+      --padding-start: 12px;
+      --padding-end: 12px;
+      font-size: 12px;
+      font-weight: 600;
+      height: 32px;
+      
+      ion-icon {
+        font-size: 14px;
+      }
+      
+      ion-spinner {
+        width: 14px;
+        height: 14px;
+      }
+    }
   }
 }
 
@@ -372,6 +397,25 @@ $risk-critical: #ff3b30;
   align-items: center;
   padding: 24px 0;
   gap: 8px;
+  text-align: center;
+  
+  ion-icon {
+    font-size: 40px;
+    color: var(--text-light);
+    opacity: 0.5;
+  }
+  
+  p {
+    font-size: 14px;
+    color: var(--text-light);
+    margin: 0;
+  }
+  
+  small {
+    font-size: 12px;
+    color: var(--text-light);
+    opacity: 0.7;
+  }
   
   ion-icon {
     font-size: 32px;

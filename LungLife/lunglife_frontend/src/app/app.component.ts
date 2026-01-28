@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { IonApp, IonRouterOutlet } from '@ionic/angular/standalone';
 import { NgIf, AsyncPipe } from '@angular/common';
-import { AppInitService } from './core/services/app-init.service';
+import { AuthInitService } from './auth/core/services/auth-init.service';
 import { ThemeToggleComponent } from './shared/components/theme-toggle/theme-toggle.component';
 
 @Component({
@@ -11,6 +11,6 @@ import { ThemeToggleComponent } from './shared/components/theme-toggle/theme-tog
   imports: [IonApp, IonRouterOutlet, NgIf, AsyncPipe, ThemeToggleComponent],
 })
 export class AppComponent {
-  private initSvc = inject(AppInitService);
+  private initSvc = inject(AuthInitService);
   isInitializing$ = this.initSvc.isInitializing();
 }

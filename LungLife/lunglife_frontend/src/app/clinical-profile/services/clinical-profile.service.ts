@@ -172,9 +172,24 @@ export class ClinicalProfileService {
         throw new Error(response.error || 'Error al cargar perfil');
       }
     } catch (err: any) {
-      const errorMessage = err.error?.error || err.message || 'Error al cargar perfil clínico';
-      this._error.set(errorMessage);
       console.error('Error loading clinical profile:', err);
+      
+      // Handle specific error cases
+      let errorMessage = 'Error al cargar perfil clínico';
+      
+      if (err.status === 401) {
+        errorMessage = 'Sesión expirada. Por favor, inicie sesión nuevamente.';
+      } else if (err.status === 403) {
+        errorMessage = 'No tiene permiso para ver este perfil.';
+      } else if (err.status === 404) {
+        errorMessage = 'Perfil no encontrado.';
+      } else if (err.error?.error) {
+        errorMessage = err.error.error;
+      } else if (err.message) {
+        errorMessage = err.message;
+      }
+      
+      this._error.set(errorMessage);
       return null;
     } finally {
       this._loading.set(false);
@@ -198,6 +213,87 @@ export class ClinicalProfileService {
     } catch (err) {
       console.error('Error loading risk history:', err);
       return [];
+    }
+  }
+
+  /**
+   * Generate new ML prediction for a patient
+   * Calls the ML Service through the backend
+   */
+  async generatePrediction(patientId: number): Promise<RiskAssessment | null> {
+    try {
+      this._loading.set(true);
+      this._error.set(null);
+
+      const mlApiUrl = `${environment.apiUrl || '/api'}/ml/predict/${patientId}`;
+      const response = await firstValueFrom(
+        this.http.post<ApiResponse<any>>(mlApiUrl, {})
+      );
+
+      if (response.success && response.data) {
+        // Transform ML response to RiskAssessment format
+        const prediction: RiskAssessment = {
+          predictionId: response.data.predictionId,
+          riskScore: response.data.riskScore,
+          riskLevel: response.data.riskLevel,
+          confidence: response.data.confidence / 100, // Convert back to 0-1
+          predictionDate: response.data.predictionDate,
+          modelVersion: response.data.modelVersion,
+          assessmentType: 'ML_GENERATED'
+        };
+
+        // Update the profile with new prediction
+        const currentProfile = this._profile();
+        if (currentProfile) {
+          this._profile.set({
+            ...currentProfile,
+            riskAssessment: prediction
+          });
+        }
+
+        return prediction;
+      }
+      
+      throw new Error(response.error || 'Error al generar predicción');
+    } catch (err: any) {
+      console.error('Error generating ML prediction:', err);
+      
+      let errorMessage = 'Error al generar predicción de riesgo';
+      
+      if (err.status === 503) {
+        errorMessage = 'Servicio ML no disponible. Por favor intente más tarde.';
+      } else if (err.error?.error) {
+        errorMessage = err.error.error;
+      } else if (err.message) {
+        errorMessage = err.message;
+      }
+      
+      this._error.set(errorMessage);
+      return null;
+    } finally {
+      this._loading.set(false);
+    }
+  }
+
+  /**
+   * Check ML Service availability
+   */
+  async checkMLServiceHealth(): Promise<{ available: boolean; status: string }> {
+    try {
+      const mlApiUrl = `${environment.apiUrl || '/api'}/ml/health`;
+      const response = await firstValueFrom(
+        this.http.get<ApiResponse<any>>(mlApiUrl)
+      );
+
+      if (response.success && response.data) {
+        return {
+          available: response.data.mlService === 'healthy',
+          status: response.data.mlService
+        };
+      }
+      return { available: false, status: 'unknown' };
+    } catch {
+      return { available: false, status: 'unreachable' };
     }
   }
 

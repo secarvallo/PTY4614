@@ -1,6 +1,6 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterLink } from '@angular/router';
+import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { personOutline, fitnessOutline, chevronForwardOutline } from 'ionicons/icons';
@@ -24,9 +24,17 @@ interface RoleOption {
     './role-selection.page.scss'
   ]
 })
-export class RoleSelectionPage {
+export class RoleSelectionPage implements OnInit {
+  
+  private route = inject(ActivatedRoute);
   
   selectedRole = signal<UserRole | null>(null);
+  
+  // Email del usuario que viene del registro
+  private userEmail: string | null = null;
+  
+  // Indica si venimos del flujo de registro
+  isPostRegistration = signal(false);
   
   roles: RoleOption[] = [
     {
@@ -48,6 +56,12 @@ export class RoleSelectionPage {
     addIcons({ personOutline, fitnessOutline, chevronForwardOutline });
   }
 
+  ngOnInit(): void {
+    // Verificar si venimos del registro (tiene email en queryParams)
+    this.userEmail = this.route.snapshot.queryParams['email'] || null;
+    this.isPostRegistration.set(!!this.userEmail);
+  }
+
   selectRole(role: UserRole): void {
     this.selectedRole.set(role);
   }
@@ -56,10 +70,22 @@ export class RoleSelectionPage {
     return this.selectedRole() === role;
   }
 
-  continueToRegister(): void {
+  /**
+   * Continúa al siguiente paso según el flujo:
+   * - Si viene del registro (tiene email): va a login
+   * - Si es flujo normal: va a register con el rol
+   */
+  continueToNextStep(): void {
     const role = this.selectedRole();
-    if (role) {
-      // Navigate to register with role as query parameter
+    if (!role) return;
+
+    if (this.isPostRegistration()) {
+      // Flujo post-registro: ir a login con el email
+      this.router.navigate(['/auth/login'], { 
+        queryParams: { email: this.userEmail }
+      });
+    } else {
+      // Flujo normal: ir a register con el rol
       this.router.navigate(['/auth/register'], { 
         queryParams: { role: role }
       });

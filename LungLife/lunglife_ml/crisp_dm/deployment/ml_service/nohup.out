@@ -1,0 +1,45 @@
+INFO:     Started server process [17576]
+INFO:     Waiting for application startup.
+2026-01-26 01:49:26,042 - app.main - INFO - ============================================================
+2026-01-26 01:49:26,042 - app.main - INFO - Iniciando LungLife ML Service...
+2026-01-26 01:49:26,042 - app.main - INFO - Model path: C:\Users\scarv\Desktop\PTY4614\LungLife\lunglife_ml\crisp_dm\deployment\ml_service\models\lung_cancer_classifier.joblib
+2026-01-26 01:49:26,042 - app.main - INFO - Model exists: True
+2026-01-26 01:49:26,042 - app.core.model_loader - INFO - Cargando modelo desde: C:\Users\scarv\Desktop\PTY4614\LungLife\lunglife_ml\crisp_dm\deployment\ml_service\models\lung_cancer_classifier.joblib
+C:\Users\scarv\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\sklearn\base.py:442: InconsistentVersionWarning: Trying to unpickle estimator DecisionTreeClassifier from version 1.8.0 when using version 1.7.2. This might lead to breaking code or invalid results. Use at your own risk. For more info please refer to:
+https://scikit-learn.org/stable/model_persistence.html#security-maintainability-limitations
+  warnings.warn(
+C:\Users\scarv\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\sklearn\base.py:442: InconsistentVersionWarning: Trying to unpickle estimator RandomForestClassifier from version 1.8.0 when using version 1.7.2. This might lead to breaking code or invalid results. Use at your own risk. For more info please refer to:
+https://scikit-learn.org/stable/model_persistence.html#security-maintainability-limitations
+  warnings.warn(
+2026-01-26 01:49:27,302 - app.core.model_loader - INFO - Modelo cargado exitosamente
+2026-01-26 01:49:27,303 - app.core.model_loader - INFO - Configuración cargada: {'model_name': 'Random Forest', 'model_type': 'RandomForestClassifier', 'created_at': '2026-01-26T00:03:25.811926', 'version': '1.0.0', 'metrics': {'test': {'Model': 'Random Forest', 'Accuracy': 0.5023777777777778, 'Precision': 0.5017062073448164, 'Recall': 0.5494505494505495, 'F1-Score': 0.5244940861699191, 'AUC-ROC': 0.5020602026466118, 'AP (Avg Precision)': 0.5023471573782685}}, 'hyperparameters': {'bootstrap': True, 'ccp_alpha': 0.0, 'class_weight': 'balanced', 'criterion': 'gini', 'max_depth': 5, 'max_features': 'log2', 'max_leaf_nodes': None, 'max_samples': None, 'min_impurity_decrease': 0.0, 'min_samples_leaf': 2, 'min_samples_split': 10, 'min_weight_fraction_leaf': 0.0, 'monotonic_cst': None, 'n_estimators': 50, 'n_jobs': -1, 'oob_score': False, 'random_state': 42, 'verbose': 0, 'warm_start': False}, 'features': {'count': 29, 'names': ['Age', 'Years_Smoked', 'Pack_Years', 'BMI', 'Lung_Function_Test_Result', 'Air_Quality_Index', 'Tumor_Size_cm', 'Age_Group_18-40', 'Age_Group_41-60', 'Age_Group_61+', 'Gender', 'Smoking_History', 'Family_History_Cancer', 'Occupation', 'Exposure_to_Toxins', 'Residential_Area', 'Chest_Pain_Symptoms', 'Shortness_of_Breath', 'Chronic_Cough', 'Weight_Loss', 'Physical_Activity_Level', 'Dietary_Habits', 'Comorbidities', 'Previous_Cancer_Diagnosis', 'Pack_Years_Normalized', 'Smoking_Risk_Level', 'Symptom_Count', 'Environmental_Risk', 'Risk_Score_Composite']}, 'target': {'name': 'Cancer_Stage_Binary', 'classes': ['Early (0)', 'Advanced (1)']}, 'thresholds': {'default': 0.5, 'recall_optimized': 0.5}, 'acceptance_criteria': {'recall_min': 0.85, 'auc_min': 0.8, 'precision_min': 0.7, 'status': 'REVISION'}}
+2026-01-26 01:49:27,304 - app.core.model_loader - WARNING - No se pudo cargar SHAP: No module named 'shap'
+2026-01-26 01:49:27,304 - app.main - INFO - \u2713 Modelo cargado exitosamente
+2026-01-26 01:49:27,304 - app.main - INFO - ML Service listo
+2026-01-26 01:49:27,304 - app.main - INFO - ============================================================
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+2026-01-26 01:49:37,788 - app.main - INFO - GET / - 200 - 0.001s
+INFO:     127.0.0.1:45125 - "GET / HTTP/1.1" 200 OK
+2026-01-26 01:49:43,981 - app.main - INFO - GET /api/v1/health - 200 - 0.001s
+INFO:     127.0.0.1:28200 - "GET /api/v1/health HTTP/1.1" 200 OK
+2026-01-26 01:49:51,149 - app.main - INFO - GET /docs - 200 - 0.000s
+INFO:     127.0.0.1:4556 - "GET /docs?id=f5075110-f21f-42be-a7e5-6eebb93a91f4&vscodeBrowserReqId=1769402990838 HTTP/1.1" 200 OK
+2026-01-26 01:49:51,336 - app.main - INFO - GET /openapi.json - 200 - 0.014s
+INFO:     127.0.0.1:4556 - "GET /openapi.json HTTP/1.1" 200 OK
+2026-01-26 02:00:36,783 - app.main - INFO - GET /api/v1/health - 200 - 0.001s
+INFO:     127.0.0.1:21247 - "GET /api/v1/health HTTP/1.1" 200 OK
+2026-01-26 02:02:36,106 - app.main - INFO - GET /api/v1/health - 200 - 0.000s
+INFO:     127.0.0.1:20250 - "GET /api/v1/health HTTP/1.1" 200 OK
+2026-01-26 02:02:36,131 - app.main - INFO - POST /api/v1/predict - 422 - 0.001s
+INFO:     127.0.0.1:20250 - "POST /api/v1/predict HTTP/1.1" 422 Unprocessable Entity
+2026-01-26 02:02:57,503 - app.main - INFO - GET /api/v1/health - 200 - 0.000s
+INFO:     127.0.0.1:30467 - "GET /api/v1/health HTTP/1.1" 200 OK
+2026-01-26 02:03:20,420 - app.main - INFO - POST /api/v1/predict - 422 - 0.002s
+INFO:     127.0.0.1:34051 - "POST /api/v1/predict HTTP/1.1" 422 Unprocessable Entity
+2026-01-26 02:03:27,053 - app.main - INFO - GET /docs - 200 - 0.001s
+INFO:     127.0.0.1:55596 - "GET /docs HTTP/1.1" 200 OK
+2026-01-26 02:03:31,983 - app.main - INFO - GET /openapi.json - 200 - 0.000s
+INFO:     127.0.0.1:1994 - "GET /openapi.json HTTP/1.1" 200 OK
+2026-01-26 02:03:39,649 - app.main - INFO - GET /openapi.json - 200 - 0.000s
+INFO:     127.0.0.1:6401 - "GET /openapi.json HTTP/1.1" 200 OK

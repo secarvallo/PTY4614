@@ -6,7 +6,7 @@ import { Router } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { AuthFacadeService } from '../../auth/core/services';
 import { AuthValidators } from '../../auth/core/validators/auth-validators';
-import { TwoFactorMethod } from '../../auth/core/interfaces/auth-advanced.interface';
+import { TwoFactorMethod } from '../../auth/core/interfaces/auth.unified';
 
 @Component({
   selector: 'app-two-fa-setup',

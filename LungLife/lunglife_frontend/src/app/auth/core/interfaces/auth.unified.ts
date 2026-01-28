@@ -105,9 +105,27 @@ export interface UserSession {
   created_at?: Date;
   last_activity?: Date;
   expires_at: Date;
+  // Propiedades computadas/relaciones para compatibilidad
+  deviceName?: string;
+  deviceType?: string;
+  browser?: string;
+  os?: string;
+  location?: {
+    city?: string;
+    country?: string;
+  };
+  // Propiedades camelCase para compatibilidad con templates
+  isCurrent?: boolean;      // -> is_current
+  ipAddress?: string;       // -> ip_address
+  lastActivity?: Date;      // -> last_activity
+  createdAt?: Date;         // -> created_at
+  expiresAt?: Date;         // -> expires_at
+  isActive?: boolean;       // computada: sesión no expirada
 }
 
 // Usuario principal
+export type UserRole = 'PATIENT' | 'DOCTOR' | 'ADMINISTRATOR';
+
 export interface User {
   id: number;
   email: string;
@@ -126,6 +144,9 @@ export interface User {
   security_settings?: UserSecuritySettings;
   devices?: UserDevice[];
   sessions?: UserSession[];
+  // --- Campos de rol para navegación post-login ---
+  role?: UserRole;    // PATIENT, DOCTOR, ADMINISTRATOR
+  roleId?: number;    // 1=PATIENT, 2=DOCTOR, 3=ADMINISTRATOR
   // --- Compatibilidad con código previo (camelCase) ---
   firstName?: string; // -> profile.nombre
   lastName?: string; // -> profile.apellido
@@ -138,8 +159,6 @@ export interface User {
   birthDate?: Date; // -> profile.fecha_nacimiento
   isActive?: boolean; // -> is_active
   avatar?: string; // -> profile.avatar_url
-  role?: string; // (si se agrega en backend futuro)
-  roleId?: number; // 1=PATIENT, 2=DOCTOR
 }
 
 export interface AuthCredentials {
@@ -164,4 +183,22 @@ export interface AuthState {
   error$: Observable<string | null>;
   requiresTwoFA$: Observable<boolean>;
   user$: Observable<User | null>;
+}
+
+// ========== Interfaces de Sesiones ==========
+export enum TwoFactorMethod {
+  TOTP = 'totp',
+  SMS = 'sms',
+  EMAIL = 'email'
+}
+
+export interface SessionsResponse {
+  success: boolean;
+  sessions?: UserSession[];
+  error?: string;
+}
+
+export interface RevokeSessionRequest {
+  sessionId?: string;
+  revokeAll?: boolean;
 }

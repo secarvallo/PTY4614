@@ -1,0 +1,210 @@
+# ============================================================================
+# LungLife MVP - Docker Compose Configuration
+# Versión: 1.0.0
+# Autor: LungLife Team
+# Descripción: Orquestación de servicios para el MVP de predicción de cáncer
+# ============================================================================
+
+version: '3.8'
+
+# =============================================================================
+# NETWORKS
+# =============================================================================
+networks:
+  lunglife-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.0.0/16
+
+# =============================================================================
+# VOLUMES
+# =============================================================================
+volumes:
+  pgdata:
+    name: lunglife_pgdata
+  redisdata:
+    name: lunglife_redisdata
+  ml-models:
+    name: lunglife_ml_models
+  logs:
+    name: lunglife_logs
+
+# =============================================================================
+# SERVICES
+# =============================================================================
+services:
+  # ---------------------------------------------------------------------------
+  # PostgreSQL Database
+  # ---------------------------------------------------------------------------
+  postgres:
+    image: postgres:15-alpine
+    container_name: lunglife_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-lunglife}
+      POSTGRES_USER: ${POSTGRES_USER:-lunglife_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-secure_password_change_me}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./database/init:/docker-entrypoint-initdb.d:ro
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    networks:
+      lunglife-network:
+        ipv4_address: 172.28.0.10
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-lunglife_user} -d ${POSTGRES_DB:-lunglife}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 256M
+
+  # ---------------------------------------------------------------------------
+  # Redis Cache
+  # ---------------------------------------------------------------------------
+  redis:
+    image: redis:7-alpine
+    container_name: lunglife_redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redisdata:/data
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    networks:
+      lunglife-network:
+        ipv4_address: 172.28.0.11
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+        reservations:
+          memory: 128M
+
+  # ---------------------------------------------------------------------------
+  # ML Service (FastAPI)
+  # ---------------------------------------------------------------------------
+  ml-service:
+    build:
+      context: ./ml_service
+      dockerfile: Dockerfile
+    container_name: lunglife_ml_service
+    restart: unless-stopped
+    environment:
+      - ENVIRONMENT=${ENVIRONMENT:-production}
+      - MODEL_PATH=/app/models
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - REDIS_URL=redis://redis:6379/0
+      - MAX_WORKERS=${ML_MAX_WORKERS:-4}
+      - MODEL_VERSION=${MODEL_VERSION:-1.0.0}
+    volumes:
+      - ml-models:/app/models:ro
+      - logs:/app/logs
+    ports:
+      - "${ML_SERVICE_PORT:-8000}:8000"
+    networks:
+      lunglife-network:
+        ipv4_address: 172.28.0.20
+    depends_on:
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+        reservations:
+          memory: 512M
+
+  # ---------------------------------------------------------------------------
+  # Backend (Node.js/Express)
+  # ---------------------------------------------------------------------------
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: lunglife_backend
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=${NODE_ENV:-production}
+      - PORT=3000
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-lunglife_user}:${POSTGRES_PASSWORD:-secure_password_change_me}@postgres:5432/${POSTGRES_DB:-lunglife}
+      - REDIS_URL=redis://redis:6379/0
+      - ML_SERVICE_URL=http://ml-service:8000
+      - JWT_SECRET=${JWT_SECRET:-change_this_secret_in_production}
+      - JWT_EXPIRES_IN=${JWT_EXPIRES_IN:-24h}
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+    volumes:
+      - logs:/app/logs
+    ports:
+      - "${BACKEND_PORT:-3000}:3000"
+    networks:
+      lunglife-network:
+        ipv4_address: 172.28.0.30
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      ml-service:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 256M
+
+  # ---------------------------------------------------------------------------
+  # Frontend (Ionic/Angular con Nginx)
+  # ---------------------------------------------------------------------------
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - API_URL=${API_URL:-http://localhost:3000/api}
+    container_name: lunglife_frontend
+    restart: unless-stopped
+    ports:
+      - "${FRONTEND_PORT:-8100}:80"
+    networks:
+      lunglife-network:
+        ipv4_address: 172.28.0.40
+    depends_on:
+      - backend
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+        reservations:
+          memory: 128M

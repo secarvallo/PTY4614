@@ -1,0 +1,420 @@
+# ============================================================================
+# LungLife ML Service - OpenAPI 3.0 Specification
+# Version: 1.0.0
+# ============================================================================
+openapi: 3.0.3
+
+info:
+  title: LungLife ML Service API
+  description: |
+    API REST para el servicio de Machine Learning del MVP LungLife.
+    Proporciona predicciones de riesgo de cáncer pulmonar basadas en
+    factores clínicos y demográficos del paciente.
+
+    ## Características
+    - Predicción de riesgo con interpretabilidad (SHAP)
+    - Clasificación por niveles de riesgo clínico
+    - Soporte para predicciones individuales y por lotes
+    - Health checks y métricas de rendimiento
+
+    ## Autenticación
+    Todas las rutas de predicción requieren autenticación Bearer JWT.
+  version: 1.0.0
+  contact:
+    name: LungLife Team
+    email: soporte@lunglife.cl
+  license:
+    name: Proprietary
+    url: https://lunglife.cl/license
+
+servers:
+  - url: http://localhost:8000
+    description: Development server
+  - url: https://api.lunglife.cl/ml
+    description: Production server
+
+tags:
+  - name: Health
+    description: Health check endpoints
+  - name: Predictions
+    description: ML prediction endpoints
+  - name: Model
+    description: Model information endpoints
+
+paths:
+  /health:
+    get:
+      tags:
+        - Health
+      summary: Health Check
+      description: Verifica el estado del servicio y sus dependencias
+      operationId: healthCheck
+      responses:
+        '200':
+          description: Servicio saludable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+              example:
+                status: healthy
+                timestamp: "2024-01-15T10:30:00Z"
+                version: "1.0.0"
+                model_loaded: true
+                uptime_seconds: 3600.5
+
+  /api/v1/predict:
+    post:
+      tags:
+        - Predictions
+      summary: Predicción Individual
+      description: |
+        Realiza una predicción de riesgo de cáncer pulmonar para un paciente.
+        Retorna probabilidad, nivel de riesgo y top 5 factores contribuyentes.
+      operationId: predictSingle
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatientDataRequest'
+            example:
+              age: 65
+              gender: "M"
+              smoking: 2
+              yellow_fingers: 1
+              anxiety: 1
+              peer_pressure: 0
+              chronic_disease: 1
+              fatigue: 2
+              allergy: 0
+              wheezing: 2
+              alcohol_consuming: 1
+              coughing: 2
+              shortness_of_breath: 2
+              swallowing_difficulty: 1
+              chest_pain: 2
+      responses:
+        '200':
+          description: Predicción exitosa
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PredictionResponse'
+              example:
+                prediction: 1
+                probability: 0.847
+                risk_level: "HIGH"
+                confidence: 0.923
+                model_version: "1.0.0"
+                top_features:
+                  - feature: "smoking"
+                    contribution: 0.234
+                    direction: "positive"
+                  - feature: "age"
+                    contribution: 0.187
+                    direction: "positive"
+                  - feature: "wheezing"
+                    contribution: 0.156
+                    direction: "positive"
+                  - feature: "chest_pain"
+                    contribution: 0.134
+                    direction: "positive"
+                  - feature: "chronic_disease"
+                    contribution: 0.098
+                    direction: "positive"
+                recommendation: "Se recomienda evaluación médica urgente"
+                timestamp: "2024-01-15T10:30:00Z"
+        '400':
+          description: Datos de entrada inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: No autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/predict/batch:
+    post:
+      tags:
+        - Predictions
+      summary: Predicción por Lotes
+      description: |
+        Realiza predicciones para múltiples pacientes en una sola solicitud.
+        Máximo 100 pacientes por lote.
+      operationId: predictBatch
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BatchPredictionRequest'
+      responses:
+        '200':
+          description: Predicciones exitosas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchPredictionResponse'
+        '400':
+          description: Datos de entrada inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/model/info:
+    get:
+      tags:
+        - Model
+      summary: Información del Modelo
+      description: Retorna metadata del modelo cargado
+      operationId: getModelInfo
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Información del modelo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModelInfoResponse'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token from backend authentication
+
+  schemas:
+    PatientDataRequest:
+      type: object
+      required:
+        - age
+        - gender
+        - smoking
+      properties:
+        age:
+          type: integer
+          minimum: 18
+          maximum: 120
+          description: Edad del paciente en años
+        gender:
+          type: string
+          enum: ["M", "F"]
+          description: Género del paciente
+        smoking:
+          type: integer
+          minimum: 0
+          maximum: 2
+          description: "Nivel de tabaquismo (0: No, 1: Ex-fumador, 2: Fumador activo)"
+        yellow_fingers:
+          type: integer
+          minimum: 0
+          maximum: 2
+          default: 0
+        anxiety:
+          type: integer
+          minimum: 0
+          maximum: 2
+          default: 0
+        peer_pressure:
+          type: integer
+          minimum: 0
+          maximum: 2
+          default: 0
+        chronic_disease:
+          type: integer
+          minimum: 0
+          maximum: 2
+          default: 0
+        fatigue:
+          type: integer
+          minimum: 0
+          maximum: 2
+          default: 0
+        allergy:
+          type: integer
+          minimum: 0
+          maximum: 2
+          default: 0
+        wheezing:
+          type: integer
+          minimum: 0
+          maximum: 2
+          default: 0
+        alcohol_consuming:
+          type: integer
+          minimum: 0
+          maximum: 2
+          default: 0
+        coughing:
+          type: integer
+          minimum: 0
+          maximum: 2
+          default: 0
+        shortness_of_breath:
+          type: integer
+          minimum: 0
+          maximum: 2
+          default: 0
+        swallowing_difficulty:
+          type: integer
+          minimum: 0
+          maximum: 2
+          default: 0
+        chest_pain:
+          type: integer
+          minimum: 0
+          maximum: 2
+          default: 0
+
+    PredictionResponse:
+      type: object
+      properties:
+        prediction:
+          type: integer
+          enum: [0, 1]
+          description: "Predicción binaria (0: No cáncer, 1: Riesgo de cáncer)"
+        probability:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 1
+          description: Probabilidad de riesgo (0.0 a 1.0)
+        risk_level:
+          type: string
+          enum: ["LOW", "MODERATE", "HIGH", "VERY_HIGH"]
+          description: Nivel de riesgo clínico
+        confidence:
+          type: number
+          format: float
+          description: Confianza del modelo en la predicción
+        model_version:
+          type: string
+          description: Versión del modelo utilizado
+        top_features:
+          type: array
+          items:
+            $ref: '#/components/schemas/FeatureContribution'
+          description: Top 5 factores contribuyentes
+        recommendation:
+          type: string
+          description: Recomendación clínica basada en el riesgo
+        timestamp:
+          type: string
+          format: date-time
+          description: Timestamp de la predicción
+
+    FeatureContribution:
+      type: object
+      properties:
+        feature:
+          type: string
+          description: Nombre del factor
+        contribution:
+          type: number
+          format: float
+          description: Magnitud de la contribución
+        direction:
+          type: string
+          enum: ["positive", "negative"]
+          description: Dirección del impacto en el riesgo
+
+    BatchPredictionRequest:
+      type: object
+      properties:
+        patients:
+          type: array
+          items:
+            $ref: '#/components/schemas/PatientDataRequest'
+          maxItems: 100
+          description: Lista de pacientes para predicción
+
+    BatchPredictionResponse:
+      type: object
+      properties:
+        predictions:
+          type: array
+          items:
+            $ref: '#/components/schemas/PredictionResponse'
+        total_processed:
+          type: integer
+        processing_time_ms:
+          type: number
+
+    HealthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: ["healthy", "degraded", "unhealthy"]
+        timestamp:
+          type: string
+          format: date-time
+        version:
+          type: string
+        model_loaded:
+          type: boolean
+        uptime_seconds:
+          type: number
+
+    ModelInfoResponse:
+      type: object
+      properties:
+        model_name:
+          type: string
+        version:
+          type: string
+        trained_date:
+          type: string
+          format: date-time
+        features:
+          type: array
+          items:
+            type: string
+        metrics:
+          type: object
+          properties:
+            accuracy:
+              type: number
+            recall:
+              type: number
+            precision:
+              type: number
+            f1_score:
+              type: number
+            auc_roc:
+              type: number
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Tipo de error
+        message:
+          type: string
+          description: Mensaje descriptivo
+        detail:
+          type: object
+          description: Detalles adicionales del error
+        timestamp:
+          type: string
+          format: date-time

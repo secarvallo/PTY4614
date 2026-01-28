@@ -3,7 +3,7 @@
  */
 
 // Import shared auth styles for centering
-@import '../auth/auth.styles.scss';
+@use '../auth/auth.styles.scss' as auth;
 
 // Dashboard Section
 .dashboard-section {
@@ -274,6 +274,47 @@
   }
 }
 
+// Alert Card (for warnings/errors)
+.alert-card {
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 12px;
+  margin-bottom: 16px;
+  
+  &.warning {
+    background: rgba(255, 193, 7, 0.1);
+    border: 1px solid rgba(255, 193, 7, 0.3);
+    
+    > ion-icon {
+      font-size: 24px;
+      color: #f59e0b;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+  }
+  
+  .alert-content {
+    flex: 1;
+    
+    h4 {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+      margin: 0 0 4px 0;
+    }
+    
+    p {
+      font-size: 14px;
+      color: var(--text-light);
+      margin: 0;
+      line-height: 1.4;
+    }
+  }
+}
+
 // Dark Mode
 [data-theme="dark"] {
   .stat-card,
@@ -287,5 +328,9 @@
   
   .user-avatar-container .avatar-circle {
     background: rgba(0, 122, 255, 0.15);
+  }
+  
+  .alert-card.warning {
+    background: rgba(255, 193, 7, 0.15);
   }
 }
