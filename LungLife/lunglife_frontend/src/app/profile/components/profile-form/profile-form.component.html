@@ -76,11 +76,10 @@
 
     <!-- ========== PERFIL DE MÉDICO ========== -->
     <div *ngIf="isDoctor && doctorProfile" class="doctor-profile-section">
-      <div class="action-section">
+      <div class="action-section profile-section">
+        <!-- Header igual que paciente -->
         <div class="auth-header">
-          <div class="logo-placeholder doctor-badge">
-            <ion-icon name="medkit"></ion-icon>
-          </div>
+          <div class="logo-placeholder"></div>
           <div class="header-content">
             <div class="header-text">
               <h1>Dr. {{ doctorProfile.fullName }}</h1>
@@ -89,52 +88,108 @@
           </div>
         </div>
 
-        <div class="doctor-info-grid">
-          <div class="info-card">
-            <label>Licencia Médica</label>
-            <p>{{ doctorProfile.medicalLicense || 'No especificada' }}</p>
-          </div>
-          <div class="info-card">
-            <label>Institución</label>
-            <p>{{ doctorProfile.hospitalInstitution || 'No especificada' }}</p>
-          </div>
-          <div class="info-card">
-            <label>Teléfono</label>
-            <p>{{ doctorProfile.phone || 'No especificado' }}</p>
-          </div>
-          <div class="info-card">
-            <label>Email Institucional</label>
-            <p>{{ doctorProfile.emailInstitutional || userEmail }}</p>
-          </div>
-          <div class="info-card">
-            <label>Fecha de Nacimiento</label>
-            <p>{{ doctorProfile.dateOfBirth | date:'dd/MM/yyyy' }}</p>
-          </div>
-          <div class="info-card">
-            <label>Género</label>
-            <p>{{ doctorProfile.gender || 'No especificado' }}</p>
-          </div>
-        </div>
-
-        <div class="doctor-stats">
-          <div class="stat-highlight">
-            <ion-icon name="people" color="primary"></ion-icon>
-            <div>
-              <h2>{{ doctorProfile.patientCount }}</h2>
-              <p>Pacientes asignados</p>
+        <!-- Estadística Destacada -->
+        <div class="doctor-highlight-card">
+          <div class="highlight-content">
+            <div class="highlight-icon">
+              <ion-icon name="people"></ion-icon>
+            </div>
+            <div class="highlight-info">
+              <span class="highlight-number">{{ doctorProfile.patientCount || 0 }}</span>
+              <span class="highlight-label">Pacientes Asignados</span>
             </div>
           </div>
         </div>
 
-        <div class="doctor-actions">
-          <ion-button expand="block" routerLink="/doctor/patients">
-            <ion-icon slot="start" name="list"></ion-icon>
-            Ver Mis Pacientes
-          </ion-button>
-          <ion-button expand="block" fill="outline" routerLink="/dashboard">
-            <ion-icon slot="start" name="home"></ion-icon>
-            Ir al Dashboard
-          </ion-button>
+        <!-- Sección: Información Profesional -->
+        <div class="form-section">
+          <div class="form-section-header">
+            <h3><ion-icon name="briefcase-outline"></ion-icon> Información Profesional</h3>
+            <p>Datos de tu perfil médico</p>
+          </div>
+
+          <div class="view-field">
+            <label>Licencia Médica</label>
+            <p>{{ doctorProfile.medicalLicense || 'No especificada' }}</p>
+          </div>
+
+          <div class="view-field">
+            <label>Especialidad</label>
+            <p>{{ doctorProfile.specialty || 'No especificada' }}</p>
+          </div>
+
+          <div class="view-field">
+            <label>Institución / Hospital</label>
+            <p>{{ doctorProfile.hospitalInstitution || 'No especificada' }}</p>
+          </div>
+        </div>
+
+        <!-- Sección: Información Personal -->
+        <div class="form-section">
+          <div class="form-section-header">
+            <h3><ion-icon name="person-outline"></ion-icon> Información Personal</h3>
+            <p>Datos personales del médico</p>
+          </div>
+
+          <div class="view-field">
+            <label>Nombre Completo</label>
+            <p>{{ doctorProfile.fullName }}</p>
+          </div>
+
+          <div class="view-fields-row">
+            <div class="view-field">
+              <label>Fecha de Nacimiento</label>
+              <p>{{ doctorProfile.dateOfBirth ? (doctorProfile.dateOfBirth | date:'dd/MM/yyyy') : 'No especificada' }}</p>
+            </div>
+            <div class="view-field">
+              <label>Género</label>
+              <p>{{ doctorProfile.gender || 'No especificado' }}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sección: Información de Contacto -->
+        <div class="form-section">
+          <div class="form-section-header">
+            <h3><ion-icon name="call-outline"></ion-icon> Información de Contacto</h3>
+            <p>Datos de contacto profesional</p>
+          </div>
+
+          <div class="view-field">
+            <label>Teléfono</label>
+            <p>
+              <ion-icon name="call-outline" class="field-icon"></ion-icon>
+              {{ doctorProfile.phone || 'No especificado' }}
+            </p>
+          </div>
+
+          <div class="view-field">
+            <label>Email Institucional</label>
+            <p>
+              <ion-icon name="mail-outline" class="field-icon"></ion-icon>
+              {{ doctorProfile.emailInstitutional || userEmail || 'No especificado' }}
+            </p>
+          </div>
+        </div>
+
+        <!-- Acciones -->
+        <div class="form-actions">
+          <div class="button-group">
+            <ion-button expand="block" class="primary-button" routerLink="/doctor/patients">
+              <ion-icon slot="start" name="list-outline"></ion-icon>
+              Ver Mis Pacientes
+            </ion-button>
+            <ion-button expand="block" fill="outline" class="secondary-button" routerLink="/dashboard">
+              <ion-icon slot="start" name="home-outline"></ion-icon>
+              Ir al Dashboard
+            </ion-button>
+          </div>
+        </div>
+
+        <!-- Navigation Section -->
+        <div class="navigation-section">
+          <a [routerLink]="['/dashboard']" class="back-link">← Volver al Dashboard</a>
+          <app-logout-button [buttonStyle]="'card'" [showConfirmation]="true"></app-logout-button>
         </div>
       </div>
     </div>

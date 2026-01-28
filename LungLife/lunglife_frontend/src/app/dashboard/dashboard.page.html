@@ -2,14 +2,14 @@
   <div class="welcome-container">
     <div class="action-section dashboard-section">
 
-    @if (user) {
+      @if (user) {
       <!-- User Avatar -->
       <div class="user-avatar-container">
         <div class="avatar-circle">
           @if (user.avatar || user.profile?.avatarUrl) {
-            <img [src]="user.avatar || user.profile?.avatarUrl" alt="Foto de perfil" class="avatar-img">
+          <img [src]="user.avatar || user.profile?.avatarUrl" alt="Foto de perfil" class="avatar-img">
           } @else {
-            <ion-icon name="person-outline"></ion-icon>
+          <ion-icon name="person-outline"></ion-icon>
           }
         </div>
       </div>
@@ -17,43 +17,51 @@
       <!-- Welcome Header -->
       <div class="auth-header">
         @if (isDoctor() && userFullName()) {
-          <h1>¡Hola, Dr(a). {{ userFullName() }}!</h1>
-          <p>Bienvenido de vuelta a LungLife</p>
+        <h1>¡Hola, Dr(a). {{ userFullName() }}!</h1>
+        <p>Bienvenido de vuelta a LungLife</p>
         } @else if (userFullName() && userFullName() !== '') {
-          <h1>¡Hola, {{ userFullName() }}!</h1>
-          <p>Bienvenido de vuelta a LungLife</p>
+        <h1>¡Hola, {{ userFullName() }}!</h1>
+        <p>Bienvenido de vuelta a LungLife</p>
         } @else if (user && user.email) {
-          <h1>¡Hola, {{ user.email.split('@')[0] }}!</h1>
-          <p>Bienvenido de vuelta a LungLife</p>
+        <h1>¡Hola, {{ user.email.split('@')[0] }}!</h1>
+        <p>Bienvenido de vuelta a LungLife</p>
         } @else {
-          <h1>¡Bienvenido a LungLife!</h1>
-          <p>Cargando tu información...</p>
+        <h1>¡Bienvenido a LungLife!</h1>
+        <p>Cargando tu información...</p>
         }
       </div>
 
       <!-- Quick Stats Cards - Solo para pacientes -->
       @if (isPatient()) {
-        <div class="stats-row">
-          <div class="stat-card">
-            <div class="stat-icon smoke-free">
-              <ion-icon name="leaf-outline"></ion-icon>
-            </div>
-            <div class="stat-info">
-              <span class="stat-value">{{ smokeFreeDays }}</span>
-              <span class="stat-label">Días sin fumar</span>
-            </div>
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-icon smoke-free">
+            <ion-icon name="leaf-outline"></ion-icon>
           </div>
-          
-          <div class="stat-card">
-            <div class="stat-icon health">
-              <ion-icon name="fitness-outline"></ion-icon>
-            </div>
-            <div class="stat-info">
-              <span class="stat-value">{{ lungHealthPercentage }}%</span>
-              <span class="stat-label">Salud Pulmonar</span>
-            </div>
+          <div class="stat-info">
+            @if (statsLoading()) {
+            <span class="stat-value">--</span>
+            } @else {
+            <span class="stat-value">{{ smokeFreeDays() }}</span>
+            }
+            <span class="stat-label">Días sin fumar</span>
           </div>
         </div>
+
+        <div class="stat-card">
+          <div class="stat-icon health">
+            <ion-icon name="fitness-outline"></ion-icon>
+          </div>
+          <div class="stat-info">
+            @if (statsLoading()) {
+            <span class="stat-value">--</span>
+            } @else {
+            <span class="stat-value">{{ lungHealthPercentage() }}%</span>
+            }
+            <span class="stat-label">Salud Pulmonar</span>
+          </div>
+        </div>
+      </div>
       }
 
       <!-- Action Cards -->
@@ -63,166 +71,194 @@
 
       <!-- ===== PATIENT ACTIONS (Order: 1.Hábito, 2.Clínico, 3.Médico, 4.Progreso, 5.Perfil) ===== -->
       @if (isPatient()) {
-        <div class="action-card" (click)="logHabit()">
-          <div class="card-icon primary">
-            <ion-icon name="add-circle-outline"></ion-icon>
-          </div>
-          <div class="card-info">
-            <h3>Registrar Hábito</h3>
-            <p>Registra tu progreso de hoy</p>
-          </div>
-          <ion-icon name="chevron-forward-outline" class="arrow-icon"></ion-icon>
+      <div class="action-card" (click)="logHabit()">
+        <div class="card-icon primary">
+          <ion-icon name="add-circle-outline"></ion-icon>
         </div>
-
-        <div class="action-card" routerLink="/clinical-profile">
-          <div class="card-icon clinical">
-            <ion-icon name="pulse-outline"></ion-icon>
-          </div>
-          <div class="card-info">
-            <h3>Mi Perfil Clínico</h3>
-            <p>Información clínica y riesgo</p>
-          </div>
-          <ion-icon name="chevron-forward-outline" class="arrow-icon"></ion-icon>
+        <div class="card-info">
+          <h3>Registrar Hábito</h3>
+          <p>Registra tu progreso de hoy</p>
         </div>
+        <ion-icon name="chevron-forward-outline" class="arrow-icon"></ion-icon>
+      </div>
 
-        <div class="action-card" routerLink="/directory">
-          <div class="card-icon doctor">
-            <ion-icon name="medkit-outline"></ion-icon>
-          </div>
-          <div class="card-info">
-            <h3>Buscar Médico</h3>
-            <p>Encuentra un especialista</p>
-          </div>
-          <ion-icon name="chevron-forward-outline" class="arrow-icon"></ion-icon>
+      <div class="action-card" routerLink="/clinical-profile">
+        <div class="card-icon clinical">
+          <ion-icon name="pulse-outline"></ion-icon>
         </div>
-
-        <div class="action-card" (click)="viewProgress()">
-          <div class="card-icon">
-            <ion-icon name="bar-chart-outline"></ion-icon>
-          </div>
-          <div class="card-info">
-            <h3>Ver Progreso</h3>
-            <p>Revisa tu avance detallado</p>
-          </div>
-          <ion-icon name="chevron-forward-outline" class="arrow-icon"></ion-icon>
+        <div class="card-info">
+          <h3>Mi Perfil Clínico</h3>
+          <p>Información clínica y riesgo</p>
         </div>
+        <ion-icon name="chevron-forward-outline" class="arrow-icon"></ion-icon>
+      </div>
 
-        <div class="action-card" routerLink="/profile">
-          <div class="card-icon settings">
-            <ion-icon name="person-outline"></ion-icon>
-          </div>
-          <div class="card-info">
-            <h3>Gestión de Perfil</h3>
-            <p>Edita tu información personal</p>
-          </div>
-          <ion-icon name="chevron-forward-outline" class="arrow-icon"></ion-icon>
+      <div class="action-card" routerLink="/directory">
+        <div class="card-icon doctor">
+          <ion-icon name="medkit-outline"></ion-icon>
         </div>
+        <div class="card-info">
+          <h3>Buscar Médico</h3>
+          <p>Encuentra un especialista</p>
+        </div>
+        <ion-icon name="chevron-forward-outline" class="arrow-icon"></ion-icon>
+      </div>
 
-        <!-- Logout Button for Patients -->
-        <app-logout-button [buttonStyle]="'card'" [showConfirmation]="true"></app-logout-button>
+      <div class="action-card" (click)="viewProgress()">
+        <div class="card-icon">
+          <ion-icon name="bar-chart-outline"></ion-icon>
+        </div>
+        <div class="card-info">
+          <h3>Ver Progreso</h3>
+          <p>Revisa tu avance detallado</p>
+        </div>
+        <ion-icon name="chevron-forward-outline" class="arrow-icon"></ion-icon>
+      </div>
+
+      <div class="action-card" routerLink="/profile">
+        <div class="card-icon settings">
+          <ion-icon name="person-outline"></ion-icon>
+        </div>
+        <div class="card-info">
+          <h3>Gestión de Perfil</h3>
+          <p>Edita tu información personal</p>
+        </div>
+        <ion-icon name="chevron-forward-outline" class="arrow-icon"></ion-icon>
+      </div>
+
+      <!-- Back Button -->
+      <ion-button expand="block" fill="outline" color="medium" shape="round" class="ion-margin-bottom"
+        (click)="navigateBack()">
+        <ion-icon name="arrow-back" slot="start"></ion-icon>
+        Volver
+      </ion-button>
+
+      <!-- Logout Button for Patients -->
+      <app-logout-button [buttonStyle]="'card'" [showConfirmation]="true"></app-logout-button>
       }
 
       <!-- ===== DOCTOR ACTIONS (Order: 1.Pacientes, 2.Progreso, 3.Perfil) ===== -->
       @if (isDoctor()) {
-        <div class="action-card" routerLink="/directory">
-          <div class="card-icon doctor">
-            <ion-icon name="people-outline"></ion-icon>
-          </div>
-          <div class="card-info">
-            <h3>Ver Mis Pacientes</h3>
-            <p>Gestiona tus pacientes asignados</p>
-          </div>
-          <ion-icon name="chevron-forward-outline" class="arrow-icon"></ion-icon>
+      <div class="action-card" routerLink="/directory">
+        <div class="card-icon doctor">
+          <ion-icon name="people-outline"></ion-icon>
         </div>
-
-        <div class="action-card" (click)="viewProgress()">
-          <div class="card-icon">
-            <ion-icon name="bar-chart-outline"></ion-icon>
-          </div>
-          <div class="card-info">
-            <h3>Ver Progreso</h3>
-            <p>Revisa estadísticas de pacientes</p>
-          </div>
-          <ion-icon name="chevron-forward-outline" class="arrow-icon"></ion-icon>
+        <div class="card-info">
+          <h3>Ver Mis Pacientes</h3>
+          <p>Gestiona tus pacientes asignados</p>
         </div>
+        <ion-icon name="chevron-forward-outline" class="arrow-icon"></ion-icon>
+      </div>
 
-        <div class="action-card" routerLink="/profile">
-          <div class="card-icon settings">
-            <ion-icon name="person-outline"></ion-icon>
-          </div>
-          <div class="card-info">
-            <h3>Gestión de Perfil</h3>
-            <p>Edita tu información profesional</p>
-          </div>
-          <ion-icon name="chevron-forward-outline" class="arrow-icon"></ion-icon>
+      <div class="action-card" (click)="viewProgress()">
+        <div class="card-icon">
+          <ion-icon name="bar-chart-outline"></ion-icon>
         </div>
+        <div class="card-info">
+          <h3>Ver Progreso</h3>
+          <p>Revisa estadísticas de pacientes</p>
+        </div>
+        <ion-icon name="chevron-forward-outline" class="arrow-icon"></ion-icon>
+      </div>
 
-        <!-- Logout Button for Doctors -->
-        <app-logout-button [buttonStyle]="'card'" [showConfirmation]="true"></app-logout-button>
+      <div class="action-card" routerLink="/profile">
+        <div class="card-icon settings">
+          <ion-icon name="person-outline"></ion-icon>
+        </div>
+        <div class="card-info">
+          <h3>Gestión de Perfil</h3>
+          <p>Edita tu información profesional</p>
+        </div>
+        <ion-icon name="chevron-forward-outline" class="arrow-icon"></ion-icon>
+      </div>
+
+      <!-- Back Button -->
+      <ion-button expand="block" fill="outline" color="medium" shape="round" class="ion-margin-bottom"
+        (click)="navigateBack()">
+        <ion-icon name="arrow-back" slot="start"></ion-icon>
+        Volver
+      </ion-button>
+
+      <!-- Logout Button for Doctors -->
+      <app-logout-button [buttonStyle]="'card'" [showConfirmation]="true"></app-logout-button>
       }
 
       <!-- ===== ADMINISTRATOR ACTIONS ===== -->
       @if (isAdmin()) {
-        <div class="action-card" routerLink="/directory">
-          <div class="card-icon doctor">
-            <ion-icon name="people-outline"></ion-icon>
-          </div>
-          <div class="card-info">
-            <h3>Gestión de Usuarios</h3>
-            <p>Administrar usuarios del sistema</p>
-          </div>
-          <ion-icon name="chevron-forward-outline" class="arrow-icon"></ion-icon>
+      <div class="action-card" routerLink="/directory">
+        <div class="card-icon doctor">
+          <ion-icon name="people-outline"></ion-icon>
         </div>
-
-        <div class="action-card" (click)="viewProgress()">
-          <div class="card-icon">
-            <ion-icon name="bar-chart-outline"></ion-icon>
-          </div>
-          <div class="card-info">
-            <h3>Estadísticas del Sistema</h3>
-            <p>Métricas y reportes generales</p>
-          </div>
-          <ion-icon name="chevron-forward-outline" class="arrow-icon"></ion-icon>
+        <div class="card-info">
+          <h3>Gestión de Usuarios</h3>
+          <p>Administrar usuarios del sistema</p>
         </div>
+        <ion-icon name="chevron-forward-outline" class="arrow-icon"></ion-icon>
+      </div>
 
-        <div class="action-card" routerLink="/profile">
-          <div class="card-icon settings">
-            <ion-icon name="person-outline"></ion-icon>
-          </div>
-          <div class="card-info">
-            <h3>Mi Perfil</h3>
-            <p>Edita tu información de administrador</p>
-          </div>
-          <ion-icon name="chevron-forward-outline" class="arrow-icon"></ion-icon>
+      <div class="action-card" (click)="viewProgress()">
+        <div class="card-icon">
+          <ion-icon name="bar-chart-outline"></ion-icon>
         </div>
+        <div class="card-info">
+          <h3>Estadísticas del Sistema</h3>
+          <p>Métricas y reportes generales</p>
+        </div>
+        <ion-icon name="chevron-forward-outline" class="arrow-icon"></ion-icon>
+      </div>
 
-        <!-- Logout Button for Admins -->
-        <app-logout-button [buttonStyle]="'card'" [showConfirmation]="true"></app-logout-button>
+      <div class="action-card" routerLink="/profile">
+        <div class="card-icon settings">
+          <ion-icon name="person-outline"></ion-icon>
+        </div>
+        <div class="card-info">
+          <h3>Mi Perfil</h3>
+          <p>Edita tu información de administrador</p>
+        </div>
+        <ion-icon name="chevron-forward-outline" class="arrow-icon"></ion-icon>
+      </div>
+
+      <!-- Back Button -->
+      <ion-button expand="block" fill="outline" color="medium" shape="round" class="ion-margin-bottom"
+        (click)="navigateBack()">
+        <ion-icon name="arrow-back" slot="start"></ion-icon>
+        Volver
+      </ion-button>
+
+      <!-- Logout Button for Admins -->
+      <app-logout-button [buttonStyle]="'card'" [showConfirmation]="true"></app-logout-button>
       }
 
       <!-- ===== FALLBACK: Usuario sin rol definido ===== -->
       @if (!hasKnownRole()) {
-        <div class="alert-card warning">
-          <ion-icon name="alert-circle-outline"></ion-icon>
-          <div class="alert-content">
-            <h4>Rol no configurado</h4>
-            <p>Tu cuenta no tiene un rol asignado. Contacta al administrador del sistema.</p>
-          </div>
+      <div class="alert-card warning">
+        <ion-icon name="alert-circle-outline"></ion-icon>
+        <div class="alert-content">
+          <h4>Rol no configurado</h4>
+          <p>Tu cuenta no tiene un rol asignado. Contacta al administrador del sistema.</p>
         </div>
+      </div>
 
-        <div class="action-card" routerLink="/profile">
-          <div class="card-icon settings">
-            <ion-icon name="person-outline"></ion-icon>
-          </div>
-          <div class="card-info">
-            <h3>Gestión de Perfil</h3>
-            <p>Edita tu información personal</p>
-          </div>
-          <ion-icon name="chevron-forward-outline" class="arrow-icon"></ion-icon>
+      <div class="action-card" routerLink="/profile">
+        <div class="card-icon settings">
+          <ion-icon name="person-outline"></ion-icon>
         </div>
+        <div class="card-info">
+          <h3>Gestión de Perfil</h3>
+          <p>Edita tu información personal</p>
+        </div>
+        <ion-icon name="chevron-forward-outline" class="arrow-icon"></ion-icon>
+      </div>
 
-        <!-- Logout Button for users without role -->
-        <app-logout-button [buttonStyle]="'card'" [showConfirmation]="true"></app-logout-button>
+      <!-- Back Button -->
+      <ion-button expand="block" fill="outline" color="medium" shape="round" class="ion-margin-bottom"
+        (click)="navigateBack()">
+        <ion-icon name="arrow-back" slot="start"></ion-icon>
+        Volver
+      </ion-button>
+
+      <!-- Logout Button for users without role -->
+      <app-logout-button [buttonStyle]="'card'" [showConfirmation]="true"></app-logout-button>
       }
 
       <!-- Bottom Link -->
@@ -231,12 +267,12 @@
         <a href="#">Centro de soporte</a>
       </div>
 
-    } @else {
+      } @else {
       <div class="loading-state">
         <ion-spinner name="crescent" color="primary"></ion-spinner>
         <p>Cargando tu dashboard...</p>
       </div>
-    }
+      }
     </div>
   </div>
 </ion-content>

@@ -12,6 +12,7 @@ interface Feature {
   description: string;
   icon: string;
   color: string;
+  route: string; // Route identifier for onboarding
 }
 
 @Component({
@@ -35,28 +36,32 @@ export class HomePage implements OnInit, OnDestroy {
       title: 'Detección Temprana',
       description: 'Análisis avanzado con IA para detectar signos tempranos de cáncer de pulmón',
       icon: 'analytics',
-      color: 'primary'
+      color: 'primary',
+      route: 'detection'
     },
     {
       id: 2,
       title: 'Seguimiento Personalizado',
       description: 'Monitoreo continuo y planes de tratamiento personalizados',
       icon: 'heart',
-      color: 'tertiary'
+      color: 'tertiary',
+      route: 'tracking'
     },
     {
       id: 3,
       title: 'Seguridad de Datos',
       description: 'Protección avanzada de tu información médica personal',
       icon: 'shield',
-      color: 'warning'
+      color: 'warning',
+      route: 'security'
     },
     {
       id: 4,
       title: 'Comunidad de Apoyo',
       description: 'Conecta con otros pacientes y profesionales de la salud',
       icon: 'people',
-      color: 'dark'
+      color: 'dark',
+      route: 'community'
     }
   ];
 
@@ -93,10 +98,10 @@ export class HomePage implements OnInit, OnDestroy {
 
   /**
    * Handles click events on feature cards
+   * Navigates to onboarding page with details
    * @param feature The feature that was clicked
    */
   onFeatureClick(feature: Feature): void {
-    console.log(`Feature clicked: ${feature.title}`);
-    // Here you can add navigation logic, e.g., this.router.navigate(['/features', feature.id]);
+    this.router.navigate(['/onboarding', feature.route]);
   }
 }

@@ -5,7 +5,7 @@
 import { Component, OnInit, inject, computed, signal } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { addIcons } from 'ionicons';
 import {
   leafOutline,
@@ -21,12 +21,14 @@ import {
   chevronForwardOutline,
   logOutOutline,
   alertCircleOutline,
+  arrowBack,
   settingsOutline
 } from 'ionicons/icons';
 import { AuthFacadeService } from '../auth/core/services';
 import { User } from '../auth/core/interfaces/auth.unified';
 import { LogoutButtonComponent } from '../shared/components/logout-button/logout-button.component';
 import { ProfileService, PatientProfile, DoctorProfile, AdminProfile } from '../profile/services/profile.service';
+import { SmokingTrackerService, SmokingStats } from '../habits/services/smoking-tracker.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -41,6 +43,8 @@ import { ProfileService, PatientProfile, DoctorProfile, AdminProfile } from '../
 export class DashboardPage implements OnInit {
   private authFacade = inject(AuthFacadeService);
   private profileService = inject(ProfileService);
+  private smokingService = inject(SmokingTrackerService);
+  private router = inject(Router);
 
   user: User | null = null;
   userProfile: PatientProfile | DoctorProfile | AdminProfile | null = null;
@@ -52,11 +56,12 @@ export class DashboardPage implements OnInit {
   isAdmin = signal<boolean>(false);
   hasKnownRole = signal<boolean>(false); // True si tiene rol conocido (PATIENT, DOCTOR, ADMIN)
 
-  // Example data properties
-  smokeFreeDays = 128;
-  moneySaved = 450;
-  cigarettesAvoided = 2560;
-  lungHealthPercentage = 85;
+  // Smoking stats - loaded from backend
+  smokeFreeDays = signal<number>(0);
+  moneySaved = signal<number>(0);
+  cigarettesAvoided = signal<number>(0);
+  lungHealthPercentage = signal<number>(0);
+  statsLoading = signal<boolean>(true);
 
   constructor() {
     addIcons({
@@ -73,30 +78,31 @@ export class DashboardPage implements OnInit {
       chevronForwardOutline,
       logOutOutline,
       alertCircleOutline,
+      arrowBack,
       settingsOutline
     });
   }
 
   ngOnInit() {
     console.log('[Dashboard] ngOnInit iniciado');
-    
+
     this.authFacade.user$.subscribe(user => {
       console.log('[Dashboard] User recibido:', user);
       this.user = user;
-      
+
       // Set role-based flags (roleId: 1=PATIENT, 2=DOCTOR, 3=ADMIN)
       // También verificar por role string para compatibilidad
       const roleId = user?.roleId;
       const roleName = user?.role?.toUpperCase();
-      
+
       this.isPatient.set(roleId === 1 || roleName === 'PATIENT');
       this.isDoctor.set(roleId === 2 || roleName === 'DOCTOR');
       this.isAdmin.set(roleId === 3 || roleName === 'ADMINISTRATOR');
       this.hasKnownRole.set(this.isPatient() || this.isDoctor() || this.isAdmin());
-      
-      console.log('[Dashboard] Roles asignados:', { 
-        email: user?.email, 
-        roleId, 
+
+      console.log('[Dashboard] Roles asignados:', {
+        email: user?.email,
+        roleId,
         role: roleName,
         isPatient: this.isPatient(),
         isDoctor: this.isDoctor(),
@@ -118,6 +124,11 @@ export class DashboardPage implements OnInit {
       // Cargar perfil del usuario para obtener el nombre completo actualizado
       if (user) {
         this.loadUserProfile();
+
+        // Cargar estadísticas de tabaco para pacientes
+        if (this.isPatient() && user.id) {
+          this.loadSmokingStats(user.id);
+        }
       }
     });
   }
@@ -127,20 +138,20 @@ export class DashboardPage implements OnInit {
    */
   private loadUserProfile(): void {
     console.log('[Dashboard] Iniciando carga de perfil...');
-    
+
     this.profileService.getMyProfile().subscribe({
       next: (response) => {
         console.log('[Dashboard] Respuesta completa del perfil:', response);
-        
+
         if (response.success && response.data?.profile) {
           this.userProfile = response.data.profile;
-          
+
           console.log('[Dashboard] Tipo de perfil:', response.data.profile.type);
           console.log('[Dashboard] Datos del perfil:', response.data.profile);
-          
+
           // Extraer nombre según el tipo de perfil - todos tienen fullName excepto Admin
           let fullName = '';
-          
+
           if (response.data.profile.type === 'PATIENT') {
             const profile = response.data.profile as PatientProfile;
             fullName = profile.fullName || `${profile.firstName || ''} ${profile.lastName || ''}`.trim();
@@ -154,13 +165,13 @@ export class DashboardPage implements OnInit {
             fullName = this.user?.email?.split('@')[0] || 'Administrador';
             console.log('[Dashboard] Admin - usando email:', fullName);
           }
-          
+
           // Si no hay fullName, usar email como fallback
           if (!fullName || fullName.trim() === '') {
             fullName = this.user?.email?.split('@')[0] || 'Usuario';
             console.log('[Dashboard] Usando fallback por fullName vacío:', fullName);
           }
-          
+
           this.userFullName.set(fullName);
           console.log('[Dashboard] Nombre final establecido:', this.userFullName());
         } else {
@@ -181,13 +192,42 @@ export class DashboardPage implements OnInit {
     });
   }
 
+  /**
+   * Carga las estadísticas de tabaco del paciente
+   */
+  private loadSmokingStats(patientId: number): void {
+    console.log('[Dashboard] Cargando estadísticas de tabaco para paciente:', patientId);
+    this.statsLoading.set(true);
+
+    this.smokingService.getPatientStats(patientId).subscribe({
+      next: (response) => {
+        console.log('[Dashboard] Estadísticas recibidas:', response);
+        if (response.success && response.data) {
+          this.smokeFreeDays.set(response.data.smokeFreeDays);
+          this.moneySaved.set(response.data.moneySaved);
+          this.cigarettesAvoided.set(response.data.totalCigarettesAvoided);
+          this.lungHealthPercentage.set(response.data.lungHealthImprovement);
+        }
+        this.statsLoading.set(false);
+      },
+      error: (error) => {
+        console.error('[Dashboard] Error cargando estadísticas:', error);
+        this.statsLoading.set(false);
+      }
+    });
+  }
+
   logHabit() {
-    // Logic to log a new habit
-    console.log('Log Habit button clicked');
+    // Navigate to smoking tracker page
+    this.router.navigate(['/habits/smoking']);
   }
 
   viewProgress() {
     // Logic to navigate to a detailed progress page
     console.log('View Progress button clicked');
+  }
+
+  navigateBack() {
+    this.router.navigate(['/home']);
   }
 }
